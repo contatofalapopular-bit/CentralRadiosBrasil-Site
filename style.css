@@ -1,0 +1,255 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    font-family:Arial,Helvetica,sans-serif;
+
+    background:linear-gradient(180deg,#00173d,#032b6d,#00173d);
+
+    color:#fff;
+
+    min-height:100vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.pagina{
+
+    flex:1;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:40px 20px;
+
+}
+
+.conteudo{
+
+    max-width:900px;
+
+    width:100%;
+
+    text-align:center;
+
+}
+
+.logo{
+
+    width:280px;
+
+    max-width:90%;
+
+    margin-bottom:25px;
+
+    border-radius:50%;
+
+    box-shadow:0 0 40px rgba(0,180,255,.35);
+
+}
+
+.selo{
+
+    display:inline-block;
+
+    background:#ff9800;
+
+    color:#111;
+
+    font-weight:bold;
+
+    padding:8px 18px;
+
+    border-radius:30px;
+
+    margin-bottom:25px;
+
+}
+
+h1{
+
+    font-size:2.2rem;
+
+    margin-bottom:20px;
+
+}
+
+.descricao{
+
+    font-size:1.1rem;
+
+    line-height:1.7;
+
+    max-width:700px;
+
+    margin:auto;
+
+    color:#d7e8ff;
+
+}
+
+.recursos{
+
+    margin-top:50px;
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+    gap:20px;
+
+}
+
+.recurso{
+
+    background:rgba(255,255,255,.08);
+
+    border:1px solid rgba(255,255,255,.10);
+
+    border-radius:18px;
+
+    padding:25px;
+
+    transition:.3s;
+
+}
+
+.recurso:hover{
+
+    transform:translateY(-6px);
+
+    background:rgba(255,255,255,.12);
+
+}
+
+.recurso span{
+
+    font-size:40px;
+
+}
+
+.recurso strong{
+
+    display:block;
+
+    margin-top:15px;
+
+    font-size:20px;
+
+}
+
+.recurso p{
+
+    margin-top:10px;
+
+    color:#d5d5d5;
+
+}
+
+.acoes{
+
+    margin-top:45px;
+
+}
+
+.botao{
+
+    cursor:pointer;
+
+    border:none;
+
+    border-radius:35px;
+
+    padding:16px 32px;
+
+    font-size:17px;
+
+    margin:8px;
+
+    transition:.25s;
+
+}
+
+.botao-principal{
+
+    background:#00a8ff;
+
+    color:white;
+
+}
+
+.botao-principal:hover{
+
+    background:#0bc0ff;
+
+}
+
+.botao-secundario{
+
+    background:white;
+
+    color:#003b80;
+
+}
+
+.botao-secundario:hover{
+
+    background:#e6f5ff;
+
+}
+
+.mensagem{
+
+    margin-top:25px;
+
+    background:rgba(255,255,255,.10);
+
+    padding:18px;
+
+    border-radius:12px;
+
+}
+
+.hidden{
+
+    display:none;
+
+}
+
+footer{
+
+    text-align:center;
+
+    padding:25px;
+
+    color:#c9d7ea;
+
+    font-size:.95rem;
+
+}
+
+@media(max-width:700px){
+
+h1{
+
+font-size:1.7rem;
+
+}
+
+.logo{
+
+width:220px;
+
+}
+
+}
