@@ -97,7 +97,7 @@ async function carregarBanco() {
     estado.banco = banco;
 
     estado.radios = banco.radios.filter(radioPublicaAtiva);
-    atualizarIndicadoresNacionais(estado.radios);
+   atualizarIndicadoresNacionais(banco);
     estado.radiosFiltradas = [...estado.radios];
 
     atualizarInformacoesBanco();
@@ -641,35 +641,28 @@ function normalizarTexto(texto) {
     .toLocaleLowerCase("pt-BR")
     .trim();
 }
-function atualizarIndicadoresNacionais(radios) {
-  const lista = Array.isArray(radios) ? radios : [];
+function atualizarIndicadoresNacionais(banco) {
+  const totais = banco?.totais || {};
 
-  const estados = new Set();
-  const cidades = new Set();
+  animarNumero(
+    "total-emissoras",
+    totais.emissoras || 0
+  );
 
-  let totalVerificadas = 0;
+  animarNumero(
+    "total-estados",
+    totais.estados || 0
+  );
 
-  lista.forEach((radio) => {
+  animarNumero(
+    "total-cidades",
+    totais.cidades || 0
+  );
 
-    const estado = (radio.estado || "").trim();
-    const cidade = (radio.cidade || "").trim();
-
-    if (estado) estados.add(estado);
-
-    if (cidade) {
-      cidades.add(cidade + estado);
-    }
-
-    if (radio.verificada === true) {
-      totalVerificadas++;
-    }
-
-  });
-
-  animarNumero("total-emissoras", lista.length);
-  animarNumero("total-estados", estados.size);
-  animarNumero("total-cidades", cidades.size);
-  animarNumero("total-verificadas", totalVerificadas);
+  animarNumero(
+    "total-verificadas",
+    totais.verificadas || 0
+  );
 }
 
 function animarNumero(id, valorFinal) {
