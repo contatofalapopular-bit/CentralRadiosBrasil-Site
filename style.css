@@ -1879,3 +1879,110 @@ a {
     transition: none;
   }
 }
+/* ==========================================================
+   COMMIT 22.2.2B
+   RÁDIO EM DESTAQUE
+========================================================== */
+
+.radio-destaque{
+    width:min(1180px,calc(100% - 32px));
+    margin:0 auto 36px;
+    padding:34px;
+    border-radius:28px;
+    overflow:hidden;
+    position:relative;
+    border:1px solid rgba(96,226,255,.15);
+    background:
+        linear-gradient(145deg,#0b1831,#08111f);
+    box-shadow:
+        0 24px 70px rgba(0,0,0,.28);
+}
+
+.radio-destaque.hidden{
+    display:none;
+}
+
+.radio-destaque::before{
+    content:"";
+    position:absolute;
+    right:-80px;
+    top:-80px;
+    width:260px;
+    height:260px;
+    border-radius:50%;
+    background:rgba(55,220,255,.08);
+    filter:blur(20px);
+}
+
+.radio-destaque-grid{
+    display:grid;
+    grid-template-columns:170px 1fr;
+    gap:34px;
+    align-items:center;
+}
+
+.radio-destaque-logo{
+    width:170px;
+    height:170px;
+    border-radius:28px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:3rem;
+    font-weight:900;
+    color:white;
+    background:
+        linear-gradient(135deg,#24d8ff,#586dff);
+    box-shadow:
+        0 25px 50px rgba(39,202,255,.25);
+}
+
+.radio-destaque-selo{
+    display:inline-block;
+    margin-bottom:16px;
+    color:#72e9ff;
+    font-size:.78rem;
+    font-weight:800;
+    letter-spacing:.15em;
+}
+
+.radio-destaque-categoria{
+    color:#57d8ff;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+}
+
+.radio-destaque h2{
+    margin:12px 0;
+    font-size:2.3rem;
+    color:#fff;
+}
+
+.radio-destaque p{
+    color:#c8d6e8;
+    line-height:1.7;
+}
+
+.radio-destaque-local{
+    margin:20px 0 30px;
+    color:#84e6ff;
+    font-weight:700;
+}
+
+@media(max-width:900px){
+
+.radio-destaque-grid{
+
+grid-template-columns:1fr;
+text-align:center;
+
+}
+
+.radio-destaque-logo{
+
+margin:auto;
+
+}
+
+}
