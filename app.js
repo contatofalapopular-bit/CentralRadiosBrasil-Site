@@ -97,6 +97,7 @@ async function carregarBanco() {
     estado.banco = banco;
 
     estado.radios = banco.radios.filter(radioPublicaAtiva);
+    atualizarIndicadoresNacionais(estado.radios);
     estado.radiosFiltradas = [...estado.radios];
 
     atualizarInformacoesBanco();
@@ -639,4 +640,62 @@ function normalizarTexto(texto) {
     .replace(/[\u0300-\u036f]/g, "")
     .toLocaleLowerCase("pt-BR")
     .trim();
+}
+function atualizarIndicadoresNacionais(radios) {
+  const lista = Array.isArray(radios) ? radios : [];
+
+  const estados = new Set();
+  const cidades = new Set();
+
+  let totalVerificadas = 0;
+
+  lista.forEach((radio) => {
+
+    const estado = (radio.estado || "").trim();
+    const cidade = (radio.cidade || "").trim();
+
+    if (estado) estados.add(estado);
+
+    if (cidade) {
+      cidades.add(cidade + estado);
+    }
+
+    if (radio.verificada === true) {
+      totalVerificadas++;
+    }
+
+  });
+
+  animarNumero("total-emissoras", lista.length);
+  animarNumero("total-estados", estados.size);
+  animarNumero("total-cidades", cidades.size);
+  animarNumero("total-verificadas", totalVerificadas);
+}
+
+function animarNumero(id, valorFinal) {
+
+  const elemento = document.getElementById(id);
+
+  if (!elemento) return;
+
+  const inicio = 0;
+  const duracao = 800;
+  const tempoInicial = performance.now();
+
+  function atualizar(tempo) {
+
+    const progresso = Math.min((tempo - tempoInicial) / duracao, 1);
+
+    elemento.textContent = Math.round(
+      inicio + (valorFinal - inicio) * progresso
+    );
+
+    if (progresso < 1) {
+      requestAnimationFrame(atualizar);
+    }
+
+  }
+
+  requestAnimationFrame(atualizar);
+
 }
