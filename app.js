@@ -692,3 +692,6 @@ function animarNumero(id, valorFinal) {
   requestAnimationFrame(atualizar);
 
 }
+
+
+// Commit 22.2.3 base preparada para Rádio em Destaque.
