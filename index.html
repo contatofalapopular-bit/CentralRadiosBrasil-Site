@@ -51,21 +51,150 @@
 
   <main class="pagina">
 
-    <section class="apresentacao">
+    <section class="apresentacao apresentacao-premium">
 
-      <div class="apresentacao-conteudo">
+  <div class="hero-efeitos" aria-hidden="true">
 
-        <span class="selo">Portal Público</span>
+    <div class="hero-orbita hero-orbita-1"></div>
+    <div class="hero-orbita hero-orbita-2"></div>
+    <div class="hero-orbita hero-orbita-3"></div>
 
-        <h1>Encontre e ouça rádios brasileiras</h1>
+    <span class="hero-particula particula-1"></span>
+    <span class="hero-particula particula-2"></span>
+    <span class="hero-particula particula-3"></span>
+    <span class="hero-particula particula-4"></span>
+    <span class="hero-particula particula-5"></span>
 
-        <p>
-          Pesquise emissoras por nome, cidade, estado ou categoria.
-        </p>
+    <div class="hero-brasil">
 
-      </div>
+      <span class="hero-brasil-sinal sinal-1"></span>
+      <span class="hero-brasil-sinal sinal-2"></span>
+      <span class="hero-brasil-sinal sinal-3"></span>
 
-    </section>
+      <span class="hero-brasil-texto">
+        BRASIL CONECTADO
+      </span>
+
+    </div>
+
+  </div>
+
+  <div class="apresentacao-conteudo">
+
+    <span class="selo">
+      A nova central brasileira de rádios
+    </span>
+
+    <p class="hero-pre-titulo">
+      Descubra novas vozes. Explore novas regiões.
+    </p>
+
+    <h1>
+      O Brasil inteiro
+      <span>em uma só sintonia.</span>
+    </h1>
+
+    <p class="hero-descricao">
+      Uma plataforma nacional criada para conectar ouvintes,
+      emissoras, cidades e culturas de todas as regiões do país.
+    </p>
+
+    <div class="hero-acoes">
+
+      <button
+        class="hero-botao hero-botao-principal"
+        type="button"
+        id="btn-explorar-radios"
+      >
+        <span>▶</span>
+        Explorar emissoras
+      </button>
+
+      <button
+        class="hero-botao hero-botao-secundario"
+        type="button"
+        id="btn-conhecer-plataforma"
+      >
+        Conhecer a plataforma
+      </button>
+
+    </div>
+
+    <div class="hero-indicadores">
+
+      <span>
+        <i class="indicador-ao-vivo"></i>
+        Emissoras ao vivo
+      </span>
+
+      <span>
+        Catálogo nacional
+      </span>
+
+      <span>
+        Dados verificados
+      </span>
+
+    </div>
+
+  </div>
+
+</section>
+
+<section
+  class="estatisticas"
+  aria-label="Indicadores da Central Rádios Brasil"
+>
+
+  <article class="estatistica-card">
+
+    <div class="estatistica-icone">📻</div>
+
+    <div class="estatistica-conteudo">
+      <strong id="total-emissoras">0</strong>
+      <span>Emissoras</span>
+      <small>Publicadas no catálogo</small>
+    </div>
+
+  </article>
+
+  <article class="estatistica-card">
+
+    <div class="estatistica-icone">◆</div>
+
+    <div class="estatistica-conteudo">
+      <strong id="total-estados">0</strong>
+      <span>Estados</span>
+      <small>Conectados à plataforma</small>
+    </div>
+
+  </article>
+
+  <article class="estatistica-card">
+
+    <div class="estatistica-icone">●</div>
+
+    <div class="estatistica-conteudo">
+      <strong id="total-cidades">0</strong>
+      <span>Cidades</span>
+      <small>Representadas no Brasil</small>
+    </div>
+
+  </article>
+
+  <article class="estatistica-card estatistica-destaque">
+
+    <div class="estatistica-icone">✓</div>
+
+    <div class="estatistica-conteudo">
+      <strong id="total-verificadas">0</strong>
+      <span>Verificadas</span>
+      <small>Emissoras autenticadas</small>
+    </div>
+
+  </article>
+
+</section>
 
     <section class="filtros" aria-label="Filtros de emissoras">
 
