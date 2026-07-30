@@ -10,97 +10,211 @@
 
   <meta
     name="description"
-    content="Site oficial da Central Rádios Brasil. em desenvolvimento."
+    content="Ouça rádios online de todo o Brasil na Central Rádios Brasil."
   >
 
-  <title>Central Rádios Brasil — Em construção</title>
+  <meta name="theme-color" content="#00173d">
 
-  <link rel="stylesheet" href="style.css">
+  <title>Central Rádios Brasil</title>
+
+  <link rel="stylesheet" href="estilo.css">
 </head>
 
 <body>
 
+  <header class="cabecalho">
+
+    <div class="cabecalho-conteudo">
+
+      <a class="marca" href="./" aria-label="Central Rádios Brasil">
+
+        <img
+          class="marca-logo"
+          src="logo-central-radios-brasil.jpeg.jpeg"
+          alt="Logo Central Rádios Brasil"
+        >
+
+        <div class="marca-texto">
+          <strong>Central Rádios Brasil</strong>
+          <span>Rádios de todo o país em um só lugar</span>
+        </div>
+
+      </a>
+
+      <div class="versao-banco" id="versao-banco">
+        Banco carregando...
+      </div>
+
+    </div>
+
+  </header>
+
   <main class="pagina">
 
-    <section class="conteudo">
+    <section class="apresentacao">
 
-     <img
-    class="logo"
-    src="logo-central-radios-brasil.jpeg.jpeg"
-    alt="Logotipo Central Rádios Brasil">
+      <div class="apresentacao-conteudo">
 
-      <div class="selo">
-        🚧 Site em construção
-      </div>
+        <span class="selo">Portal Público</span>
 
-      <h1>Estamos chegando.</h1>
+        <h1>Encontre e ouça rádios brasileiras</h1>
 
-      <p class="descricao">
-        Estamos desenvolvendo uma plataforma.
-      </p>
-
-      <div class="recursos">
-
-        <div class="recurso">
-          <span>🎧</span>
-          <strong>Rádios online</strong>
-          <p>Emissoras de todo o Brasil.</p>
-        </div>
-
-        <div class="recurso">
-          <span>📍</span>
-          <strong>Busca regional</strong>
-          <p>Por estado, cidade e categoria.</p>
-        </div>
-
-        <div class="recurso">
-          <span>📱</span>
-          <strong>Aplicativo instalável</strong>
-          <p>Para celular e computador.</p>
-        </div>
+        <p>
+          Pesquise emissoras por nome, cidade, estado ou categoria.
+        </p>
 
       </div>
 
-      <div class="acoes">
+    </section>
 
-        <button
-          class="botao botao-principal"
-          type="button"
-          id="btn-projeto"
-        >
-          Conheça o projeto
-        </button>
+    <section class="filtros" aria-label="Filtros de emissoras">
 
-        <button
-          class="botao botao-secundario"
-          type="button"
-          id="btn-radio"
+      <div class="campo campo-pesquisa">
+
+        <label for="pesquisa">Pesquisar rádio</label>
+
+        <input
+          type="search"
+          id="pesquisa"
+          placeholder="Nome, cidade, estado ou categoria"
+          autocomplete="off"
         >
-          Sou dono de uma rádio
-        </button>
+
+      </div>
+
+      <div class="campo">
+
+        <label for="filtro-estado">Estado</label>
+
+        <select id="filtro-estado">
+          <option value="">Todos os estados</option>
+        </select>
+
+      </div>
+
+      <div class="campo">
+
+        <label for="filtro-categoria">Categoria</label>
+
+        <select id="filtro-categoria">
+          <option value="">Todas as categorias</option>
+        </select>
+
+      </div>
+
+      <button
+        class="botao-limpar"
+        type="button"
+        id="btn-limpar"
+      >
+        Limpar filtros
+      </button>
+
+    </section>
+
+    <section class="catalogo">
+
+      <div class="catalogo-cabecalho">
+
+        <div>
+          <span class="titulo-menor">Catálogo oficial</span>
+          <h2>Emissoras disponíveis</h2>
+        </div>
+
+        <div class="contador" id="contador-radios">
+          0 emissoras
+        </div>
 
       </div>
 
       <div
-        class="mensagem hidden"
-        id="mensagem-projeto"
+        class="mensagem-status"
+        id="mensagem-status"
+        role="status"
       >
-        A Central Rádios Brasil conectará ouvintes e emissoras.
+        Carregando emissoras...
       </div>
 
       <div
-        class="mensagem hidden"
-        id="mensagem-radio"
-      >
-        O Site estará disponível em breve.
-      </div>
+        class="grade-radios"
+        id="grade-radios"
+        aria-live="polite"
+      ></div>
 
     </section>
 
   </main>
 
-  <footer>
-    © 2026 Central Rádios Brasil. Todos os direitos reservados.
+  <aside
+    class="player hidden"
+    id="player"
+    aria-label="Player da rádio"
+  >
+
+    <div class="player-conteudo">
+
+      <div class="player-identidade">
+
+        <div class="player-logo" id="player-logo">
+          CRB
+        </div>
+
+        <div class="player-informacoes">
+
+          <span class="player-status" id="player-status">
+            Pronto para ouvir
+          </span>
+
+          <strong id="player-nome">
+            Selecione uma rádio
+          </strong>
+
+          <small id="player-localizacao">
+            Central Rádios Brasil
+          </small>
+
+        </div>
+
+      </div>
+
+      <div class="player-acoes">
+
+        <button
+          class="botao-player"
+          type="button"
+          id="btn-play-pause"
+          aria-label="Reproduzir rádio"
+        >
+          ▶
+        </button>
+
+        <button
+          class="botao-fechar"
+          type="button"
+          id="btn-fechar-player"
+          aria-label="Fechar player"
+        >
+          ✕
+        </button>
+
+      </div>
+
+    </div>
+
+    <audio id="audio-player" preload="none"></audio>
+
+  </aside>
+
+  <footer class="rodape">
+
+    <p>
+      © 2026 Central Rádios Brasil. Todos os direitos reservados.
+    </p>
+
+    <p id="informacao-banco">
+      Dados oficiais da Central Rádios Brasil.
+    </p>
+
   </footer>
 
   <script src="app.js"></script>
