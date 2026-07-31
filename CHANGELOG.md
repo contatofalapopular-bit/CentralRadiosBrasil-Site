@@ -71,3 +71,8 @@
 
 ## 22.2.7 — Parte 1: Favoritas
 - Até cinco favoritas salvas no navegador.
+
+## 22.4.2 — Polimento Visual / Etapa 1
+- Cards de emissoras reconstruídos em formato compacto e com largura máxima fixa.
+- Grade responsiva sem ampliar um único card para ocupar a página.
+- Hero reduzido, melhor alinhado e com maior destaque no botão principal.
