@@ -3587,3 +3587,243 @@ body.modal-aberto {
   .radio-destaque-acoes { display: grid; grid-template-columns: 1fr; }
   .radio-destaque-acoes .hero-botao { width: 100%; }
 }
+
+/* =========================================================
+   VERSÃO 22.4.2.1 — SEÇÕES COMPACTAS E ALTURA PREVISÍVEL
+   Destaque menor + listas em uma única faixa horizontal.
+   A altura visual não cresce com a quantidade de emissoras.
+   ========================================================= */
+
+/* DESTAQUE: mantém todas as informações, mas sem ocupar uma tela inteira */
+.radio-destaque {
+  min-height: 0 !important;
+}
+
+.radio-destaque-conteudo {
+  padding: 24px 28px !important;
+}
+
+.radio-destaque-topo {
+  margin-bottom: 18px !important;
+}
+
+.radio-destaque-vitrine {
+  grid-template-columns: minmax(0, 1.65fr) minmax(270px, .72fr) !important;
+  gap: 24px !important;
+  align-items: center !important;
+}
+
+.radio-destaque-identidade {
+  grid-template-columns: 136px minmax(0, 1fr) !important;
+  gap: 24px !important;
+}
+
+.radio-destaque-logo {
+  width: 136px !important;
+  height: 136px !important;
+  min-width: 136px !important;
+  border-radius: 24px !important;
+  font-size: 2.3rem !important;
+}
+
+.radio-destaque-info h2 {
+  margin: 8px 0 7px !important;
+  font-size: clamp(1.8rem, 3vw, 2.75rem) !important;
+}
+
+.radio-destaque-info p {
+  margin-bottom: 12px !important;
+  line-height: 1.5 !important;
+}
+
+.radio-destaque-painel {
+  padding: 16px !important;
+  border-radius: 18px !important;
+}
+
+.radio-destaque-painel-titulo {
+  margin-bottom: 10px !important;
+}
+
+.radio-destaque-detalhes {
+  gap: 7px !important;
+}
+
+.radio-destaque-detalhe {
+  grid-template-columns: 34px 1fr !important;
+  gap: 10px !important;
+  padding: 8px 10px !important;
+  border-radius: 13px !important;
+}
+
+.radio-destaque-detalhe .detalhe-icone {
+  width: 34px !important;
+  height: 34px !important;
+  border-radius: 10px !important;
+}
+
+.radio-destaque-nota {
+  margin-top: 10px !important;
+}
+
+.radio-destaque-acoes {
+  gap: 10px !important;
+  margin-top: 18px !important;
+}
+
+.radio-destaque-acoes .hero-botao {
+  min-height: 46px !important;
+}
+
+/*
+  NOVAS, FAVORITAS, MAIS OUVIDAS E CATÁLOGO:
+  uma única faixa horizontal. Com 1 ou 1.000 rádios, a seção mantém
+  a mesma altura; novas emissoras entram para o lado, sem alongar a página.
+*/
+.recentes,
+.favoritas,
+.mais-ouvidas,
+.catalogo {
+  min-height: 0 !important;
+}
+
+.recentes,
+.mais-ouvidas {
+  padding: 22px 28px !important;
+}
+
+.catalogo {
+  padding-top: 28px !important;
+  padding-bottom: 20px !important;
+}
+
+.recentes-cabecalho,
+.mais-ouvidas-cabecalho,
+.catalogo-cabecalho {
+  margin-bottom: 16px !important;
+}
+
+.grade-recentes,
+.grade-favoritas,
+.grade-mais-ouvidas,
+#grade-radios {
+  display: flex !important;
+  flex-flow: row nowrap !important;
+  align-items: stretch !important;
+  justify-content: flex-start !important;
+  gap: 16px !important;
+  width: 100% !important;
+  padding: 3px 4px 12px !important;
+  overflow-x: auto !important;
+  overflow-y: hidden !important;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(62, 196, 255, .48) rgba(255, 255, 255, .05);
+  overscroll-behavior-inline: contain;
+}
+
+.grade-recentes::-webkit-scrollbar,
+.grade-favoritas::-webkit-scrollbar,
+.grade-mais-ouvidas::-webkit-scrollbar,
+#grade-radios::-webkit-scrollbar {
+  height: 8px;
+}
+
+.grade-recentes::-webkit-scrollbar-track,
+.grade-favoritas::-webkit-scrollbar-track,
+.grade-mais-ouvidas::-webkit-scrollbar-track,
+#grade-radios::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .045);
+}
+
+.grade-recentes::-webkit-scrollbar-thumb,
+.grade-favoritas::-webkit-scrollbar-thumb,
+.grade-mais-ouvidas::-webkit-scrollbar-thumb,
+#grade-radios::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(62, 196, 255, .42);
+}
+
+.grade-recentes > .radio-card,
+.grade-favoritas > .radio-card,
+.grade-mais-ouvidas > .radio-card,
+#grade-radios > .radio-card {
+  flex: 0 0 300px !important;
+  width: 300px !important;
+  max-width: 300px !important;
+  min-height: 270px !important;
+  height: 270px !important;
+  scroll-snap-align: start;
+}
+
+.grade-recentes > .radio-card .radio-card-corpo,
+.grade-favoritas > .radio-card .radio-card-corpo,
+.grade-mais-ouvidas > .radio-card .radio-card-corpo,
+#grade-radios > .radio-card .radio-card-corpo {
+  min-height: 0 !important;
+}
+
+/* Não deixa o rodapé gerar uma área vazia enorme após o catálogo. */
+.catalogo + .rodape,
+footer.rodape {
+  margin-top: 26px !important;
+}
+
+@media (max-width: 980px) {
+  .radio-destaque-vitrine {
+    grid-template-columns: 1fr !important;
+  }
+
+  .radio-destaque-painel {
+    display: block !important;
+  }
+
+  .radio-destaque-detalhes {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .radio-destaque-conteudo {
+    padding: 21px 18px !important;
+  }
+
+  .radio-destaque-identidade {
+    grid-template-columns: 96px minmax(0, 1fr) !important;
+    gap: 16px !important;
+    align-items: start !important;
+  }
+
+  .radio-destaque-logo {
+    width: 96px !important;
+    height: 96px !important;
+    min-width: 96px !important;
+    border-radius: 19px !important;
+    font-size: 1.7rem !important;
+  }
+
+  .radio-destaque-info h2 {
+    font-size: clamp(1.65rem, 8.2vw, 2.35rem) !important;
+  }
+
+  .radio-destaque-detalhes {
+    grid-template-columns: 1fr !important;
+  }
+
+  .recentes,
+  .mais-ouvidas {
+    padding: 20px 16px !important;
+  }
+
+  .grade-recentes > .radio-card,
+  .grade-favoritas > .radio-card,
+  .grade-mais-ouvidas > .radio-card,
+  #grade-radios > .radio-card {
+    flex-basis: min(300px, calc(100vw - 72px)) !important;
+    width: min(300px, calc(100vw - 72px)) !important;
+    max-width: min(300px, calc(100vw - 72px)) !important;
+    height: auto !important;
+    min-height: 270px !important;
+  }
+}
