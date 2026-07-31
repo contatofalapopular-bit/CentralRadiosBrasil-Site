@@ -1,33 +1,18 @@
-# Central Rádios Brasil — Histórico de versões
+# Histórico de versões — Central Rádios Brasil
 
-## 22.2.8 — Parte 2: Explorar por Regiões
-**Data:** 30/07/2026
+## 22.2.9 — Parte 3: Mais ouvidas por você
+- Ranking automático baseado nas reproduções feitas neste navegador.
+- Contagem individual de reproduções por emissora.
+- Lista das cinco emissoras mais ouvidas.
+- Botão para limpar o histórico local.
+- Integração com player, favoritas e cards existentes.
+- Mantida a correção de espaçamento da versão 22.2.8.1.
 
-### Novidades
-- Cards automáticos para Norte, Nordeste, Centro-Oeste, Sudeste e Sul.
-- Contagem real de emissoras em cada região.
-- Clique na região filtra o catálogo automaticamente.
-- Região selecionada recebe destaque visual.
-- Botão “Mostrar todas” remove o filtro regional.
-- Regiões sem emissoras permanecem visíveis, mas desabilitadas.
-- Integração com pesquisa, estado, categoria e botão “Limpar filtros”.
-- Layout responsivo para computador, tablet e celular.
+## 22.2.8.1 — Correção visual
+- Corrigida a sobreposição entre os cards de regiões e a barra de filtros.
 
----
+## 22.2.8 — Parte 2: Explorar por regiões
+- Filtro pelas cinco regiões brasileiras com contagem automática.
 
-## 22.2.7 — Favoritas locais
-**Data:** 30/07/2026
-
-### Novidades
-- Botão de coração em todos os cards de emissoras.
-- Até 5 rádios favoritas por navegador.
-- Favoritas preservadas no `localStorage` após fechar ou atualizar a página.
-- Seção “Rádios favoritas” exibida automaticamente quando houver ao menos uma favorita.
-- Contador visual de favoritas (`0 de 5` até `5 de 5`).
-- Remoção da favorita pelo mesmo botão, tanto no catálogo quanto na seção de favoritas.
-
-### Arquivos alterados
-- `index.html`
-- `app.js`
-- `style.css`
-- `CHANGELOG.md`
+## 22.2.7 — Parte 1: Favoritas
+- Até cinco favoritas salvas no navegador.
