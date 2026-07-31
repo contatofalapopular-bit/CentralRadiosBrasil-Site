@@ -7,7 +7,7 @@
 <meta content="Ouça rádios online de todo o Brasil na Central Rádios Brasil." name="description"/>
 <meta content="#00173d" name="theme-color"/>
 <title>Central Rádios Brasil</title>
-<link href="style.css" rel="stylesheet"/>
+<link href="style.css?v=23.0.0" rel="stylesheet"/>
 </head>
 <body>
 <header class="cabecalho">
@@ -193,7 +193,7 @@
 <h2 id="titulo-recentes">Recém-chegadas à Central</h2>
 <p>Conheça as emissoras publicadas mais recentemente na plataforma.</p>
 </div>
-<div class="recentes-contador" id="contador-recentes">0 emissoras</div>
+<div class="prateleira-acoes"><div class="recentes-contador" id="contador-recentes">0 emissoras</div><button class="seta-prateleira" type="button" data-prateleira="grade-recentes" data-direcao="-1" aria-label="Voltar novidades">‹</button><button class="seta-prateleira" type="button" data-prateleira="grade-recentes" data-direcao="1" aria-label="Avançar novidades">›</button></div>
 </div>
 <div aria-live="polite" class="grade-radios grade-recentes" id="grade-recentes"></div>
 </section><section aria-labelledby="titulo-regioes" class="regioes" id="explorar-regioes">
@@ -215,7 +215,7 @@
 <h2 id="titulo-favoritas">Rádios favoritas</h2>
 <p>Salvas neste navegador. Você pode guardar até 5 emissoras.</p>
 </div>
-<div class="favoritas-contador" id="contador-favoritas">0 de 5</div>
+<div class="prateleira-acoes"><div class="favoritas-contador" id="contador-favoritas">0 de 5</div><button class="seta-prateleira" type="button" data-prateleira="grade-favoritas" data-direcao="-1" aria-label="Voltar favoritas">‹</button><button class="seta-prateleira" type="button" data-prateleira="grade-favoritas" data-direcao="1" aria-label="Avançar favoritas">›</button></div>
 </div>
 <div aria-live="polite" class="grade-radios grade-favoritas" id="grade-favoritas"></div>
 </section><section aria-labelledby="titulo-mais-ouvidas" class="mais-ouvidas hidden" id="secao-mais-ouvidas">
@@ -227,7 +227,7 @@
 </div>
 <div class="mais-ouvidas-acoes">
 <div class="mais-ouvidas-contador" id="contador-mais-ouvidas">0 emissoras</div>
-<button class="botao-limpar-historico" id="btn-limpar-historico" type="button">Limpar histórico</button>
+<button class="botao-limpar-historico" id="btn-limpar-historico" type="button">Limpar histórico</button><button class="seta-prateleira" type="button" data-prateleira="grade-mais-ouvidas" data-direcao="-1" aria-label="Voltar ranking">‹</button><button class="seta-prateleira" type="button" data-prateleira="grade-mais-ouvidas" data-direcao="1" aria-label="Avançar ranking">›</button>
 </div>
 </div>
 <div aria-live="polite" class="grade-radios grade-mais-ouvidas" id="grade-mais-ouvidas"></div>
@@ -264,7 +264,8 @@
 <div class="mensagem-status" id="mensagem-status" role="status">
         Carregando emissoras...
       </div>
-<div aria-live="polite" class="grade-radios" id="grade-radios"></div>
+<div aria-live="polite" class="grade-radios grade-catalogo" id="grade-radios"></div>
+<nav class="paginacao-catalogo hidden" id="paginacao-catalogo" aria-label="Paginação do catálogo"></nav>
 </section>
 
 
@@ -316,6 +317,6 @@
       Dados oficiais da Central Rádios Brasil.
     </p>
 </footer>
-<script src="app.js"></script>
+<script src="app.js?v=23.0.0"></script>
 </body>
 </html>
