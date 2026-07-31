@@ -101,22 +101,24 @@
 
     <div class="hero-acoes">
 
-      <button
+      <a
         class="hero-botao hero-botao-principal"
-        type="button"
         id="btn-explorar-radios"
+        href="#catalogo-emissoras"
+        aria-label="Ir para o catálogo de emissoras"
       >
-        <span>▶</span>
+        <span aria-hidden="true">▶</span>
         Explorar emissoras
-      </button>
+      </a>
 
-      <button
+      <a
         class="hero-botao hero-botao-secundario"
-        type="button"
         id="btn-conhecer-plataforma"
+        href="#sobre-plataforma"
+        aria-label="Conhecer a Central Rádios Brasil"
       >
         Conhecer a plataforma
-      </button>
+      </a>
 
     </div>
 
@@ -195,6 +197,33 @@
   </article>
 
 </section>
+
+<section class="sobre-plataforma" id="sobre-plataforma" aria-labelledby="titulo-sobre-plataforma">
+  <div class="sobre-plataforma-conteudo">
+    <span class="sobre-plataforma-selo">CENTRAL RÁDIOS BRASIL</span>
+    <h2 id="titulo-sobre-plataforma">Uma plataforma nacional para descobrir e ouvir rádios brasileiras</h2>
+    <p>
+      Encontre emissoras por nome, estado e categoria, acompanhe dados verificados
+      e ouça a programação ao vivo em um único lugar.
+    </p>
+    <div class="sobre-plataforma-recursos" aria-label="Recursos da plataforma">
+      <article>
+        <strong>Catálogo nacional</strong>
+        <span>Emissoras organizadas por cidade, estado e categoria.</span>
+      </article>
+      <article>
+        <strong>Transmissão ao vivo</strong>
+        <span>Player integrado para ouvir a rádio sem sair do portal.</span>
+      </article>
+      <article>
+        <strong>Dados confiáveis</strong>
+        <span>Informações publicadas e atualizadas pelo banco oficial.</span>
+      </article>
+    </div>
+    <a class="sobre-plataforma-link" href="#catalogo-emissoras">Explorar o catálogo</a>
+  </div>
+</section>
+
 <section class="radio-destaque hidden" id="radio-destaque">
 
   <div class="radio-destaque-conteudo">
@@ -252,7 +281,7 @@
   </div>
 
 </section>
-    <section class="filtros" aria-label="Filtros de emissoras">
+    <section class="filtros" id="catalogo-emissoras" aria-label="Filtros de emissoras">
 
       <div class="campo campo-pesquisa">
 
