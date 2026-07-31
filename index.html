@@ -17,7 +17,7 @@
 
   <title>Central Rádios Brasil</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=22.2.6">
 </head>
 
 <body>
@@ -195,6 +195,27 @@
   </article>
 
 </section>
+
+<section class="ranking-nacional" id="ranking-nacional" aria-labelledby="ranking-nacional-titulo">
+
+  <div class="ranking-nacional-cabecalho">
+    <span class="titulo-menor">DESTAQUES DA CENTRAL</span>
+    <h2 id="ranking-nacional-titulo">🏆 Ranking Nacional</h2>
+    <p>As emissoras mais ouvidas da Central</p>
+  </div>
+
+  <div class="ranking-nacional-top3" id="ranking-nacional-top3" aria-live="polite">
+    <div class="ranking-carregando">Carregando ranking...</div>
+  </div>
+
+  <div class="ranking-nacional-acao">
+    <button class="ranking-ver-top10" id="btn-ranking-top10" type="button">
+      Ver Top 10 →
+    </button>
+  </div>
+
+</section>
+
 <section class="radio-destaque hidden" id="radio-destaque">
 
   <div class="radio-destaque-conteudo">
@@ -336,6 +357,19 @@
 
   </main>
 
+
+  <div class="ranking-modal hidden" id="ranking-modal" role="dialog" aria-modal="true" aria-labelledby="ranking-modal-titulo">
+    <div class="ranking-modal-painel">
+      <button class="ranking-modal-fechar" id="btn-fechar-ranking" type="button" aria-label="Fechar ranking">✕</button>
+
+      <span class="titulo-menor">CLASSIFICAÇÃO NACIONAL</span>
+      <h2 id="ranking-modal-titulo">🏆 Top 10 da Central</h2>
+      <p class="ranking-modal-subtitulo">As emissoras mais ouvidas da plataforma.</p>
+
+      <ol class="ranking-top10-lista" id="ranking-top10-lista"></ol>
+    </div>
+  </div>
+
   <aside
     class="player hidden"
     id="player"
@@ -408,7 +442,7 @@
 
   </footer>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=22.2.6"></script>
 
 </body>
 </html>
