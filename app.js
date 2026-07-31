@@ -51,6 +51,7 @@ const elementos = {
   btnPlayPause: document.getElementById("btn-play-pause"),
   btnFecharPlayer: document.getElementById("btn-fechar-player"),
 
+  btnHeroOuvir: document.getElementById("btn-hero-ouvir"),
   btnExplorarRadios: document.getElementById("btn-explorar-radios"),
   btnConhecerPlataforma: document.getElementById("btn-conhecer-plataforma"),
   modalPlataforma: document.getElementById("modal-plataforma"),
@@ -121,6 +122,17 @@ function registrarEventos() {
   });
 
   window.addEventListener("scroll", atualizarInterfaceDeRolagem, { passive: true });
+
+  elementos.btnHeroOuvir?.addEventListener("click", () => {
+    const radio = estado.radioDestaque || estado.radios[0] || null;
+
+    if (radio) {
+      selecionarRadio(radio, { destacarCard: true });
+      return;
+    }
+
+    elementos.radioDestaque?.scrollIntoView({ behavior: "smooth", block: "center" });
+  });
 
   elementos.btnExplorarRadios?.addEventListener("click", irParaCatalogo);
   elementos.btnConhecerPlataforma?.addEventListener("click", abrirModalPlataforma);
