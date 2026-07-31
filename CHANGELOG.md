@@ -1,5 +1,15 @@
 # CHANGELOG — Central Rádios Brasil
 
+## 22.3.2 — Parte 6: Estatísticas nacionais
+
+- Seis indicadores calculados diretamente a partir das emissoras públicas e ativas.
+- Totais automáticos de emissoras, estados, cidades, categorias, streams ativos e verificadas.
+- Contagem independente do bloco `totais` do banco, evitando números zerados ou desatualizados.
+- Animação numérica com formatação brasileira para valores maiores.
+- Cidades identificadas por cidade + UF para impedir duplicidade incorreta entre estados.
+- Streams duplicados da mesma emissora são contabilizados apenas uma vez.
+- Grade responsiva em três, duas ou uma coluna conforme a tela.
+
 ## 22.3.1 — Parte 5: Rádios recém-adicionadas
 
 - Nova seção “Recém-chegadas à Central”.
