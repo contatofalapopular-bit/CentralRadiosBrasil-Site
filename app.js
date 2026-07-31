@@ -852,7 +852,7 @@ function animarNumero(id, valorFinal) {
 
 
 /* =========================================================
-   RANKING NACIONAL — VERSÃO 22.3.4
+   RANKING NACIONAL — VERSÃO 22.3.5
 ========================================================= */
 
 const rankingDemonstracao = [
@@ -1088,7 +1088,9 @@ function criarCardRanking(radio, indice) {
 
   const ouvintes = document.createElement("span");
   ouvintes.className = "ranking-ouvintes";
-  ouvintes.textContent = `🎧 ${formatarOuvintesRanking(radio.ouvintesRanking)} ouvintes`;
+  ouvintes.textContent =
+    `🎧 ${formatarOuvintesRanking(radio.ouvintesRanking)} ` +
+    `${Number(radio.ouvintesRanking) === 1 ? "ouvinte" : "ouvintes"}`;
 
   card.append(topo, logo, nome, segmento, ouvintes);
 
@@ -1106,7 +1108,8 @@ function criarCardRanking(radio, indice) {
 
 function criarLinhaRanking(radio, indice) {
   const item = document.createElement("li");
-  item.className = "ranking-top10-item";
+  item.className =
+    `ranking-top10-item ${rankingClasses[indice] || "ranking-card-padrao"}`;
   item.tabIndex = 0;
   item.setAttribute("role", "button");
   item.setAttribute(
@@ -1114,10 +1117,19 @@ function criarLinhaRanking(radio, indice) {
     `${indice + 1}º lugar: ${radio.nome}`
   );
 
+  const topo = document.createElement("div");
+  topo.className = "ranking-card-topo";
+
+  const vivo = document.createElement("span");
+  vivo.className = "ranking-status-vivo";
+  vivo.textContent = "AO VIVO";
+
   const posicao = document.createElement("span");
   posicao.className = "ranking-top10-posicao";
   posicao.textContent =
     indice < 3 ? rankingMedalhas[indice] : `${indice + 1}º`;
+
+  topo.append(vivo, posicao);
 
   const logo = criarLogoRanking(radio, "ranking-top10-logo");
 
@@ -1135,7 +1147,7 @@ function criarLinhaRanking(radio, indice) {
     `🎧 ${formatarOuvintesRanking(radio.ouvintesRanking)} ` +
     `${Number(radio.ouvintesRanking) === 1 ? "ouvinte" : "ouvintes"}`;
 
-  item.append(posicao, logo, nome, categoria, ouvintes);
+  item.append(topo, logo, nome, categoria, ouvintes);
 
   const abrir = () => acionarRadioRanking(radio);
   item.addEventListener("click", abrir);
