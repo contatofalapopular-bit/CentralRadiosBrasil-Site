@@ -6,6 +6,17 @@ const URL_RADIOS =
 const URL_API =
   "https://broken-bar-45e2.contatofalapopular.workers.dev";
 
+const URL_HERO_FRASES = "hero-frases.json";
+
+const HERO_FRASES_PADRAO = [
+  "Descubra rádios de todas as regiões do Brasil.",
+  "Encontre novas vozes, cidades e culturas.",
+  "Ouça sua cidade onde estiver.",
+  "Uma sintonia para cada momento do seu dia.",
+  "Conectando ouvintes e emissoras de todo o país.",
+  "Sua próxima rádio favorita está aqui."
+];
+
 const CHAVE_SESSAO = "centralRadiosBrasilSessaoId";
 
 const elementos = {
@@ -13,6 +24,8 @@ const elementos = {
   filtroEstado: document.getElementById("filtro-estado"),
   filtroCategoria: document.getElementById("filtro-categoria"),
   btnLimpar: document.getElementById("btn-limpar"),
+
+  heroFrase: document.getElementById("hero-frase-rotativa"),
 
   gradeRadios: document.getElementById("grade-radios"),
   mensagemStatus: document.getElementById("mensagem-status"),
@@ -40,13 +53,22 @@ const estado = {
   carregandoAudio: false,
   paginaAtual: 1,
   radiosPorPagina: 12,
-  registroPendente: false
+  registroPendente: false,
+  hero: {
+    frases: [...HERO_FRASES_PADRAO],
+    indice: 0,
+    intervaloId: null,
+    intervaloMs: 6000,
+    transicaoMs: 450,
+    pausadoPorVisibilidade: false
+  }
 };
 
 document.addEventListener("DOMContentLoaded", iniciarPortal);
 
 async function iniciarPortal() {
   registrarEventos();
+  void iniciarHeroRotativo();
   await carregarBanco();
 }
 
@@ -86,6 +108,262 @@ function registrarEventos() {
     estado.carregandoAudio = false;
     atualizarEstadoPlayer("Não foi possível reproduzir", "▶");
   });
+}
+
+
+async function iniciarHeroRotativo() {
+  if (!elementos.heroFrase) return;
+
+  try {
+    const resposta = await fetch(URL_HERO_FRASES, {
+      cache: "no-store"
+    });
+
+    if (!resposta.ok) {
+      throw new Error(`Erro HTTP ${resposta.status}`);
+    }
+
+    const configuracao = await resposta.json();
+    aplicarConfiguracaoHero(configuracao);
+  } catch (erro) {
+    console.warn(
+      "Não foi possível carregar hero-frases.json. Usando frases padrão.",
+      erro
+    );
+
+    estado.hero.frases = [...HERO_FRASES_PADRAO];
+  }
+
+  exibirFraseHero(0, false);
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    return;
+  }
+
+  iniciarIntervaloHero();
+
+  document.addEventListener("visibilitychange", controlarVisibilidadeHero);
+}
+
+function aplicarConfiguracaoHero(configuracao) {
+  if (!configuracao || typeof configuracao !== "object") return;
+
+  const frasesPadrao = normalizarFrases(configuracao.frasesPadrao);
+  const fusoHorario = normalizarTexto(configuracao.fusoHorario) ||
+    "America/Sao_Paulo";
+
+  const campanhasAtivas = Array.isArray(configuracao.campanhas)
+    ? configuracao.campanhas
+        .filter(campanha => campanhaEstaAtiva(campanha, fusoHorario))
+        .sort((a, b) => numeroSeguro(b.prioridade) - numeroSeguro(a.prioridade))
+    : [];
+
+  const campanhaSubstituta = campanhasAtivas.find(
+    campanha => normalizarTexto(campanha.modo).toLowerCase() === "substituir"
+  );
+
+  let frases = frasesPadrao.length > 0
+    ? frasesPadrao
+    : [...HERO_FRASES_PADRAO];
+
+  if (campanhaSubstituta) {
+    const especiais = normalizarFrases(campanhaSubstituta.frases);
+
+    if (especiais.length > 0) {
+      frases = especiais;
+    }
+  } else {
+    const frasesEspeciais = campanhasAtivas.flatMap(
+      campanha => normalizarFrases(campanha.frases)
+    );
+
+    if (frasesEspeciais.length > 0) {
+      frases = [...frasesEspeciais, ...frases];
+    }
+  }
+
+  estado.hero.frases = removerDuplicadas(frases);
+
+  const intervaloSegundos = numeroSeguro(configuracao.intervaloSegundos);
+  const transicaoMs = numeroSeguro(configuracao.transicaoMilissegundos);
+
+  estado.hero.intervaloMs = Math.max(
+    3500,
+    intervaloSegundos > 0 ? intervaloSegundos * 1000 : 6000
+  );
+
+  estado.hero.transicaoMs = Math.min(
+    900,
+    Math.max(180, transicaoMs > 0 ? transicaoMs : 450)
+  );
+}
+
+function campanhaEstaAtiva(campanha, fusoHorario) {
+  if (!campanha || campanha.ativa !== true) return false;
+
+  const inicio = normalizarTexto(campanha.inicio);
+  const fim = normalizarTexto(campanha.fim);
+
+  if (!inicio || !fim) return false;
+
+  const hoje = obterDataNoFuso(fusoHorario);
+
+  if (campanha.anual === true) {
+    const hojeMesDia = `${hoje.mes}-${hoje.dia}`;
+
+    if (!/^\d{2}-\d{2}$/.test(inicio) || !/^\d{2}-\d{2}$/.test(fim)) {
+      return false;
+    }
+
+    return intervaloIncluiValor(hojeMesDia, inicio, fim);
+  }
+
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(inicio) ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(fim)) {
+    return false;
+  }
+
+  return intervaloIncluiValor(hoje.iso, inicio, fim);
+}
+
+function obterDataNoFuso(fusoHorario) {
+  try {
+    const partes = new Intl.DateTimeFormat("en-CA", {
+      timeZone: fusoHorario,
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).formatToParts(new Date());
+
+    const mapa = Object.fromEntries(
+      partes
+        .filter(parte => parte.type !== "literal")
+        .map(parte => [parte.type, parte.value])
+    );
+
+    return {
+      ano: mapa.year,
+      mes: mapa.month,
+      dia: mapa.day,
+      iso: `${mapa.year}-${mapa.month}-${mapa.day}`
+    };
+  } catch (erro) {
+    console.warn("Fuso horário inválido no Hero:", fusoHorario, erro);
+
+    const agora = new Date();
+    const ano = String(agora.getFullYear());
+    const mes = String(agora.getMonth() + 1).padStart(2, "0");
+    const dia = String(agora.getDate()).padStart(2, "0");
+
+    return {
+      ano,
+      mes,
+      dia,
+      iso: `${ano}-${mes}-${dia}`
+    };
+  }
+}
+
+function intervaloIncluiValor(valor, inicio, fim) {
+  if (inicio <= fim) {
+    return valor >= inicio && valor <= fim;
+  }
+
+  return valor >= inicio || valor <= fim;
+}
+
+function normalizarFrases(lista) {
+  if (!Array.isArray(lista)) return [];
+
+  return lista
+    .map(item => {
+      if (typeof item === "string") return item.trim();
+
+      if (item && typeof item === "object") {
+        return normalizarTexto(item.texto);
+      }
+
+      return "";
+    })
+    .filter(frase => frase.length >= 8 && frase.length <= 150);
+}
+
+function removerDuplicadas(lista) {
+  return [...new Set(lista)];
+}
+
+function normalizarTexto(valor) {
+  return typeof valor === "string" ? valor.trim() : "";
+}
+
+function numeroSeguro(valor) {
+  const numero = Number(valor);
+  return Number.isFinite(numero) ? numero : 0;
+}
+
+function iniciarIntervaloHero() {
+  pararIntervaloHero();
+
+  if (estado.hero.frases.length < 2) return;
+
+  estado.hero.intervaloId = window.setInterval(
+    avancarFraseHero,
+    estado.hero.intervaloMs
+  );
+}
+
+function pararIntervaloHero() {
+  if (estado.hero.intervaloId !== null) {
+    window.clearInterval(estado.hero.intervaloId);
+    estado.hero.intervaloId = null;
+  }
+}
+
+function controlarVisibilidadeHero() {
+  if (document.hidden) {
+    estado.hero.pausadoPorVisibilidade = true;
+    pararIntervaloHero();
+    return;
+  }
+
+  if (estado.hero.pausadoPorVisibilidade) {
+    estado.hero.pausadoPorVisibilidade = false;
+    iniciarIntervaloHero();
+  }
+}
+
+function avancarFraseHero() {
+  const proximoIndice =
+    (estado.hero.indice + 1) % estado.hero.frases.length;
+
+  exibirFraseHero(proximoIndice, true);
+}
+
+function exibirFraseHero(indice, animar) {
+  const frase = estado.hero.frases[indice];
+
+  if (!elementos.heroFrase || !frase) return;
+
+  const trocarTexto = () => {
+    elementos.heroFrase.textContent = frase;
+    estado.hero.indice = indice;
+    elementos.heroFrase.classList.remove("hero-frase-saindo");
+    elementos.heroFrase.classList.add("hero-frase-entrando");
+
+    window.setTimeout(() => {
+      elementos.heroFrase?.classList.remove("hero-frase-entrando");
+    }, estado.hero.transicaoMs);
+  };
+
+  if (!animar) {
+    trocarTexto();
+    return;
+  }
+
+  elementos.heroFrase.classList.remove("hero-frase-entrando");
+  elementos.heroFrase.classList.add("hero-frase-saindo");
+
+  window.setTimeout(trocarTexto, estado.hero.transicaoMs);
 }
 
 async function carregarBanco() {
