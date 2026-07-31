@@ -1956,24 +1956,31 @@ margin:auto;
 
 }
 
-
 /* =========================================================
-   RANKING NACIONAL — VERSÃO 22.2.6
+   RANKING NACIONAL + TOP 10 — VERSÃO 22.3.5
 ========================================================= */
 
 .ranking-nacional {
     margin: 64px 0 34px;
-    padding: 38px;
+    padding: 34px 38px 38px;
     border: 1px solid var(--borda);
     border-radius: 28px;
     background:
-        radial-gradient(circle at 50% 0%, rgba(255, 201, 74, 0.09), transparent 32%),
-        linear-gradient(145deg, rgba(10, 31, 66, 0.92), rgba(4, 18, 42, 0.94));
+        radial-gradient(
+            circle at 50% 0%,
+            rgba(255, 201, 74, 0.09),
+            transparent 32%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(10, 31, 66, 0.92),
+            rgba(4, 18, 42, 0.94)
+        );
     box-shadow: var(--sombra);
 }
 
 .ranking-nacional-cabecalho {
-    margin-bottom: 28px;
+    margin-bottom: 25px;
     text-align: center;
 }
 
@@ -1987,10 +1994,14 @@ margin:auto;
     font-size: 0.95rem;
 }
 
-.ranking-nacional-top3 {
+/* Cinco cards com a mesma largura aproximada do catálogo.
+   Quando houver menos de cinco, ficam centralizados. */
+.ranking-nacional-top3,
+.ranking-top10-lista {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(5, minmax(0, 196px));
+    justify-content: center;
+    gap: 14px;
 }
 
 .ranking-carregando {
@@ -2000,337 +2011,21 @@ margin:auto;
     text-align: center;
 }
 
-.ranking-card {
+/* Estrutura compacta: mesma altura do card de Emissoras disponíveis. */
+.ranking-card,
+.ranking-top10-item {
     position: relative;
-    min-width: 0;
-    padding: 19px;
-    overflow: hidden;
-    border: 2px solid transparent;
-    border-radius: 22px;
-    background: linear-gradient(160deg, rgba(17, 43, 83, 0.98), rgba(6, 22, 49, 0.99));
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.22s ease, box-shadow 0.22s ease;
-}
-
-.ranking-card:hover,
-.ranking-card:focus-visible {
-    transform: translateY(-5px);
-    outline: none;
-}
-
-.ranking-card-ouro {
-    border-color: rgba(255, 201, 74, 0.96);
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28), 0 0 26px rgba(255, 201, 74, 0.13);
-}
-
-.ranking-card-prata {
-    border-color: rgba(219, 229, 241, 0.78);
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28), 0 0 23px rgba(219, 229, 241, 0.09);
-}
-
-.ranking-card-bronze {
-    border-color: rgba(205, 127, 50, 0.9);
-    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.28), 0 0 23px rgba(205, 127, 50, 0.11);
-}
-
-.ranking-card-topo {
-    min-height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-}
-
-.ranking-status-vivo {
-    display: inline-flex;
-    align-items: center;
-    gap: 7px;
-    padding: 6px 10px;
-    border: 1px solid rgba(66, 245, 158, 0.25);
-    border-radius: 999px;
-    background: rgba(66, 245, 158, 0.1);
-    color: var(--verde-ao-vivo);
-    font-size: 0.64rem;
-    font-weight: 900;
-    letter-spacing: 0.07em;
-}
-
-.ranking-status-vivo::before {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--verde-ao-vivo);
-    box-shadow: 0 0 11px rgba(66, 245, 158, 0.72);
-    content: "";
-}
-
-.ranking-medalha {
-    font-size: 2rem;
-    line-height: 1;
-}
-
-.ranking-logo {
-    width: 110px;
-    height: 110px;
-    margin: 17px auto 16px;
-    display: grid;
-    place-items: center;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 25px;
-    background: linear-gradient(135deg, #12386f, #09234b);
-    color: #e4f7ff;
-    font-size: 1.08rem;
-    font-weight: 900;
-}
-
-.ranking-logo img,
-.ranking-top10-logo img {
     width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.ranking-card h3 {
-    overflow: hidden;
-    margin: 0;
-    color: var(--branco);
-    font-size: 1.08rem;
-    line-height: 1.3;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.ranking-segmento {
-    display: block;
-    margin-top: 7px;
-    color: var(--ciano);
-    font-size: 0.7rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-}
-
-.ranking-ouvintes {
-    display: block;
-    margin-top: 17px;
-    color: #e9f4ff;
-    font-size: 0.84rem;
-    font-weight: 800;
-}
-
-.ranking-nacional-acao {
-    margin-top: 27px;
-    text-align: center;
-}
-
-.ranking-ver-top10 {
-    min-height: 47px;
-    padding: 0 23px;
-    border: 0;
-    border-radius: 13px;
-    background: linear-gradient(135deg, var(--azul-eletrico), #005ce8);
-    box-shadow: 0 13px 35px rgba(0, 140, 255, 0.28);
-    color: var(--branco);
-    font: inherit;
-    font-weight: 850;
-    cursor: pointer;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.ranking-ver-top10:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 18px 42px rgba(0, 140, 255, 0.4);
-}
-
-.ranking-modal {
-    position: fixed;
-    inset: 0;
-    z-index: 200;
-    display: grid;
-    place-items: center;
-    padding: 20px;
-    background: rgba(0, 4, 14, 0.84);
-    backdrop-filter: blur(10px);
-}
-
-.ranking-modal-painel {
-    position: relative;
-    width: min(680px, 100%);
-    max-height: calc(100vh - 40px);
-    padding: 32px;
-    overflow-y: auto;
-    border: 1px solid var(--borda);
-    border-radius: 25px;
-    background: linear-gradient(155deg, #0b244b, #071a38);
-    box-shadow: var(--sombra);
-}
-
-.ranking-modal-painel h2 {
-    margin: 8px 0 5px;
-    font-size: 2rem;
-}
-
-.ranking-modal-subtitulo {
-    margin-bottom: 23px;
-    color: var(--texto-secundario);
-}
-
-.ranking-modal-fechar {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    width: 41px;
-    height: 41px;
-    border: 1px solid var(--borda);
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.07);
-    color: var(--branco);
-    cursor: pointer;
-}
-
-.ranking-top10-lista {
-    display: grid;
-    gap: 9px;
-    list-style: none;
-}
-
-.ranking-top10-item {
-    display: grid;
-    grid-template-columns: 55px 94px minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 12px;
-    padding: 11px 13px;
-    border: 1px solid var(--borda);
-    border-radius: 14px;
-    background: rgba(255, 255, 255, 0.045);
-    cursor: pointer;
-}
-
-.ranking-top10-posicao {
-    font-weight: 900;
-}
-
-.ranking-top10-logo {
-    width: 94px;
-    height: 94px;
-    display: grid;
-    place-items: center;
-    overflow: hidden;
-    border-radius: 11px;
-    background: #123666;
-    color: #e5f7ff;
-    font-size: 0.7rem;
-    font-weight: 900;
-}
-
-.ranking-top10-info {
+    height: 188px;
     min-width: 0;
-}
-
-.ranking-top10-info strong,
-.ranking-top10-info small {
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.ranking-top10-info small {
-    margin-top: 3px;
-    color: var(--texto-secundario);
-}
-
-.ranking-top10-ouvintes {
-    color: #e3efff;
-    font-size: 0.78rem;
-    font-weight: 800;
-    white-space: nowrap;
-}
-
-@media (max-width: 820px) {
-    .ranking-nacional {
-        padding: 27px;
-    }
-
-    .ranking-nacional-top3 {
-        gap: 13px;
-    }
-
-    .ranking-logo {
-        width: 91px;
-        height: 91px;
-    }
-}
-
-@media (max-width: 720px) {
-    .ranking-nacional {
-        margin-top: 48px;
-        padding: 21px;
-        border-radius: 22px;
-    }
-
-    .ranking-nacional-top3 {
-        grid-template-columns: 1fr;
-    }
-
-    .ranking-card {
-        width: min(100%, 430px);
-        margin-inline: auto;
-    }
-
-    .ranking-modal-painel {
-        padding: 27px 18px 21px;
-    }
-
-    .ranking-top10-item {
-        grid-template-columns: 43px 84px minmax(0, 1fr);
-    }
-
-    .ranking-top10-logo {
-        width: 84px;
-        height: 84px;
-    }
-
-    .ranking-top10-ouvintes {
-        grid-column: 3;
-    }
-}
-
-
-/* =========================================================
-   TOP 10 — MESMO PADRÃO VISUAL DO CATÁLOGO — VERSÃO 22.3.3
-========================================================= */
-
-.ranking-modal {
-    padding: 20px;
-}
-
-.ranking-modal-painel {
-    width: min(calc(100% - 20px), var(--largura));
-    max-height: calc(100vh - 40px);
-    padding: 32px;
-}
-
-.ranking-top10-lista {
     display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 14px;
-    list-style: none;
-}
-
-.ranking-top10-item {
-    position: relative;
-    min-width: 0;
-    min-height: 188px;
-    display: grid;
-    grid-template-rows: 94px auto auto auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 24px 94px 18px 14px 16px;
     justify-items: center;
+    align-items: center;
     align-content: center;
-    gap: 8px;
-    padding: 15px 10px 13px;
+    gap: 3px;
+    padding: 6px 10px;
     overflow: hidden;
     border: 1px solid var(--borda);
     border-radius: 19px;
@@ -2354,6 +2049,8 @@ margin:auto;
         box-shadow 0.22s ease;
 }
 
+.ranking-card:hover,
+.ranking-card:focus-visible,
 .ranking-top10-item:hover,
 .ranking-top10-item:focus-visible {
     transform: translateY(-5px);
@@ -2364,8 +2061,34 @@ margin:auto;
     outline: none;
 }
 
+/* Cores já definidas para as três primeiras posições. */
+.ranking-card-ouro {
+    border-color: rgba(255, 201, 74, 0.96);
+    box-shadow:
+        0 15px 34px rgba(0, 0, 0, 0.22),
+        0 0 24px rgba(255, 201, 74, 0.12);
+}
+
+.ranking-card-prata {
+    border-color: rgba(219, 229, 241, 0.78);
+    box-shadow:
+        0 15px 34px rgba(0, 0, 0, 0.22),
+        0 0 22px rgba(219, 229, 241, 0.08);
+}
+
+.ranking-card-bronze {
+    border-color: rgba(205, 127, 50, 0.9);
+    box-shadow:
+        0 15px 34px rgba(0, 0, 0, 0.22),
+        0 0 22px rgba(205, 127, 50, 0.1);
+}
+
+.ranking-card-padrao {
+    border-color: var(--borda);
+}
+
+.ranking-card::before,
 .ranking-top10-item::before {
-    content: "";
     position: absolute;
     top: -70px;
     right: -70px;
@@ -2374,31 +2097,66 @@ margin:auto;
     border-radius: 50%;
     background: rgba(55, 230, 255, 0.055);
     filter: blur(5px);
+    content: "";
     pointer-events: none;
 }
 
-.ranking-top10-posicao {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+.ranking-card-topo {
+    position: relative;
     z-index: 3;
-    min-width: 30px;
-    min-height: 30px;
-    display: grid;
-    place-items: center;
-    padding: 4px;
-    border-radius: 999px;
-    background: rgba(2, 8, 23, 0.72);
-    color: var(--amarelo);
-    font-size: 0.76rem;
-    font-weight: 900;
+    width: 100%;
+    min-height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
 }
 
+.ranking-status-vivo {
+    min-height: 21px;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 7px;
+    border: 1px solid rgba(66, 245, 158, 0.25);
+    border-radius: 999px;
+    background: rgba(66, 245, 158, 0.1);
+    color: var(--verde-ao-vivo);
+    font-size: 0.56rem;
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+
+.ranking-status-vivo::before {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--verde-ao-vivo);
+    box-shadow: 0 0 9px rgba(66, 245, 158, 0.72);
+    content: "";
+}
+
+.ranking-medalha,
+.ranking-top10-posicao {
+    min-width: 25px;
+    min-height: 25px;
+    display: grid;
+    place-items: center;
+    color: var(--amarelo);
+    font-size: 1.15rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.ranking-logo,
 .ranking-top10-logo {
     position: relative;
     z-index: 2;
     width: 94px;
     height: 94px;
+    margin: 0;
     display: grid;
     place-items: center;
     overflow: hidden;
@@ -2416,56 +2174,224 @@ margin:auto;
     font-weight: 900;
 }
 
+.ranking-logo img,
 .ranking-top10-logo img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
+.ranking-card h3,
 .ranking-top10-nome {
     position: relative;
     z-index: 2;
+    width: 100%;
     max-width: 100%;
+    margin: 0;
     overflow: hidden;
     color: var(--branco);
-    font-size: 0.82rem;
+    font-size: 0.78rem;
     font-weight: 900;
-    line-height: 1.2;
+    line-height: 18px;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 
+.ranking-segmento,
 .ranking-top10-categoria {
     position: relative;
     z-index: 2;
+    width: 100%;
     max-width: 100%;
+    margin: 0;
     overflow: hidden;
     color: var(--azul-claro);
-    font-size: 0.66rem;
+    font-size: 0.61rem;
     font-weight: 900;
-    line-height: 1.2;
-    letter-spacing: 0.065em;
+    line-height: 14px;
+    letter-spacing: 0.055em;
     text-overflow: ellipsis;
     text-transform: uppercase;
     white-space: nowrap;
 }
 
+.ranking-ouvintes,
 .ranking-top10-ouvintes {
     position: relative;
     z-index: 2;
+    width: 100%;
+    margin: 0;
+    overflow: hidden;
     color: #dbeaff;
-    font-size: 0.68rem;
+    font-size: 0.64rem;
     font-weight: 800;
+    line-height: 16px;
+    text-overflow: ellipsis;
     white-space: nowrap;
 }
 
+.ranking-nacional-acao {
+    margin-top: 24px;
+    text-align: center;
+}
+
+.ranking-ver-top10 {
+    min-height: 47px;
+    padding: 0 23px;
+    border: 0;
+    border-radius: 13px;
+    background:
+        linear-gradient(
+            135deg,
+            var(--azul-eletrico),
+            #005ce8
+        );
+    box-shadow: 0 13px 35px rgba(0, 140, 255, 0.28);
+    color: var(--branco);
+    font: inherit;
+    font-weight: 850;
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.ranking-ver-top10:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 42px rgba(0, 140, 255, 0.4);
+}
+
+.ranking-ver-top10:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Modal Top 10 */
+.ranking-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    display: grid;
+    place-items: center;
+    padding: 20px;
+    overflow-y: auto;
+    background: rgba(0, 4, 14, 0.84);
+    backdrop-filter: blur(10px);
+}
+
+.ranking-modal-painel {
+    position: relative;
+    width: min(calc(100% - 20px), var(--largura));
+    max-height: calc(100vh - 40px);
+    padding: 30px 32px 32px;
+    overflow-y: auto;
+    border: 1px solid var(--borda);
+    border-radius: 25px;
+    background:
+        linear-gradient(
+            155deg,
+            #0b244b,
+            #071a38
+        );
+    box-shadow: var(--sombra);
+}
+
+.ranking-modal-painel h2 {
+    margin: 8px 0 5px;
+    font-size: 2rem;
+}
+
+.ranking-modal-subtitulo {
+    margin-bottom: 23px;
+    color: var(--texto-secundario);
+}
+
+.ranking-modal-fechar {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 5;
+    width: 41px;
+    height: 41px;
+    border: 1px solid var(--borda);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.07);
+    color: var(--branco);
+    cursor: pointer;
+}
+
+.ranking-top10-lista {
+    list-style: none;
+}
+
+/* Tablet: três cards por linha */
 @media (max-width: 980px) {
+    .ranking-nacional-top3,
     .ranking-top10-lista {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(3, minmax(0, 196px));
     }
 }
 
+/* Celular: dois cards por linha */
 @media (max-width: 680px) {
+    .ranking-nacional {
+        margin-top: 48px;
+        padding: 24px 14px 26px;
+        border-radius: 22px;
+    }
+
+    .ranking-nacional-top3,
+    .ranking-top10-lista {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 11px;
+    }
+
+    .ranking-card,
+    .ranking-top10-item {
+        height: 174px;
+        grid-template-rows: 21px 84px 17px 13px 15px;
+        gap: 3px;
+        padding: 5px 8px;
+    }
+
+    .ranking-logo,
+    .ranking-top10-logo {
+        width: 84px;
+        height: 84px;
+        border-radius: 18px;
+    }
+
+    .ranking-status-vivo {
+        min-height: 19px;
+        padding: 3px 5px;
+        font-size: 0.5rem;
+    }
+
+    .ranking-medalha,
+    .ranking-top10-posicao {
+        min-width: 22px;
+        min-height: 22px;
+        font-size: 1rem;
+    }
+
+    .ranking-card h3,
+    .ranking-top10-nome {
+        font-size: 0.7rem;
+        line-height: 17px;
+    }
+
+    .ranking-segmento,
+    .ranking-top10-categoria {
+        font-size: 0.56rem;
+        line-height: 13px;
+    }
+
+    .ranking-ouvintes,
+    .ranking-top10-ouvintes {
+        font-size: 0.58rem;
+        line-height: 15px;
+    }
+
     .ranking-modal {
         padding: 9px;
     }
@@ -2473,116 +2399,12 @@ margin:auto;
     .ranking-modal-painel {
         width: 100%;
         max-height: calc(100vh - 18px);
-        padding: 27px 17px 21px;
+        padding: 27px 14px 21px;
         border-radius: 21px;
     }
 
-    .ranking-top10-lista {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 11px;
-    }
-
-    .ranking-top10-item {
-        min-height: 174px;
-        grid-template-rows: 84px auto auto auto;
-        padding: 12px 8px;
-    }
-
-    .ranking-top10-logo {
-        width: 84px;
-        height: 84px;
-    }
-
-    .ranking-top10-ouvintes {
-        grid-column: auto;
-    }
-}
-
-
-/* =========================================================
-   RANKING — TOP 5 VISÍVEL + MODAL TOP 10 — VERSÃO 22.3.4
-========================================================= */
-
-/* Seção principal: cinco rádios por linha no computador */
-.ranking-nacional-top3 {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 14px;
-    align-items: stretch;
-}
-
-/* Mesmo tamanho, altura, borda e efeito dos cards do catálogo */
-.ranking-card {
-    min-width: 0;
-    min-height: 188px;
-    display: grid;
-    grid-template-rows: 94px auto auto auto;
-    justify-items: center;
-    align-content: center;
-    gap: 8px;
-    padding: 15px 10px 13px;
-    border-radius: 19px;
-}
-
-/* Mantém as cores especiais já definidas para ouro, prata e bronze */
-.ranking-card-ouro,
-.ranking-card-prata,
-.ranking-card-bronze {
-    border-width: 1px;
-}
-
-/* 4º e 5º lugares seguem a identidade visual azul do catálogo */
-.ranking-card-padrao {
-    border: 1px solid var(--borda);
-    background:
-        radial-gradient(
-            circle at 100% 0%,
-            rgba(39, 181, 255, 0.15),
-            transparent 42%
-        ),
-        linear-gradient(
-            155deg,
-            rgba(17, 49, 93, 0.88),
-            rgba(5, 18, 39, 0.94)
-        );
-}
-
-/* Logos iguais aos do catálogo */
-.ranking-logo {
-    width: 94px;
-    height: 94px;
-    border-radius: 20px;
-}
-
-/* Modal Top 10: cinco rádios por linha no computador */
-.ranking-top10-lista {
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-}
-
-/* Tablet: três por linha */
-@media (max-width: 980px) {
-    .ranking-nacional-top3,
-    .ranking-top10-lista {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
-}
-
-/* Celular: duas por linha */
-@media (max-width: 680px) {
-    .ranking-nacional-top3,
-    .ranking-top10-lista {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 11px;
-    }
-
-    .ranking-card {
-        min-height: 174px;
-        grid-template-rows: 84px auto auto auto;
-        padding: 12px 8px;
-    }
-
-    .ranking-logo {
-        width: 84px;
-        height: 84px;
+    .ranking-modal-painel h2 {
+        padding-right: 42px;
+        font-size: 1.55rem;
     }
 }
