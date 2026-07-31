@@ -3,6 +3,11 @@
 const URL_RADIOS =
   "https://raw.githubusercontent.com/contatofalapopular-bit/CentralRadiosBrasil-Dados/main/radios.json";
 
+const URL_API =
+  "https://broken-bar-45e2.contatofalapopular.workers.dev";
+
+const CHAVE_SESSAO = "centralRadiosBrasilSessaoId";
+
 const elementos = {
   pesquisa: document.getElementById("pesquisa"),
   filtroEstado: document.getElementById("filtro-estado"),
@@ -34,7 +39,8 @@ const estado = {
   radioAtual: null,
   carregandoAudio: false,
   paginaAtual: 1,
-  radiosPorPagina: 12
+  radiosPorPagina: 12,
+  registroPendente: false
 };
 
 document.addEventListener("DOMContentLoaded", iniciarPortal);
@@ -73,6 +79,7 @@ function registrarEventos() {
   elementos.audio.addEventListener("playing", () => {
     estado.carregandoAudio = false;
     atualizarEstadoPlayer("AO VIVO", "⏸");
+    registrarReproducaoAtual();
   });
 
   elementos.audio.addEventListener("error", () => {
@@ -549,6 +556,108 @@ async function selecionarRadio(radio) {
       "Toque no botão para iniciar",
       "▶"
     );
+  }
+}
+
+
+function obterSessaoId() {
+  try {
+    let sessaoId = localStorage.getItem(CHAVE_SESSAO);
+
+    if (sessaoId) {
+      return sessaoId;
+    }
+
+    sessaoId =
+      typeof crypto?.randomUUID === "function"
+        ? crypto.randomUUID()
+        : `sessao-${Date.now()}-${Math.random()
+            .toString(36)
+            .slice(2, 14)}`;
+
+    localStorage.setItem(CHAVE_SESSAO, sessaoId);
+    return sessaoId;
+  } catch (erro) {
+    console.warn("Não foi possível persistir a sessão:", erro);
+
+    return `sessao-${Date.now()}-${Math.random()
+      .toString(36)
+      .slice(2, 14)}`;
+  }
+}
+
+function obterRadioId(radio) {
+  const candidato =
+    radio?.id ||
+    radio?.radioId ||
+    radio?.slug ||
+    radio?.codigo;
+
+  if (typeof candidato === "string" && candidato.trim()) {
+    return candidato.trim();
+  }
+
+  const nome =
+    radio?.nomeFantasia ||
+    radio?.nome ||
+    "radio";
+
+  const cidade = radio?.localizacao?.cidade || "brasil";
+  const uf = radio?.localizacao?.uf || "br";
+
+  return normalizarTexto(`${nome}-${cidade}-${uf}`)
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 100);
+}
+
+async function registrarReproducaoAtual() {
+  if (!estado.radioAtual || estado.registroPendente) {
+    return;
+  }
+
+  const radioId = obterRadioId(estado.radioAtual);
+
+  if (!radioId) {
+    console.warn("A rádio atual não possui identificador válido.");
+    return;
+  }
+
+  estado.registroPendente = true;
+
+  try {
+    const resposta = await fetch(`${URL_API}/api/play`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        radioId,
+        sessaoId: obterSessaoId(),
+        origem: "PWA",
+        cidade: estado.radioAtual?.localizacao?.cidade || "",
+        estado: estado.radioAtual?.localizacao?.uf || ""
+      }),
+      keepalive: true
+    });
+
+    if (!resposta.ok) {
+      throw new Error(`Erro HTTP ${resposta.status}`);
+    }
+
+    const resultado = await resposta.json();
+
+    console.info(
+      resultado.contabilizado
+        ? "Reprodução contabilizada."
+        : "Reprodução já contabilizada recentemente.",
+      resultado
+    );
+  } catch (erro) {
+    // A indisponibilidade das estatísticas nunca interrompe o áudio.
+    console.warn("Não foi possível registrar a reprodução:", erro);
+  } finally {
+    estado.registroPendente = false;
   }
 }
 
