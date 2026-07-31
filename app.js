@@ -56,6 +56,7 @@ const elementos = {
 
   radioDestaque: document.getElementById("radio-destaque"),
   destaqueLogo: document.getElementById("destaque-logo"),
+  destaqueSelo: document.getElementById("destaque-selo"),
   destaqueCategoria: document.getElementById("destaque-categoria"),
   destaqueNome: document.getElementById("destaque-nome"),
   destaqueDescricao: document.getElementById("destaque-descricao"),
@@ -896,11 +897,17 @@ function atualizarRadioDestaque() {
     return;
   }
 
-  const candidatas = estado.radios
+  const destaquesOficiais = estado.radios
     .filter(radio => radio.status?.destaque === true)
     .sort(compararRadiosDestaque);
 
-  const radio = candidatas[0] || null;
+  // Enquanto o Painel Administrativo ainda não publicar um destaque oficial,
+  // a melhor emissora pública e ativa é usada como destaque automático.
+  // Assim, a seção nunca fica vazia em um catálogo que já possui rádios.
+  const radio = destaquesOficiais[0] ||
+    [...estado.radios].sort(compararRadiosDestaque)[0] ||
+    null;
+
   estado.radioDestaque = radio;
 
   if (!radio) {
@@ -909,10 +916,19 @@ function atualizarRadioDestaque() {
     return;
   }
 
+  const destaqueOficial = radio.status?.destaque === true;
   const nome = radio.nomeFantasia || radio.nome || "Emissora em destaque";
-  const categoria = radio.classificacao?.categoriaPrincipal || "Rádio online";
-  const descricao = radio.slogan || radio.descricao ||
+  const categoria = radio.classificacao?.categoriaPrincipal ||
+    obterCategorias(radio)[0] ||
+    "Rádio online";
+  const descricao = radio.descricaoPublica || radio.descricao || radio.slogan ||
     "Ouça esta emissora ao vivo na Central Rádios Brasil.";
+
+  if (elementos.destaqueSelo) {
+    elementos.destaqueSelo.textContent = destaqueOficial
+      ? "⭐ RÁDIO EM DESTAQUE"
+      : "⭐ DESTAQUE DA CENTRAL";
+  }
 
   elementos.destaqueNome.textContent = nome;
   elementos.destaqueCategoria.textContent = categoria;
@@ -992,7 +1008,9 @@ function atualizarSiteDestaque(radio) {
     return;
   }
 
-  const site = normalizarUrlExterna(radio.site);
+  const site = normalizarUrlExterna(
+    radio.site || radio.contato?.site || radio.links?.site
+  );
 
   if (!site) {
     elementos.btnSiteDestaque.classList.add("hidden");
