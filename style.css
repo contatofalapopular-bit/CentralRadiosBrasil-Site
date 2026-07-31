@@ -2756,3 +2756,37 @@ body.modal-aberto {
     flex-direction: column;
   }
 }
+
+
+/* ==========================================================
+   COMMIT 22.3.2 — PARTE 6: ESTATÍSTICAS NACIONAIS
+========================================================== */
+
+.estatisticas {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.estatistica-card {
+  min-height: 142px;
+}
+
+.estatistica-conteudo strong {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 980px) {
+  .estatisticas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .estatisticas {
+    grid-template-columns: 1fr;
+    margin-top: -48px;
+  }
+
+  .estatistica-card {
+    min-height: 118px;
+  }
+}
