@@ -653,6 +653,10 @@ async function registrarReproducaoAtual() {
         : "Reprodução já contabilizada recentemente.",
       resultado
     );
+
+    if (resultado.contabilizado) {
+      atualizarRankingNacional();
+    }
   } catch (erro) {
     // A indisponibilidade das estatísticas nunca interrompe o áudio.
     console.warn("Não foi possível registrar a reprodução:", erro);
@@ -848,7 +852,7 @@ function animarNumero(id, valorFinal) {
 
 
 /* =========================================================
-   RANKING NACIONAL — VERSÃO 22.2.6
+   RANKING NACIONAL — VERSÃO 22.3.1
 ========================================================= */
 
 const rankingDemonstracao = [
@@ -975,22 +979,50 @@ function normalizarRadioRanking(radio) {
   };
 }
 
-function montarRanking() {
-  const reaisComAudiencia = estado.radios
-    .map(normalizarRadioRanking)
-    .filter(radio => radio.ouvintesRanking > 0)
-    .sort((a, b) => b.ouvintesRanking - a.ouvintesRanking);
+function localizarRadioPorId(radioId) {
+  return estado.radios.find(
+    radio => obterRadioId(radio) === radioId
+  ) || null;
+}
 
-  if (reaisComAudiencia.length >= 3) {
-    return reaisComAudiencia.slice(0, 10);
-  }
-
-  const usados = new Set(reaisComAudiencia.map(radio => normalizarTexto(radio.nome)));
-  const complementos = rankingDemonstracao.filter(
-    radio => !usados.has(normalizarTexto(radio.nome))
+async function carregarRankingReal() {
+  const resposta = await fetch(
+    `${URL_API}/api/ranking?periodo=mes&limit=10`,
+    {
+      method: "GET",
+      cache: "no-store"
+    }
   );
 
-  return [...reaisComAudiencia, ...complementos].slice(0, 10);
+  if (!resposta.ok) {
+    throw new Error(`Erro HTTP ${resposta.status}`);
+  }
+
+  const dados = await resposta.json();
+
+  if (!dados?.ok || !Array.isArray(dados.ranking)) {
+    throw new Error("Resposta inválida da API de ranking.");
+  }
+
+  return dados.ranking
+    .map(item => {
+      const radio = localizarRadioPorId(item.radioId);
+
+      if (!radio) {
+        console.warn(
+          "Rádio do ranking não encontrada no catálogo:",
+          item.radioId
+        );
+        return null;
+      }
+
+      return {
+        ...normalizarRadioRanking(radio),
+        ouvintesRanking: Number(item.ouvintes || 0),
+        posicaoRanking: Number(item.posicao || 0)
+      };
+    })
+    .filter(Boolean);
 }
 
 function criarLogoRanking(radio, classe) {
@@ -1019,11 +1051,6 @@ function formatarOuvintesRanking(valor) {
 }
 
 function acionarRadioRanking(radio) {
-  if (radio.demonstrativa) {
-    alert("Esta posição está em modo demonstrativo até a plataforma registrar estatísticas reais de audiência.");
-    return;
-  }
-
   selecionarRadio(radio);
 }
 
@@ -1141,21 +1168,54 @@ function registrarEventosRanking() {
   rankingEventosRegistrados = true;
 }
 
-function atualizarRankingNacional() {
+async function atualizarRankingNacional() {
   const top3 = document.getElementById("ranking-nacional-top3");
   const top10 = document.getElementById("ranking-top10-lista");
+  const botaoTop10 = document.getElementById("btn-ranking-top10");
 
   if (!top3 || !top10) return;
 
-  rankingAtual = montarRanking();
+  top3.innerHTML =
+    '<div class="ranking-carregando">Carregando ranking real...</div>';
+  top10.replaceChildren();
 
-  top3.replaceChildren(
-    ...rankingAtual.slice(0, 3).map(criarCardRanking)
-  );
+  try {
+    rankingAtual = await carregarRankingReal();
 
-  top10.replaceChildren(
-    ...rankingAtual.slice(0, 10).map(criarLinhaRanking)
-  );
+    if (rankingAtual.length === 0) {
+      top3.innerHTML =
+        '<div class="ranking-carregando">O ranking começará a aparecer conforme as emissoras receberem reproduções.</div>';
+
+      if (botaoTop10) {
+        botaoTop10.disabled = true;
+      }
+
+      registrarEventosRanking();
+      return;
+    }
+
+    top3.replaceChildren(
+      ...rankingAtual.slice(0, 3).map(criarCardRanking)
+    );
+
+    top10.replaceChildren(
+      ...rankingAtual.slice(0, 10).map(criarLinhaRanking)
+    );
+
+    if (botaoTop10) {
+      botaoTop10.disabled = false;
+    }
+  } catch (erro) {
+    console.error("Erro ao carregar o ranking real:", erro);
+
+    rankingAtual = [];
+    top3.innerHTML =
+      '<div class="ranking-carregando">Não foi possível carregar o ranking agora.</div>';
+
+    if (botaoTop10) {
+      botaoTop10.disabled = true;
+    }
+  }
 
   registrarEventosRanking();
 }
