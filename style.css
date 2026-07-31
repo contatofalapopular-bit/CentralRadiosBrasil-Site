@@ -2137,3 +2137,132 @@ body.modal-aberto {
     grid-template-columns: 1fr;
   }
 }
+
+/* ==========================================================
+   COMMIT 22.2.6 — RÁDIO EM DESTAQUE COMPLETA
+========================================================== */
+
+.radio-destaque {
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 88% 22%, rgba(40, 213, 255, 0.15), transparent 31%),
+    radial-gradient(circle at 4% 100%, rgba(92, 91, 255, 0.13), transparent 37%),
+    linear-gradient(145deg, #0b203d, #061326 74%);
+}
+
+.radio-destaque::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.22;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(105, 224, 255, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(105, 224, 255, 0.08) 1px, transparent 1px);
+  background-size: 52px 52px;
+  mask-image: linear-gradient(to right, transparent, #000 48%, transparent);
+}
+
+.radio-destaque-conteudo {
+  position: relative;
+  z-index: 1;
+}
+
+.radio-destaque-logo {
+  overflow: hidden;
+  border: 1px solid rgba(123, 235, 255, 0.28);
+}
+
+.radio-destaque-logo img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+}
+
+.radio-destaque-info {
+  min-width: 0;
+}
+
+.radio-destaque-descricao,
+#destaque-descricao {
+  max-width: 680px;
+}
+
+.radio-destaque-local {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#destaque-uf:empty,
+#destaque-uf:empty::before {
+  display: none;
+}
+
+.radio-destaque-acoes {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.radio-destaque-acoes .hero-botao {
+  min-height: 52px;
+}
+
+.radio-destaque-site.hidden {
+  display: none;
+}
+
+.radio-card {
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.radio-card-selecionado {
+  border-color: rgba(82, 225, 255, 0.62);
+  box-shadow:
+    0 0 0 2px rgba(58, 218, 255, 0.13),
+    0 24px 62px rgba(12, 185, 239, 0.18);
+  transform: translateY(-3px);
+}
+
+@media (max-width: 900px) {
+  .radio-destaque-local,
+  .radio-destaque-acoes {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 520px) {
+  .radio-destaque {
+    width: calc(100% - 24px);
+    padding: 24px 20px;
+    border-radius: 22px;
+  }
+
+  .radio-destaque-logo {
+    width: 136px;
+    height: 136px;
+    border-radius: 24px;
+  }
+
+  .radio-destaque h2 {
+    font-size: 1.85rem;
+  }
+
+  .radio-destaque-acoes {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .radio-destaque-acoes .hero-botao {
+    width: 100%;
+    justify-content: center;
+  }
+}
