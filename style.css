@@ -2199,7 +2199,7 @@ margin:auto;
 
 .ranking-top10-item {
     display: grid;
-    grid-template-columns: 55px 45px minmax(0, 1fr) auto;
+    grid-template-columns: 55px 94px minmax(0, 1fr) auto;
     align-items: center;
     gap: 12px;
     padding: 11px 13px;
@@ -2214,8 +2214,8 @@ margin:auto;
 }
 
 .ranking-top10-logo {
-    width: 43px;
-    height: 43px;
+    width: 94px;
+    height: 94px;
     display: grid;
     place-items: center;
     overflow: hidden;
@@ -2286,12 +2286,12 @@ margin:auto;
     }
 
     .ranking-top10-item {
-        grid-template-columns: 43px 38px minmax(0, 1fr);
+        grid-template-columns: 43px 84px minmax(0, 1fr);
     }
 
     .ranking-top10-logo {
-        width: 37px;
-        height: 37px;
+        width: 84px;
+        height: 84px;
     }
 
     .ranking-top10-ouvintes {
