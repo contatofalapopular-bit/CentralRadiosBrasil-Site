@@ -1,15 +1,33 @@
 {
-  "versao": "1.0",
+  "versao": "1.1",
   "fusoHorario": "America/Sao_Paulo",
   "intervaloSegundos": 6,
   "transicaoMilissegundos": 450,
-  "frasesPadrao": [
-    "Descubra rádios de todas as regiões do Brasil.",
-    "Encontre novas vozes, cidades e culturas.",
-    "Ouça sua cidade onde estiver.",
-    "Uma sintonia para cada momento do seu dia.",
-    "Conectando ouvintes e emissoras de todo o país.",
-    "Sua próxima rádio favorita está aqui."
+  "mensagensPadrao": [
+    {
+      "superior": "Descubra rádios de todas as regiões do Brasil.",
+      "inferior": "Encontre emissoras, cidades e estilos em um catálogo nacional."
+    },
+    {
+      "superior": "Encontre novas vozes, cidades e culturas.",
+      "inferior": "Cada sintonia aproxima você de uma nova região do país."
+    },
+    {
+      "superior": "Ouça sua cidade onde estiver.",
+      "inferior": "Leve as vozes e a programação da sua região com você."
+    },
+    {
+      "superior": "Uma sintonia para cada momento do seu dia.",
+      "inferior": "Música, informação, cultura e entretenimento em um só lugar."
+    },
+    {
+      "superior": "Conectando ouvintes e emissoras de todo o país.",
+      "inferior": "Uma plataforma criada para ampliar o alcance das rádios brasileiras."
+    },
+    {
+      "superior": "Sua próxima rádio favorita está aqui.",
+      "inferior": "Explore o catálogo e descubra novas emissoras ao vivo."
+    }
   ],
   "campanhas": [
     {
@@ -21,9 +39,15 @@
       "fim": "06-30",
       "prioridade": 20,
       "modo": "misturar",
-      "frases": [
-        "O Brasil celebra suas tradições em uma só sintonia.",
-        "Música, alegria e cultura brasileira em clima de São João."
+      "mensagens": [
+        {
+          "superior": "O Brasil celebra suas tradições em uma só sintonia.",
+          "inferior": "Música, alegria e cultura brasileira em clima de São João."
+        },
+        {
+          "superior": "A festa junina também toca na Central Rádios Brasil.",
+          "inferior": "Sintonize as tradições e os ritmos que animam o país."
+        }
       ]
     },
     {
@@ -35,9 +59,15 @@
       "fim": "09-07",
       "prioridade": 30,
       "modo": "substituir",
-      "frases": [
-        "Neste 7 de Setembro, o Brasil inteiro está em uma só sintonia.",
-        "Vozes de todas as regiões celebrando o nosso Brasil."
+      "mensagens": [
+        {
+          "superior": "Neste 7 de Setembro, o Brasil inteiro está em uma só sintonia.",
+          "inferior": "Vozes de todas as regiões celebrando a história e a diversidade do país."
+        },
+        {
+          "superior": "Nossa independência também se celebra pelas ondas do rádio.",
+          "inferior": "Uma homenagem às emissoras que levam o Brasil a todos os lugares."
+        }
       ]
     },
     {
@@ -49,9 +79,15 @@
       "fim": "12-26",
       "prioridade": 40,
       "modo": "substituir",
-      "frases": [
-        "Que o Natal leve música, esperança e união a todos os lares.",
-        "Um Feliz Natal em sintonia com todo o Brasil."
+      "mensagens": [
+        {
+          "superior": "Que o Natal leve música, esperança e união a todos os lares.",
+          "inferior": "A Central Rádios Brasil deseja um Feliz Natal em perfeita sintonia."
+        },
+        {
+          "superior": "Um Feliz Natal em sintonia com todo o Brasil.",
+          "inferior": "Que cada canção aproxime famílias, cidades e corações."
+        }
       ]
     },
     {
@@ -63,22 +99,15 @@
       "fim": "01-02",
       "prioridade": 50,
       "modo": "substituir",
-      "frases": [
-        "Um novo ano começa com o Brasil inteiro em uma só sintonia.",
-        "Que o novo ano traga novas vozes, conexões e conquistas."
-      ]
-    },
-    {
-      "id": "exemplo-campanha-unica",
-      "nome": "Exemplo de campanha com ano definido",
-      "ativa": false,
-      "anual": false,
-      "inicio": "2026-10-01",
-      "fim": "2026-10-07",
-      "prioridade": 100,
-      "modo": "substituir",
-      "frases": [
-        "Exemplo de mensagem especial por período definido."
+      "mensagens": [
+        {
+          "superior": "Um novo ano começa com o Brasil inteiro em uma só sintonia.",
+          "inferior": "Que o próximo ciclo traga novas vozes, conexões e conquistas."
+        },
+        {
+          "superior": "Novas histórias, novas emissoras e novas sintonias.",
+          "inferior": "Feliz Ano-Novo da Central Rádios Brasil."
+        }
       ]
     }
   ]
