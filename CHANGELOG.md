@@ -1,5 +1,16 @@
 # CHANGELOG — Central Rádios Brasil
 
+## 22.4.0 — Parte 7: Visual Premium 2026
+
+- Cabeçalho premium com navegação rápida para Destaque, Regiões, Novidades e Emissoras.
+- Barra de progresso de leitura no topo da página.
+- Novo acabamento visual para estatísticas, filtros, regiões, cards e player.
+- Efeitos de profundidade, brilho, elevação e transições mais suaves.
+- Entrada animada das seções e dos cards conforme o conteúdo aparece.
+- Botão flutuante para voltar ao topo.
+- Melhorias específicas para celular e telas menores.
+- Respeito automático à preferência de acessibilidade por movimento reduzido.
+
 ## 22.3.2 — Parte 6: Estatísticas nacionais
 
 - Seis indicadores calculados diretamente a partir das emissoras públicas e ativas.
