@@ -1,11 +1,3 @@
-# Versão 23.0.0 — Home Streaming
-
-- Prateleiras compactas para Novidades, Favoritas e Mais Ouvidas.
-- Componente único de emissora.
-- Catálogo em grade fixa com 12 emissoras por página.
-- Paginação e controles de navegação.
-- Hero, cabeçalho, identidade, estatísticas, filtros, player e regiões preservados.
-
 # Changelog — Central Rádios Brasil
 
 ## 22.4.1 — Parte 8: Hero compacto e reorganização da página
