@@ -5,6 +5,8 @@ const URL_RADIOS =
 
 const CHAVE_FAVORITAS = "central-radios-brasil-favoritas";
 const LIMITE_FAVORITAS = 5;
+const CHAVE_REPRODUCOES = "central-radios-brasil-reproducoes";
+const LIMITE_MAIS_OUVIDAS = 5;
 
 const REGIOES_BRASIL = {
   "Norte": ["AC", "AP", "AM", "PA", "RO", "RR", "TO"],
@@ -26,6 +28,10 @@ const elementos = {
   secaoFavoritas: document.getElementById("secao-favoritas"),
   gradeFavoritas: document.getElementById("grade-favoritas"),
   contadorFavoritas: document.getElementById("contador-favoritas"),
+  secaoMaisOuvidas: document.getElementById("secao-mais-ouvidas"),
+  gradeMaisOuvidas: document.getElementById("grade-mais-ouvidas"),
+  contadorMaisOuvidas: document.getElementById("contador-mais-ouvidas"),
+  btnLimparHistorico: document.getElementById("btn-limpar-historico"),
   gradeRegioes: document.getElementById("grade-regioes"),
   btnLimparRegiao: document.getElementById("btn-limpar-regiao"),
 
@@ -66,6 +72,7 @@ const estado = {
   radioAtual: null,
   radioDestaque: null,
   favoritas: carregarIdsFavoritos(),
+  reproducoes: carregarReproducoes(),
   regiaoSelecionada: "",
   carregandoAudio: false
 };
@@ -90,6 +97,7 @@ function registrarEventos() {
 
   elementos.btnLimpar.addEventListener("click", limparFiltros);
   elementos.btnLimparRegiao?.addEventListener("click", limparFiltroRegiao);
+  elementos.btnLimparHistorico?.addEventListener("click", limparHistoricoReproducoes);
   elementos.gradeRegioes?.addEventListener("click", evento => {
     const botao = evento.target.closest("[data-regiao]");
     if (!botao || botao.disabled) return;
@@ -209,6 +217,7 @@ async function carregarBanco() {
     renderizarRegioes();
     renderizarRadios();
     renderizarFavoritas();
+    renderizarMaisOuvidas();
   } catch (erro) {
     console.error("Erro ao carregar o banco:", erro);
 
@@ -697,6 +706,7 @@ function alternarFavorita(radio) {
   salvarFavoritas();
   renderizarRadios();
   renderizarFavoritas();
+  renderizarMaisOuvidas();
 }
 
 function renderizarFavoritas() {
@@ -731,6 +741,81 @@ function renderizarFavoritas() {
 
   elementos.gradeFavoritas.appendChild(fragmento);
   elementos.secaoFavoritas.classList.remove("hidden");
+}
+
+
+function carregarReproducoes() {
+  try {
+    const valor = JSON.parse(localStorage.getItem(CHAVE_REPRODUCOES) || "{}");
+    return valor && typeof valor === "object" && !Array.isArray(valor) ? valor : {};
+  } catch {
+    return {};
+  }
+}
+
+function salvarReproducoes() {
+  localStorage.setItem(CHAVE_REPRODUCOES, JSON.stringify(estado.reproducoes));
+}
+
+function registrarReproducao(radio) {
+  const id = obterIdRadio(radio);
+  if (!id) return;
+
+  const atual = Number(estado.reproducoes[id]) || 0;
+  estado.reproducoes[id] = atual + 1;
+  salvarReproducoes();
+  renderizarMaisOuvidas();
+}
+
+function limparHistoricoReproducoes() {
+  if (!Object.keys(estado.reproducoes).length) return;
+
+  const confirmar = window.confirm("Limpar o histórico de rádios mais ouvidas neste navegador?");
+  if (!confirmar) return;
+
+  estado.reproducoes = {};
+  salvarReproducoes();
+  renderizarMaisOuvidas();
+}
+
+function renderizarMaisOuvidas() {
+  if (!elementos.secaoMaisOuvidas || !elementos.gradeMaisOuvidas) return;
+
+  const ranking = estado.radios
+    .map(radio => ({ radio, total: Number(estado.reproducoes[obterIdRadio(radio)]) || 0 }))
+    .filter(item => item.total > 0)
+    .sort((a, b) => b.total - a.total || (a.radio.nome || "").localeCompare(b.radio.nome || "", "pt-BR"))
+    .slice(0, LIMITE_MAIS_OUVIDAS);
+
+  elementos.gradeMaisOuvidas.innerHTML = "";
+  elementos.contadorMaisOuvidas.textContent = `${ranking.length} ${ranking.length === 1 ? "emissora" : "emissoras"}`;
+
+  if (ranking.length === 0) {
+    elementos.secaoMaisOuvidas.classList.add("hidden");
+    return;
+  }
+
+  const fragmento = document.createDocumentFragment();
+
+  ranking.forEach((item, indice) => {
+    const card = criarCardRadio(item.radio);
+    card.classList.add("radio-card-ranking");
+
+    const posicao = document.createElement("span");
+    posicao.className = "ranking-posicao";
+    posicao.textContent = `${indice + 1}º`;
+
+    const audicoes = document.createElement("span");
+    audicoes.className = "ranking-audicoes";
+    audicoes.textContent = `${item.total} ${item.total === 1 ? "reprodução" : "reproduções"}`;
+
+    card.prepend(posicao);
+    card.querySelector(".radio-card-corpo")?.appendChild(audicoes);
+    fragmento.appendChild(card);
+  });
+
+  elementos.gradeMaisOuvidas.appendChild(fragmento);
+  elementos.secaoMaisOuvidas.classList.remove("hidden");
 }
 
 function criarLogoRadio(radio, classe) {
@@ -989,6 +1074,7 @@ async function selecionarRadio(radio, opcoes = {}) {
 
   estado.radioAtual = radio;
   estado.carregandoAudio = true;
+  registrarReproducao(radio);
 
   elementos.player.classList.remove("hidden");
 
