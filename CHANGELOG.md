@@ -18,3 +18,11 @@
 - Botão Ver Top 10 com modal completo.
 - Integração com o player para emissoras reais.
 - Dados demonstrativos usados somente enquanto não houver métricas reais suficientes.
+
+## 22.3.0 — Estatísticas reais via API
+- Integração do player com `POST /api/play` no Cloudflare Worker.
+- Registro somente após o áudio entrar no estado `playing`.
+- Identificador persistente de sessão salvo no navegador.
+- Envio de rádio, origem, cidade e estado ao banco D1.
+- Falhas na API não interrompem a reprodução da emissora.
+- Proteção contra chamadas simultâneas no cliente; deduplicação definitiva mantida no Worker.
