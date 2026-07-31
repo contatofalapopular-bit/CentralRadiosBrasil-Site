@@ -2686,3 +2686,100 @@ margin:auto;
     min-height: 0;
   }
 }
+/* =========================================================
+   HERO DINÂMICO E CAMPANHAS PROGRAMADAS — VERSÃO 22.4.0
+   ========================================================= */
+
+.apresentacao-premium {
+  min-height: 590px;
+  padding: 82px 24px 105px;
+}
+
+.apresentacao-premium .selo {
+  margin-bottom: 18px;
+}
+
+.hero-frase-rotativa {
+  min-height: 1.6em;
+  max-width: 820px;
+  margin-bottom: 10px;
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 450ms ease,
+    transform 450ms ease;
+  will-change: opacity, transform;
+}
+
+.hero-frase-rotativa.hero-frase-saindo {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+.hero-frase-rotativa.hero-frase-entrando {
+  animation: heroFraseEntrando 450ms ease both;
+}
+
+.hero-descricao {
+  margin-top: 22px;
+}
+
+.hero-acoes {
+  margin-top: 29px;
+}
+
+.hero-indicadores {
+  margin-top: 27px;
+}
+
+@keyframes heroFraseEntrando {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1050px) {
+  .apresentacao-premium {
+    min-height: 560px;
+    padding-top: 72px;
+    padding-bottom: 92px;
+  }
+}
+
+@media (max-width: 720px) {
+  .apresentacao-premium {
+    min-height: auto;
+    padding: 60px 20px 76px;
+  }
+
+  .hero-frase-rotativa {
+    min-height: 3.2em;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .hero-descricao {
+    margin-top: 18px;
+  }
+
+  .hero-acoes {
+    margin-top: 24px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-frase-rotativa,
+  .hero-frase-rotativa.hero-frase-saindo,
+  .hero-frase-rotativa.hero-frase-entrando {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
