@@ -67,7 +67,9 @@ const elementos = {
   destaqueCidade: document.getElementById("destaque-cidade"),
   destaqueUf: document.getElementById("destaque-uf"),
   btnOuvirDestaque: document.getElementById("btn-ouvir-destaque"),
-  btnSiteDestaque: document.getElementById("btn-site-destaque")
+  btnSiteDestaque: document.getElementById("btn-site-destaque"),
+  progressoPagina: document.getElementById("progresso-pagina"),
+  btnVoltarTopo: document.getElementById("btn-voltar-topo")
 };
 
 const estado = {
@@ -86,7 +88,9 @@ document.addEventListener("DOMContentLoaded", iniciarPortal);
 
 async function iniciarPortal() {
   registrarEventos();
+  ativarExperienciaPremium();
   await carregarBanco();
+  observarConteudoDinamico();
 }
 
 function registrarEventos() {
@@ -111,6 +115,12 @@ function registrarEventos() {
 
   elementos.btnPlayPause.addEventListener("click", alternarReproducao);
   elementos.btnFecharPlayer.addEventListener("click", fecharPlayer);
+
+  elementos.btnVoltarTopo?.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  window.addEventListener("scroll", atualizarInterfaceDeRolagem, { passive: true });
 
   elementos.btnExplorarRadios?.addEventListener("click", irParaCatalogo);
   elementos.btnConhecerPlataforma?.addEventListener("click", abrirModalPlataforma);
@@ -1334,6 +1344,75 @@ function ocultarMensagem() {
 function atualizarContador(total) {
   elementos.contadorRadios.textContent =
     `${total} ${total === 1 ? "emissora" : "emissoras"}`;
+}
+
+function ativarExperienciaPremium() {
+  atualizarInterfaceDeRolagem();
+
+  if (!("IntersectionObserver" in window)) {
+    document.querySelectorAll("[data-revelar]").forEach(item => {
+      item.classList.add("visivel");
+    });
+    return;
+  }
+
+  window.observadorPremium = new IntersectionObserver(entradas => {
+    entradas.forEach(entrada => {
+      if (!entrada.isIntersecting) return;
+      entrada.target.classList.add("visivel");
+      window.observadorPremium.unobserve(entrada.target);
+    });
+  }, { threshold: 0.08, rootMargin: "0px 0px -35px" });
+
+  const seletores = [
+    ".estatisticas",
+    ".radio-destaque",
+    ".regioes",
+    ".filtros",
+    ".favoritas",
+    ".mais-ouvidas",
+    ".recentes",
+    ".catalogo"
+  ];
+
+  document.querySelectorAll(seletores.join(",")).forEach((item, indice) => {
+    item.dataset.revelar = "";
+    item.style.setProperty("--atraso-revelar", `${Math.min(indice * 45, 240)}ms`);
+    window.observadorPremium.observe(item);
+  });
+}
+
+function observarConteudoDinamico() {
+  const grades = document.querySelectorAll(
+    ".grade-radios, .grade-regioes"
+  );
+
+  const prepararCards = raiz => {
+    raiz.querySelectorAll?.(".radio-card, .regiao-card").forEach((card, indice) => {
+      if (card.dataset.animado === "true") return;
+      card.dataset.animado = "true";
+      card.style.setProperty("--ordem-card", String(indice % 10));
+    });
+  };
+
+  grades.forEach(grade => {
+    prepararCards(grade);
+    const observador = new MutationObserver(() => prepararCards(grade));
+    observador.observe(grade, { childList: true });
+  });
+}
+
+function atualizarInterfaceDeRolagem() {
+  const topo = window.scrollY || document.documentElement.scrollTop;
+  const altura = document.documentElement.scrollHeight - window.innerHeight;
+  const progresso = altura > 0 ? Math.min((topo / altura) * 100, 100) : 0;
+
+  if (elementos.progressoPagina) {
+    elementos.progressoPagina.style.width = `${progresso}%`;
+  }
+
+  elementos.btnVoltarTopo?.classList.toggle("visivel", topo > 520);
+  document.body.classList.toggle("pagina-rolada", topo > 24);
 }
 
 function normalizarTexto(texto) {
