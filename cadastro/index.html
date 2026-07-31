@@ -2,21 +2,36 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
   >
+
   <meta
     name="description"
-    content="Cadastro de emissoras na Central Rádios Brasil."
+    content="Cadastre sua emissora na Central Rádios Brasil."
   >
+
   <meta name="theme-color" content="#00173d">
+
   <title>Cadastre sua rádio — Central Rádios Brasil</title>
-  <link rel="stylesheet" href="../style.css?v=22.3.6">
+
+  <link
+    rel="stylesheet"
+    href="../style.css?v=22.3.7"
+  >
+
+  <link
+    rel="stylesheet"
+    href="cadastro.css?v=22.3.7"
+  >
 </head>
+
 <body>
 
   <header class="cabecalho">
+
     <div class="cabecalho-conteudo">
 
       <a
@@ -24,6 +39,7 @@
         href="../"
         aria-label="Voltar para a Central Rádios Brasil"
       >
+
         <img
           class="marca-logo"
           src="../logo-central-radios-brasil.jpeg.jpeg"
@@ -34,25 +50,23 @@
           <strong>Central Rádios Brasil</strong>
           <span>Portal da Emissora</span>
         </div>
+
       </a>
 
-      <div class="versao-banco">
-        Cadastro
-      </div>
+      <a
+        class="cadastro-voltar-topo"
+        href="../"
+      >
+        ← Voltar ao portal
+      </a>
 
     </div>
+
   </header>
 
-  <main class="pagina-cadastro-temporaria">
+  <main class="cadastro-pagina">
 
-    <section class="cadastro-temporario-card">
-
-      <div
-        class="cadastro-temporario-icone"
-        aria-hidden="true"
-      >
-        📻
-      </div>
+    <section class="cadastro-apresentacao">
 
       <span class="titulo-menor">
         PORTAL DA EMISSORA
@@ -61,24 +75,501 @@
       <h1>Cadastre sua rádio</h1>
 
       <p>
-        O formulário oficial de cadastro está sendo preparado.
-        Na próxima etapa, esta página receberá o cadastro completo
-        para análise e aprovação da Central Rádios Brasil.
+        Envie os dados essenciais da emissora para análise.
+        O cadastro não é publicado automaticamente.
       </p>
 
-      <div class="cadastro-temporario-voltar">
+      <div class="cadastro-passos" aria-label="Etapas do cadastro">
+
+        <span>
+          <strong>1</strong>
+          Preencha os dados
+        </span>
+
+        <span>
+          <strong>2</strong>
+          Receba o protocolo
+        </span>
+
+        <span>
+          <strong>3</strong>
+          Aguarde a análise
+        </span>
+
+      </div>
+
+    </section>
+
+    <section class="cadastro-container">
+
+      <form
+        class="cadastro-formulario"
+        id="form-cadastro-emissora"
+        enctype="multipart/form-data"
+        novalidate
+      >
+
+        <div class="cadastro-secao-titulo">
+          <span>01</span>
+
+          <div>
+            <h2>Dados da emissora</h2>
+            <p>Identificação e localização da rádio.</p>
+          </div>
+        </div>
+
+        <div class="cadastro-grade cadastro-grade-dupla">
+
+          <div class="cadastro-campo cadastro-campo-largo">
+
+            <label for="nome-radio">
+              Nome da rádio <em>*</em>
+            </label>
+
+            <input
+              type="text"
+              id="nome-radio"
+              name="nomeRadio"
+              maxlength="120"
+              autocomplete="organization"
+              required
+            >
+
+          </div>
+
+          <div class="cadastro-campo">
+
+            <label for="cidade">
+              Cidade <em>*</em>
+            </label>
+
+            <input
+              type="text"
+              id="cidade"
+              name="cidade"
+              maxlength="80"
+              autocomplete="address-level2"
+              required
+            >
+
+          </div>
+
+          <div class="cadastro-campo">
+
+            <label for="estado">
+              Estado <em>*</em>
+            </label>
+
+            <select
+              id="estado"
+              name="estado"
+              autocomplete="address-level1"
+              required
+            >
+              <option value="">Selecione</option>
+              <option value="AC">Acre</option>
+              <option value="AL">Alagoas</option>
+              <option value="AP">Amapá</option>
+              <option value="AM">Amazonas</option>
+              <option value="BA">Bahia</option>
+              <option value="CE">Ceará</option>
+              <option value="DF">Distrito Federal</option>
+              <option value="ES">Espírito Santo</option>
+              <option value="GO">Goiás</option>
+              <option value="MA">Maranhão</option>
+              <option value="MT">Mato Grosso</option>
+              <option value="MS">Mato Grosso do Sul</option>
+              <option value="MG">Minas Gerais</option>
+              <option value="PA">Pará</option>
+              <option value="PB">Paraíba</option>
+              <option value="PR">Paraná</option>
+              <option value="PE">Pernambuco</option>
+              <option value="PI">Piauí</option>
+              <option value="RJ">Rio de Janeiro</option>
+              <option value="RN">Rio Grande do Norte</option>
+              <option value="RS">Rio Grande do Sul</option>
+              <option value="RO">Rondônia</option>
+              <option value="RR">Roraima</option>
+              <option value="SC">Santa Catarina</option>
+              <option value="SP">São Paulo</option>
+              <option value="SE">Sergipe</option>
+              <option value="TO">Tocantins</option>
+            </select>
+
+          </div>
+
+          <div class="cadastro-campo">
+
+            <label for="categoria-principal">
+              Categoria principal <em>*</em>
+            </label>
+
+            <input
+              type="text"
+              id="categoria-principal"
+              name="categoriaPrincipal"
+              list="categorias-sugeridas"
+              maxlength="60"
+              placeholder="Ex.: Sertanejo"
+              required
+            >
+
+            <datalist id="categorias-sugeridas">
+              <option value="Sertanejo">
+              <option value="Gospel">
+              <option value="Católica">
+              <option value="Pop">
+              <option value="Rock">
+              <option value="MPB">
+              <option value="Forró">
+              <option value="Pagode e Samba">
+              <option value="Jornalismo">
+              <option value="Esportes">
+              <option value="Variedades">
+              <option value="Comunitária">
+              <option value="Regional">
+              <option value="Eletrônica">
+            </datalist>
+
+          </div>
+
+          <div class="cadastro-campo">
+
+            <label for="site">
+              Site
+              <small>opcional</small>
+            </label>
+
+            <input
+              type="url"
+              id="site"
+              name="site"
+              maxlength="240"
+              placeholder="https://..."
+              autocomplete="url"
+            >
+
+          </div>
+
+          <div class="cadastro-campo cadastro-campo-largo">
+
+            <label for="descricao">
+              Apresentação da rádio
+              <small>opcional</small>
+            </label>
+
+            <textarea
+              id="descricao"
+              name="descricao"
+              maxlength="600"
+              rows="4"
+              placeholder="Conte brevemente sobre a emissora, público e programação."
+            ></textarea>
+
+            <span class="cadastro-contador" id="contador-descricao">
+              0/600
+            </span>
+
+          </div>
+
+        </div>
+
+        <div class="cadastro-divisor"></div>
+
+        <div class="cadastro-secao-titulo">
+          <span>02</span>
+
+          <div>
+            <h2>Transmissão e contato</h2>
+            <p>Dados utilizados para análise técnica e comunicação.</p>
+          </div>
+        </div>
+
+        <div class="cadastro-grade cadastro-grade-dupla">
+
+          <div class="cadastro-campo cadastro-campo-largo">
+
+            <label for="stream-url">
+              URL do stream <em>*</em>
+            </label>
+
+            <input
+              type="url"
+              id="stream-url"
+              name="streamUrl"
+              maxlength="500"
+              placeholder="https://servidor.com.br:porta/stream"
+              required
+            >
+
+            <p class="cadastro-ajuda">
+              Informe o endereço direto do áudio, não a página do site.
+              São aceitos endereços HTTP ou HTTPS.
+            </p>
+
+          </div>
+
+          <div class="cadastro-campo">
+
+            <label for="email">
+              E-mail da emissora <em>*</em>
+            </label>
+
+            <input
+              type="email"
+              id="email"
+              name="email"
+              maxlength="160"
+              autocomplete="email"
+              required
+            >
+
+          </div>
+
+          <div class="cadastro-campo">
+
+            <label for="whatsapp">
+              WhatsApp da emissora <em>*</em>
+            </label>
+
+            <input
+              type="tel"
+              id="whatsapp"
+              name="whatsapp"
+              maxlength="24"
+              autocomplete="tel"
+              placeholder="(64) 99999-9999"
+              required
+            >
+
+          </div>
+
+        </div>
+
+        <div class="cadastro-divisor"></div>
+
+        <div class="cadastro-secao-titulo">
+          <span>03</span>
+
+          <div>
+            <h2>Logomarca</h2>
+            <p>
+              O envio é feito somente por este formulário.
+            </p>
+          </div>
+        </div>
+
+        <div class="logo-cadastro-layout">
+
+          <div
+            class="logo-cadastro-preview"
+            id="logo-preview"
+            aria-live="polite"
+          >
+            <span>📻</span>
+            <small>Prévia da logomarca</small>
+          </div>
+
+          <div class="logo-cadastro-dados">
+
+            <label
+              class="logo-cadastro-seletor"
+              for="logo"
+            >
+              <span>Selecionar logomarca</span>
+              <small>PNG, JPG ou WebP</small>
+            </label>
+
+            <input
+              type="file"
+              id="logo"
+              name="logo"
+              accept="image/png,image/jpeg,image/webp"
+            >
+
+            <div class="logo-cadastro-regras">
+
+              <strong>Padrão aceito</strong>
+
+              <ul>
+                <li>Imagem obrigatoriamente quadrada (1:1)</li>
+                <li>Mínimo de 512 × 512 pixels</li>
+                <li>Recomendado: 1024 × 1024 pixels</li>
+                <li>Máximo de 2 MB</li>
+                <li>Formatos PNG, JPG, JPEG ou WebP</li>
+              </ul>
+
+            </div>
+
+            <p
+              class="cadastro-mensagem-campo"
+              id="mensagem-logo"
+              role="status"
+            >
+              A logomarca é opcional no envio inicial.
+            </p>
+
+            <p class="logo-cadastro-aviso">
+              Sem logomarca, o cadastro será recebido, mas continuará
+              pendente até que a própria emissora complete o envio pelo
+              sistema.
+            </p>
+
+          </div>
+
+        </div>
+
+        <input
+          type="hidden"
+          name="planoSolicitado"
+          value="gratuito"
+        >
+
+        <div
+          class="cadastro-campo-armadilha"
+          aria-hidden="true"
+        >
+          <label for="endereco-alternativo">
+            Não preencha este campo
+          </label>
+
+          <input
+            type="text"
+            id="endereco-alternativo"
+            name="enderecoAlternativo"
+            tabindex="-1"
+            autocomplete="off"
+          >
+        </div>
+
+        <div class="cadastro-termos">
+
+          <label class="cadastro-checkbox">
+
+            <input
+              type="checkbox"
+              id="termos-aceitos"
+              name="termosAceitos"
+              value="1"
+              required
+            >
+
+            <span>
+              Confirmo que tenho autorização para cadastrar a emissora
+              e que os dados fornecidos são verdadeiros.
+            </span>
+
+          </label>
+
+          <details>
+
+            <summary>Condições do cadastro</summary>
+
+            <p>
+              O envio não garante publicação. A Central Rádios Brasil
+              poderá validar o stream, a identidade da emissora e a
+              qualidade da logomarca antes da aprovação. Dados
+              incompletos permanecerão pendentes.
+            </p>
+
+          </details>
+
+        </div>
+
+        <div
+          class="cadastro-alerta hidden"
+          id="cadastro-alerta"
+          role="alert"
+        ></div>
+
+        <div class="cadastro-acoes">
+
+          <a
+            class="cadastro-botao cadastro-botao-secundario"
+            href="../"
+          >
+            Cancelar
+          </a>
+
+          <button
+            class="cadastro-botao cadastro-botao-principal"
+            type="submit"
+            id="btn-enviar-cadastro"
+          >
+            Enviar para análise
+          </button>
+
+        </div>
+
+      </form>
+
+      <section
+        class="cadastro-sucesso hidden"
+        id="cadastro-sucesso"
+        aria-live="polite"
+      >
+
+        <div class="cadastro-sucesso-icone">✓</div>
+
+        <span class="titulo-menor">
+          SOLICITAÇÃO RECEBIDA
+        </span>
+
+        <h2>Cadastro enviado com sucesso</h2>
+
+        <p>
+          Guarde o protocolo abaixo. Ele identificará sua solicitação
+          nas próximas etapas.
+        </p>
+
+        <div class="cadastro-protocolo">
+
+          <span>Protocolo</span>
+
+          <strong id="protocolo-gerado">
+            CRB-00000000-00000000
+          </strong>
+
+          <button
+            type="button"
+            id="btn-copiar-protocolo"
+          >
+            Copiar
+          </button>
+
+        </div>
+
+        <p
+          class="cadastro-sucesso-observacao"
+          id="observacao-sucesso"
+        ></p>
+
         <a
-          class="hero-botao hero-botao-principal"
+          class="cadastro-botao cadastro-botao-principal"
           href="../"
         >
-          ← Voltar para o portal
+          Voltar ao Portal
         </a>
-      </div>
+
+      </section>
 
     </section>
 
   </main>
 
+  <footer class="rodape cadastro-rodape">
+
+    <p>
+      © 2026 Central Rádios Brasil. Todos os direitos reservados.
+    </p>
+
+    <p>
+      O cadastro permanece pendente até a análise administrativa.
+    </p>
+
+  </footer>
+
+  <script src="cadastro.js?v=22.3.7"></script>
+
 </body>
 </html>
-
