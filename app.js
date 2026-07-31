@@ -6,6 +6,14 @@ const URL_RADIOS =
 const CHAVE_FAVORITAS = "central-radios-brasil-favoritas";
 const LIMITE_FAVORITAS = 5;
 
+const REGIOES_BRASIL = {
+  "Norte": ["AC", "AP", "AM", "PA", "RO", "RR", "TO"],
+  "Nordeste": ["AL", "BA", "CE", "MA", "PB", "PE", "PI", "RN", "SE"],
+  "Centro-Oeste": ["DF", "GO", "MT", "MS"],
+  "Sudeste": ["ES", "MG", "RJ", "SP"],
+  "Sul": ["PR", "RS", "SC"]
+};
+
 const elementos = {
   pesquisa: document.getElementById("pesquisa"),
   filtroEstado: document.getElementById("filtro-estado"),
@@ -18,6 +26,8 @@ const elementos = {
   secaoFavoritas: document.getElementById("secao-favoritas"),
   gradeFavoritas: document.getElementById("grade-favoritas"),
   contadorFavoritas: document.getElementById("contador-favoritas"),
+  gradeRegioes: document.getElementById("grade-regioes"),
+  btnLimparRegiao: document.getElementById("btn-limpar-regiao"),
 
   versaoBanco: document.getElementById("versao-banco"),
   informacaoBanco: document.getElementById("informacao-banco"),
@@ -56,6 +66,7 @@ const estado = {
   radioAtual: null,
   radioDestaque: null,
   favoritas: carregarIdsFavoritos(),
+  regiaoSelecionada: "",
   carregandoAudio: false
 };
 
@@ -68,10 +79,22 @@ async function iniciarPortal() {
 
 function registrarEventos() {
   elementos.pesquisa.addEventListener("input", aplicarFiltros);
-  elementos.filtroEstado.addEventListener("change", aplicarFiltros);
+  elementos.filtroEstado.addEventListener("change", () => {
+    if (elementos.filtroEstado.value) {
+      estado.regiaoSelecionada = "";
+      atualizarEstadoVisualRegioes();
+    }
+    aplicarFiltros();
+  });
   elementos.filtroCategoria.addEventListener("change", aplicarFiltros);
 
   elementos.btnLimpar.addEventListener("click", limparFiltros);
+  elementos.btnLimparRegiao?.addEventListener("click", limparFiltroRegiao);
+  elementos.gradeRegioes?.addEventListener("click", evento => {
+    const botao = evento.target.closest("[data-regiao]");
+    if (!botao || botao.disabled) return;
+    selecionarRegiao(botao.dataset.regiao || "");
+  });
 
   elementos.btnPlayPause.addEventListener("click", alternarReproducao);
   elementos.btnFecharPlayer.addEventListener("click", fecharPlayer);
@@ -183,6 +206,7 @@ async function carregarBanco() {
 
     atualizarInformacoesBanco();
     preencherFiltros();
+    renderizarRegioes();
     renderizarRadios();
     renderizarFavoritas();
   } catch (erro) {
@@ -324,10 +348,83 @@ function preencherSelect(select, valores, textoInicial) {
   });
 }
 
+function obterRegiaoPorUf(uf) {
+  return Object.entries(REGIOES_BRASIL).find(([, ufs]) => ufs.includes(uf))?.[0] || "";
+}
+
+function renderizarRegioes() {
+  if (!elementos.gradeRegioes) return;
+
+  const icones = {
+    "Norte": "🌿",
+    "Nordeste": "☀️",
+    "Centro-Oeste": "🌾",
+    "Sudeste": "🏙️",
+    "Sul": "🧉"
+  };
+
+  elementos.gradeRegioes.innerHTML = "";
+
+  Object.keys(REGIOES_BRASIL).forEach(nome => {
+    const total = estado.radios.filter(radio =>
+      REGIOES_BRASIL[nome].includes(radio.localizacao?.uf)
+    ).length;
+
+    const botao = document.createElement("button");
+    botao.type = "button";
+    botao.className = "card-regiao";
+    botao.dataset.regiao = nome;
+    botao.disabled = total === 0;
+    botao.setAttribute("aria-pressed", "false");
+    botao.innerHTML = `
+      <span class="regiao-icone" aria-hidden="true">${icones[nome]}</span>
+      <span class="regiao-nome">${nome}</span>
+      <span class="regiao-total">${total} ${total === 1 ? "emissora" : "emissoras"}</span>
+    `;
+
+    elementos.gradeRegioes.appendChild(botao);
+  });
+
+  atualizarEstadoVisualRegioes();
+}
+
+function selecionarRegiao(nome) {
+  if (!REGIOES_BRASIL[nome]) return;
+
+  estado.regiaoSelecionada = estado.regiaoSelecionada === nome ? "" : nome;
+  elementos.filtroEstado.value = "";
+  atualizarEstadoVisualRegioes();
+  aplicarFiltros();
+
+  document.getElementById("catalogo-lista")?.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+function limparFiltroRegiao() {
+  estado.regiaoSelecionada = "";
+  atualizarEstadoVisualRegioes();
+  aplicarFiltros();
+}
+
+function atualizarEstadoVisualRegioes() {
+  elementos.gradeRegioes?.querySelectorAll("[data-regiao]").forEach(botao => {
+    const ativo = botao.dataset.regiao === estado.regiaoSelecionada;
+    botao.classList.toggle("ativo", ativo);
+    botao.setAttribute("aria-pressed", String(ativo));
+  });
+
+  elementos.btnLimparRegiao?.classList.toggle("hidden", !estado.regiaoSelecionada);
+}
+
 function aplicarFiltros() {
   const termo = normalizarTexto(elementos.pesquisa.value);
   const estadoSelecionado = elementos.filtroEstado.value;
   const categoriaSelecionada = elementos.filtroCategoria.value;
+  const ufsRegiao = estado.regiaoSelecionada
+    ? REGIOES_BRASIL[estado.regiaoSelecionada] || []
+    : [];
 
   estado.radiosFiltradas = estado.radios.filter(radio => {
     const categorias = obterCategorias(radio);
@@ -356,10 +453,15 @@ function aplicarFiltros() {
       !categoriaSelecionada ||
       categorias.includes(categoriaSelecionada);
 
+    const correspondeRegiao =
+      !estado.regiaoSelecionada ||
+      ufsRegiao.includes(radio.localizacao?.uf);
+
     return (
       correspondePesquisa &&
       correspondeEstado &&
-      correspondeCategoria
+      correspondeCategoria &&
+      correspondeRegiao
     );
   });
 
@@ -370,6 +472,8 @@ function limparFiltros() {
   elementos.pesquisa.value = "";
   elementos.filtroEstado.value = "";
   elementos.filtroCategoria.value = "";
+  estado.regiaoSelecionada = "";
+  atualizarEstadoVisualRegioes();
 
   estado.radiosFiltradas = [...estado.radios];
 
