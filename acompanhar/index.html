@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="description"
+    content="Acompanhe o cadastro da sua emissora na Central Rádios Brasil e complete o envio da logomarca."
+  >
+  <meta name="theme-color" content="#00173d">
+
+  <title>Acompanhar cadastro — Central Rádios Brasil</title>
+
+  <link rel="stylesheet" href="../style.css?v=22.3.8">
+  <link rel="stylesheet" href="../cadastro/cadastro.css?v=22.3.8">
+  <link rel="stylesheet" href="acompanhar.css?v=22.3.8">
+</head>
+
+<body>
+  <header class="cabecalho">
+    <div class="cabecalho-conteudo">
+      <a
+        class="marca"
+        href="../"
+        aria-label="Voltar para a Central Rádios Brasil"
+      >
+        <img
+          class="marca-logo"
+          src="../logo-central-radios-brasil.jpeg.jpeg"
+          alt="Logo Central Rádios Brasil"
+        >
+
+        <div class="marca-texto">
+          <strong>Central Rádios Brasil</strong>
+          <span>Portal da Emissora</span>
+        </div>
+      </a>
+
+      <a class="cadastro-voltar-topo" href="../">
+        ← Voltar ao portal
+      </a>
+    </div>
+  </header>
+
+  <main class="cadastro-pagina acompanhar-pagina">
+    <section class="cadastro-apresentacao">
+      <span class="titulo-menor">PORTAL DA EMISSORA</span>
+      <h1>Acompanhar cadastro</h1>
+      <p>
+        Consulte a situação da sua solicitação usando o protocolo e o
+        mesmo e-mail informado no cadastro.
+      </p>
+
+      <div class="cadastro-passos" aria-label="Recursos disponíveis">
+        <span><strong>1</strong> Consulte o status</span>
+        <span><strong>2</strong> Veja as pendências</span>
+        <span><strong>3</strong> Complete a logomarca</span>
+      </div>
+    </section>
+
+    <section class="cadastro-container acompanhar-container">
+      <form
+        class="cadastro-formulario acompanhar-consulta"
+        id="form-acompanhar"
+        novalidate
+      >
+        <div class="cadastro-secao-titulo">
+          <span>01</span>
+          <div>
+            <h2>Localizar solicitação</h2>
+            <p>Os dois dados precisam corresponder ao cadastro enviado.</p>
+          </div>
+        </div>
+
+        <div class="cadastro-grade cadastro-grade-dupla">
+          <div class="cadastro-campo">
+            <label for="protocolo">
+              Protocolo <em>*</em>
+            </label>
+            <input
+              type="text"
+              id="protocolo"
+              name="protocolo"
+              maxlength="40"
+              placeholder="CRB-20260731-00000000"
+              autocomplete="off"
+              required
+            >
+          </div>
+
+          <div class="cadastro-campo">
+            <label for="email-acompanhamento">
+              E-mail da emissora <em>*</em>
+            </label>
+            <input
+              type="email"
+              id="email-acompanhamento"
+              name="email"
+              maxlength="160"
+              autocomplete="email"
+              required
+            >
+          </div>
+        </div>
+
+        <div
+          class="cadastro-alerta hidden"
+          id="alerta-consulta"
+          role="alert"
+        ></div>
+
+        <div class="cadastro-acoes acompanhar-acoes-consulta">
+          <a
+            class="cadastro-botao cadastro-botao-secundario"
+            href="../cadastro/"
+          >
+            Fazer novo cadastro
+          </a>
+
+          <button
+            class="cadastro-botao cadastro-botao-principal"
+            type="submit"
+            id="btn-consultar"
+          >
+            Consultar cadastro
+          </button>
+        </div>
+      </form>
+
+      <section
+        class="acompanhar-resultado hidden"
+        id="resultado-cadastro"
+        aria-live="polite"
+      >
+        <div class="acompanhar-resultado-topo">
+          <div>
+            <span class="titulo-menor">SOLICITAÇÃO LOCALIZADA</span>
+            <h2 id="resultado-nome-radio">Emissora</h2>
+            <p id="resultado-protocolo">Protocolo</p>
+          </div>
+
+          <span
+            class="acompanhar-status"
+            id="resultado-status"
+          >
+            Pendente
+          </span>
+        </div>
+
+        <div class="acompanhar-resumo">
+          <article>
+            <small>Localização</small>
+            <strong id="resultado-localizacao">—</strong>
+          </article>
+          <article>
+            <small>Categoria</small>
+            <strong id="resultado-categoria">—</strong>
+          </article>
+          <article>
+            <small>Plano solicitado</small>
+            <strong id="resultado-plano">—</strong>
+          </article>
+          <article>
+            <small>Última atualização</small>
+            <strong id="resultado-atualizacao">—</strong>
+          </article>
+        </div>
+
+        <div
+          class="acompanhar-observacao hidden"
+          id="resultado-observacao"
+        ></div>
+
+        <div class="cadastro-divisor"></div>
+
+        <div class="cadastro-secao-titulo">
+          <span>02</span>
+          <div>
+            <h2>Logomarca da emissora</h2>
+            <p id="texto-situacao-logo">
+              Consulte a situação do arquivo enviado.
+            </p>
+          </div>
+        </div>
+
+        <div class="logo-cadastro-layout">
+          <div
+            class="logo-cadastro-preview"
+            id="acompanhar-logo-preview"
+          >
+            <span>📻</span>
+            <small>Logomarca pendente</small>
+          </div>
+
+          <div class="logo-cadastro-dados">
+            <div
+              class="acompanhar-logo-confirmada hidden"
+              id="logo-confirmada"
+            >
+              <strong>✓ Logomarca recebida</strong>
+              <p id="logo-dimensoes"></p>
+            </div>
+
+            <form
+              class="acompanhar-upload"
+              id="form-enviar-logo"
+              enctype="multipart/form-data"
+              novalidate
+            >
+              <label
+                class="logo-cadastro-seletor"
+                for="logo-acompanhamento"
+              >
+                <span id="texto-selecionar-logo">
+                  Selecionar logomarca
+                </span>
+                <small>PNG, JPG ou WebP</small>
+              </label>
+
+              <input
+                class="acompanhar-input-arquivo"
+                type="file"
+                id="logo-acompanhamento"
+                name="logo"
+                accept="image/png,image/jpeg,image/webp"
+              >
+
+              <div class="logo-cadastro-regras">
+                <strong>Padrão aceito</strong>
+                <ul>
+                  <li>Imagem quadrada, proporção 1:1</li>
+                  <li>Mínimo de 512 × 512 pixels</li>
+                  <li>Recomendado: 1024 × 1024 pixels</li>
+                  <li>Máximo de 2 MB</li>
+                </ul>
+              </div>
+
+              <p
+                class="cadastro-mensagem-campo"
+                id="mensagem-logo-acompanhamento"
+                role="status"
+              >
+                Nenhum novo arquivo selecionado.
+              </p>
+
+              <div
+                class="cadastro-alerta hidden"
+                id="alerta-logo"
+                role="alert"
+              ></div>
+
+              <button
+                class="cadastro-botao cadastro-botao-principal acompanhar-botao-logo"
+                type="submit"
+                id="btn-enviar-logo"
+                disabled
+              >
+                Enviar logomarca
+              </button>
+            </form>
+
+            <div
+              class="acompanhar-aprovada hidden"
+              id="mensagem-cadastro-aprovado"
+            >
+              <strong>Cadastro aprovado</strong>
+              <p>
+                Para alterar dados ou logomarca após a aprovação,
+                entre em contato com o suporte da Central Rádios Brasil.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="cadastro-acoes">
+          <button
+            class="cadastro-botao cadastro-botao-secundario"
+            type="button"
+            id="btn-nova-consulta"
+          >
+            Consultar outro protocolo
+          </button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="rodape cadastro-rodape">
+    <p>© 2026 Central Rádios Brasil. Todos os direitos reservados.</p>
+    <p>Seus dados são usados somente para localizar e analisar o cadastro.</p>
+  </footer>
+
+  <script src="acompanhar.js?v=22.3.8"></script>
+</body>
+</html>
