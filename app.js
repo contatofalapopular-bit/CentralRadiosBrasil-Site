@@ -559,81 +559,109 @@ function renderizarRadios() {
 
 function criarCardRadio(radio) {
   const artigo = document.createElement("article");
-  artigo.className = "radio-card radio-card-streaming";
+  artigo.className = "radio-card";
   artigo.dataset.radioId = obterIdRadio(radio);
-  artigo.tabIndex = 0;
+  artigo.tabIndex = -1;
+  artigo.dataset.radioId = radio.id || radio.slug || "";
 
   if (radio === estado.radioAtual) {
     artigo.classList.add("radio-card-selecionado");
   }
 
-  const logo = criarLogoRadio(radio, "radio-logo");
-  const conteudo = document.createElement("div");
-  conteudo.className = "radio-card-conteudo";
+  const topo = document.createElement("div");
+  topo.className = "radio-card-topo";
 
-  const linhaSuperior = document.createElement("div");
-  linhaSuperior.className = "radio-card-linha-superior";
+  const logo = criarLogoRadio(radio, "radio-logo");
+
+  const selos = document.createElement("div");
+  selos.className = "radio-selos";
+
+  const botaoFavorito = criarBotaoFavorito(radio);
+
+  const seloAoVivo = document.createElement("span");
+  seloAoVivo.className = "radio-selo radio-selo-ao-vivo";
+  seloAoVivo.textContent = "No ar";
+
+  selos.appendChild(seloAoVivo);
+
+  if (radio.status?.verificada === true) {
+    const seloVerificada = document.createElement("span");
+    seloVerificada.className =
+      "radio-selo radio-selo-verificada";
+    seloVerificada.textContent = "Verificada";
+
+    selos.appendChild(seloVerificada);
+  }
+
+  const acoesTopo = document.createElement("div");
+  acoesTopo.className = "radio-topo-acoes";
+  acoesTopo.append(botaoFavorito, selos);
+
+  topo.append(logo, acoesTopo);
+
+  const corpo = document.createElement("div");
+  corpo.className = "radio-card-corpo";
 
   const categoria = document.createElement("span");
   categoria.className = "radio-categoria";
-  categoria.textContent = radio.classificacao?.categoriaPrincipal || "Rádio online";
-
-  const botaoFavorito = criarBotaoFavorito(radio);
-  linhaSuperior.append(categoria, botaoFavorito);
+  categoria.textContent =
+    radio.classificacao?.categoriaPrincipal ||
+    "Rádio online";
 
   const titulo = document.createElement("h3");
-  titulo.textContent = radio.nomeFantasia || radio.nome || "Emissora";
+  titulo.textContent =
+    radio.nomeFantasia ||
+    radio.nome ||
+    "Emissora";
+
+  const slogan = document.createElement("p");
+  slogan.className = "radio-slogan";
+  slogan.textContent =
+    radio.slogan ||
+    radio.descricao ||
+    "Ouça esta emissora na Central Rádios Brasil.";
 
   const localizacao = document.createElement("div");
   localizacao.className = "radio-localizacao";
   localizacao.textContent = montarLocalizacao(radio);
 
-  const meta = document.createElement("div");
-  meta.className = "radio-card-meta";
-
-  const seloAoVivo = document.createElement("span");
-  seloAoVivo.className = "radio-selo radio-selo-ao-vivo";
-  seloAoVivo.textContent = "No ar";
-  meta.appendChild(seloAoVivo);
-
-  if (radio.status?.verificada === true) {
-    const seloVerificada = document.createElement("span");
-    seloVerificada.className = "radio-selo radio-selo-verificada";
-    seloVerificada.textContent = "Verificada";
-    meta.appendChild(seloVerificada);
-  }
-
-  const acoes = document.createElement("div");
-  acoes.className = "radio-card-acoes-streaming";
+  const rodape = document.createElement("div");
+  rodape.className = "radio-card-rodape";
 
   const botaoOuvir = document.createElement("button");
-  botaoOuvir.className = "botao-ouvir botao-ouvir-compacto";
+  botaoOuvir.className = "botao-ouvir";
   botaoOuvir.type = "button";
-  botaoOuvir.innerHTML = '<span aria-hidden="true">▶</span><span>Ouvir</span>';
-  botaoOuvir.addEventListener("click", evento => {
-    evento.stopPropagation();
+  botaoOuvir.textContent = "Ouvir agora";
+
+  botaoOuvir.addEventListener("click", () => {
     selecionarRadio(radio);
   });
 
   const botaoCompartilhar = document.createElement("button");
-  botaoCompartilhar.className = "botao-card-secundario botao-compartilhar-compacto";
+  botaoCompartilhar.className = "botao-card-secundario";
   botaoCompartilhar.type = "button";
   botaoCompartilhar.textContent = "↗";
   botaoCompartilhar.title = "Compartilhar emissora";
-  botaoCompartilhar.setAttribute("aria-label", `Compartilhar ${titulo.textContent}`);
-  botaoCompartilhar.addEventListener("click", evento => {
-    evento.stopPropagation();
+  botaoCompartilhar.setAttribute(
+    "aria-label",
+    `Compartilhar ${titulo.textContent}`
+  );
+
+  botaoCompartilhar.addEventListener("click", () => {
     compartilharRadio(radio);
   });
 
-  acoes.append(botaoOuvir, botaoCompartilhar);
-  conteudo.append(linhaSuperior, titulo, localizacao, meta, acoes);
-  artigo.append(logo, conteudo);
+  rodape.append(botaoOuvir, botaoCompartilhar);
 
-  artigo.addEventListener("dblclick", () => selecionarRadio(radio));
-  artigo.addEventListener("keydown", evento => {
-    if (evento.key === "Enter") selecionarRadio(radio);
-  });
+  corpo.append(
+    categoria,
+    titulo,
+    slogan,
+    localizacao,
+    rodape
+  );
+
+  artigo.append(topo, corpo);
 
   return artigo;
 }
@@ -824,7 +852,7 @@ function renderizarMaisOuvidas() {
     audicoes.textContent = `${item.total} ${item.total === 1 ? "reprodução" : "reproduções"}`;
 
     card.prepend(posicao);
-    card.querySelector(".radio-card-conteudo")?.appendChild(audicoes);
+    card.querySelector(".radio-card-corpo")?.appendChild(audicoes);
     fragmento.appendChild(card);
   });
 
@@ -874,14 +902,15 @@ function renderizarRadiosRecentes() {
     seloNova.textContent = "NOVA";
     seloNova.setAttribute("aria-label", "Emissora recém-adicionada");
 
-    card.appendChild(seloNova);
+    const topo = card.querySelector(".radio-card-topo");
+    topo?.appendChild(seloNova);
 
     const dataLegivel = formatarDataPublicacaoRadio(item.radio);
     if (dataLegivel) {
       const publicada = document.createElement("span");
       publicada.className = "radio-data-publicacao";
       publicada.textContent = `Na Central desde ${dataLegivel}`;
-      card.querySelector(".radio-card-conteudo")?.appendChild(publicada);
+      card.querySelector(".radio-card-corpo")?.appendChild(publicada);
     }
 
     fragmento.appendChild(card);
