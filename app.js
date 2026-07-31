@@ -26,6 +26,7 @@ const elementos = {
   gradeRadios: document.getElementById("grade-radios"),
   mensagemStatus: document.getElementById("mensagem-status"),
   contadorRadios: document.getElementById("contador-radios"),
+  paginacaoCatalogo: document.getElementById("paginacao-catalogo"),
   secaoFavoritas: document.getElementById("secao-favoritas"),
   gradeFavoritas: document.getElementById("grade-favoritas"),
   contadorFavoritas: document.getElementById("contador-favoritas"),
@@ -88,7 +89,9 @@ const estado = {
   favoritas: carregarIdsFavoritos(),
   reproducoes: carregarReproducoes(),
   regiaoSelecionada: "",
-  carregandoAudio: false
+  carregandoAudio: false,
+  paginaCatalogo: 1,
+  itensPorPagina: 12
 };
 
 document.addEventListener("DOMContentLoaded", iniciarPortal);
@@ -112,6 +115,14 @@ function registrarEventos() {
   elementos.filtroCategoria.addEventListener("change", aplicarFiltros);
 
   elementos.btnLimpar.addEventListener("click", limparFiltros);
+
+  document.addEventListener("click", evento => {
+    const botao = evento.target.closest("[data-prateleira]");
+    if (!botao) return;
+    const alvo = document.getElementById(botao.dataset.prateleira);
+    const direcao = Number(botao.dataset.direcao) || 1;
+    alvo?.scrollBy({ left: direcao * Math.max(280, alvo.clientWidth * 0.82), behavior: "smooth" });
+  });
   elementos.btnLimparRegiao?.addEventListener("click", limparFiltroRegiao);
   elementos.btnLimparHistorico?.addEventListener("click", limparHistoricoReproducoes);
   elementos.gradeRegioes?.addEventListener("click", evento => {
@@ -514,6 +525,7 @@ function aplicarFiltros() {
       correspondeRegiao
     );
   });
+  estado.paginaCatalogo = 1;
 
   renderizarRadios();
 }
@@ -526,6 +538,7 @@ function limparFiltros() {
   atualizarEstadoVisualRegioes();
 
   estado.radiosFiltradas = [...estado.radios];
+  estado.paginaCatalogo = 1;
 
   renderizarRadios();
   elementos.pesquisa.focus();
@@ -535,26 +548,58 @@ function renderizarRadios() {
   elementos.gradeRadios.innerHTML = "";
 
   const radios = estado.radiosFiltradas;
-
   atualizarContador(radios.length);
 
   if (radios.length === 0) {
-    mostrarMensagem(
-      "Nenhuma emissora foi encontrada com os filtros selecionados."
-    );
-
+    mostrarMensagem("Nenhuma emissora foi encontrada com os filtros selecionados.");
+    elementos.paginacaoCatalogo?.classList.add("hidden");
     return;
   }
 
   ocultarMensagem();
 
+  const totalPaginas = Math.max(1, Math.ceil(radios.length / estado.itensPorPagina));
+  estado.paginaCatalogo = Math.min(Math.max(1, estado.paginaCatalogo), totalPaginas);
+  const inicio = (estado.paginaCatalogo - 1) * estado.itensPorPagina;
+  const pagina = radios.slice(inicio, inicio + estado.itensPorPagina);
+
   const fragmento = document.createDocumentFragment();
-
-  radios.forEach(radio => {
-    fragmento.appendChild(criarCardRadio(radio));
-  });
-
+  pagina.forEach(radio => fragmento.appendChild(criarCardRadio(radio)));
   elementos.gradeRadios.appendChild(fragmento);
+  renderizarPaginacaoCatalogo(totalPaginas);
+}
+
+function renderizarPaginacaoCatalogo(totalPaginas) {
+  const nav = elementos.paginacaoCatalogo;
+  if (!nav) return;
+  nav.innerHTML = "";
+  if (totalPaginas <= 1) {
+    nav.classList.add("hidden");
+    return;
+  }
+
+  const criar = (rotulo, pagina, ativo = false, desabilitado = false) => {
+    const botao = document.createElement("button");
+    botao.type = "button";
+    botao.textContent = rotulo;
+    botao.className = "pagina-botao" + (ativo ? " ativo" : "");
+    botao.disabled = desabilitado;
+    botao.addEventListener("click", () => {
+      estado.paginaCatalogo = pagina;
+      renderizarRadios();
+      elementos.catalogoLista?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+    return botao;
+  };
+
+  nav.appendChild(criar("‹", estado.paginaCatalogo - 1, false, estado.paginaCatalogo === 1));
+  const inicio = Math.max(1, estado.paginaCatalogo - 2);
+  const fim = Math.min(totalPaginas, inicio + 4);
+  for (let pagina = Math.max(1, fim - 4); pagina <= fim; pagina += 1) {
+    nav.appendChild(criar(String(pagina), pagina, pagina === estado.paginaCatalogo));
+  }
+  nav.appendChild(criar("›", estado.paginaCatalogo + 1, false, estado.paginaCatalogo === totalPaginas));
+  nav.classList.remove("hidden");
 }
 
 function criarCardRadio(radio) {
