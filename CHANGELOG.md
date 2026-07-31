@@ -76,3 +76,10 @@
 - Cards de emissoras reconstruídos em formato compacto e com largura máxima fixa.
 - Grade responsiva sem ampliar um único card para ocupar a página.
 - Hero reduzido, melhor alinhado e com maior destaque no botão principal.
+
+
+## 22.4.2 — Polimento Visual — Etapa 2
+- Destaque da Central redesenhado como vitrine premium em duas áreas.
+- Inclusão de status, credencial, dados técnicos e categoria.
+- Botões de ouvir, visitar site e favoritar integrados.
+- Layout responsivo para desktop, tablet e celular.
