@@ -852,7 +852,7 @@ function animarNumero(id, valorFinal) {
 
 
 /* =========================================================
-   RANKING NACIONAL — VERSÃO 22.3.1
+   RANKING NACIONAL — VERSÃO 22.3.2
 ========================================================= */
 
 const rankingDemonstracao = [
