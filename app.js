@@ -1611,3 +1611,18 @@ function animarNumero(id, valorFinal) {
 
 }
 
+
+
+// HOME 2.0 - atalhos de descoberta
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("atalhos-categorias")?.addEventListener("click", evento => {
+    const botao = evento.target.closest("[data-categoria]");
+    if (!botao || !elementos.filtroCategoria) return;
+    const categoria = botao.dataset.categoria || "";
+    const opcoes = Array.from(elementos.filtroCategoria.options);
+    const correspondente = opcoes.find(opcao => normalizarTexto(opcao.value).includes(normalizarTexto(categoria)));
+    elementos.filtroCategoria.value = correspondente?.value || categoria;
+    aplicarFiltros();
+    elementos.catalogoLista?.scrollIntoView({ behavior: "smooth", block: "start" });
+  });
+});
