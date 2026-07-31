@@ -1988,36 +1988,74 @@ margin:auto;
 }
 
 /* ==========================================================
-   COMMIT 22.2.4 — NAVEGAÇÃO DOS BOTÕES DO HERO
+   COMMIT 22.2.5 — NAVEGAÇÃO CORRIGIDA E MODAL DA PLATAFORMA
 ========================================================== */
 
 html {
   scroll-behavior: smooth;
 }
 
-#catalogo-emissoras,
-#sobre-plataforma {
+#catalogo-lista {
   scroll-margin-top: 110px;
 }
 
 .hero-botao {
+  border: 0;
   text-decoration: none;
+  cursor: pointer;
 }
 
-.sobre-plataforma {
-  width: min(1180px, calc(100% - 32px));
-  margin: 0 auto 36px;
-  padding: 38px;
-  border: 1px solid rgba(96, 226, 255, 0.14);
+body.modal-aberto {
+  overflow: hidden;
+}
+
+.modal-plataforma {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(1, 8, 22, 0.78);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.modal-plataforma.hidden {
+  display: none;
+}
+
+.modal-plataforma-painel {
+  position: relative;
+  width: min(920px, 100%);
+  max-height: min(760px, calc(100vh - 48px));
+  overflow-y: auto;
+  padding: 42px;
+  border: 1px solid rgba(96, 226, 255, 0.2);
   border-radius: 28px;
   background:
-    radial-gradient(circle at 90% 10%, rgba(75, 220, 255, 0.1), transparent 32%),
-    linear-gradient(145deg, rgba(13, 34, 65, 0.96), rgba(6, 18, 36, 0.98));
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
+    radial-gradient(circle at 90% 10%, rgba(75, 220, 255, 0.13), transparent 34%),
+    linear-gradient(145deg, #0d2241, #061224);
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.55);
 }
 
-.sobre-plataforma-conteudo {
-  max-width: 1000px;
+.modal-plataforma-fechar {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 14px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.06);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.modal-plataforma-fechar:hover,
+.modal-plataforma-fechar:focus-visible {
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .sobre-plataforma-selo {
@@ -2029,15 +2067,16 @@ html {
   letter-spacing: 0.14em;
 }
 
-.sobre-plataforma h2 {
-  max-width: 850px;
+.modal-plataforma h2 {
+  max-width: 780px;
   margin: 0 0 16px;
+  padding-right: 44px;
   color: #fff;
   font-size: clamp(1.8rem, 4vw, 2.8rem);
   line-height: 1.12;
 }
 
-.sobre-plataforma > .sobre-plataforma-conteudo > p {
+.modal-plataforma-painel > p {
   max-width: 760px;
   margin: 0;
   color: #b8c9df;
@@ -2075,23 +2114,23 @@ html {
   line-height: 1.55;
 }
 
-.sobre-plataforma-link {
-  display: inline-flex;
-  margin-top: 24px;
-  color: #6ce9ff;
-  font-weight: 800;
-  text-decoration: none;
-}
-
-.sobre-plataforma-link:hover,
-.sobre-plataforma-link:focus-visible {
-  text-decoration: underline;
+.modal-plataforma-explorar {
+  margin-top: 26px;
 }
 
 @media (max-width: 760px) {
-  .sobre-plataforma {
-    width: calc(100% - 24px);
-    padding: 26px;
+  .modal-plataforma {
+    padding: 12px;
+  }
+
+  .modal-plataforma-painel {
+    max-height: calc(100vh - 24px);
+    padding: 32px 22px 26px;
+    border-radius: 22px;
+  }
+
+  .modal-plataforma h2 {
+    padding-right: 28px;
   }
 
   .sobre-plataforma-recursos {
