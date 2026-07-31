@@ -1,0 +1,85 @@
+{
+  "versao": "1.0",
+  "fusoHorario": "America/Sao_Paulo",
+  "intervaloSegundos": 6,
+  "transicaoMilissegundos": 450,
+  "frasesPadrao": [
+    "Descubra rádios de todas as regiões do Brasil.",
+    "Encontre novas vozes, cidades e culturas.",
+    "Ouça sua cidade onde estiver.",
+    "Uma sintonia para cada momento do seu dia.",
+    "Conectando ouvintes e emissoras de todo o país.",
+    "Sua próxima rádio favorita está aqui."
+  ],
+  "campanhas": [
+    {
+      "id": "festas-juninas",
+      "nome": "Festas Juninas",
+      "ativa": true,
+      "anual": true,
+      "inicio": "06-01",
+      "fim": "06-30",
+      "prioridade": 20,
+      "modo": "misturar",
+      "frases": [
+        "O Brasil celebra suas tradições em uma só sintonia.",
+        "Música, alegria e cultura brasileira em clima de São João."
+      ]
+    },
+    {
+      "id": "independencia-brasil",
+      "nome": "Semana da Independência",
+      "ativa": true,
+      "anual": true,
+      "inicio": "09-01",
+      "fim": "09-07",
+      "prioridade": 30,
+      "modo": "substituir",
+      "frases": [
+        "Neste 7 de Setembro, o Brasil inteiro está em uma só sintonia.",
+        "Vozes de todas as regiões celebrando o nosso Brasil."
+      ]
+    },
+    {
+      "id": "natal",
+      "nome": "Natal",
+      "ativa": true,
+      "anual": true,
+      "inicio": "12-15",
+      "fim": "12-26",
+      "prioridade": 40,
+      "modo": "substituir",
+      "frases": [
+        "Que o Natal leve música, esperança e união a todos os lares.",
+        "Um Feliz Natal em sintonia com todo o Brasil."
+      ]
+    },
+    {
+      "id": "ano-novo",
+      "nome": "Ano-Novo",
+      "ativa": true,
+      "anual": true,
+      "inicio": "12-27",
+      "fim": "01-02",
+      "prioridade": 50,
+      "modo": "substituir",
+      "frases": [
+        "Um novo ano começa com o Brasil inteiro em uma só sintonia.",
+        "Que o novo ano traga novas vozes, conexões e conquistas."
+      ]
+    },
+    {
+      "id": "exemplo-campanha-unica",
+      "nome": "Exemplo de campanha com ano definido",
+      "ativa": false,
+      "anual": false,
+      "inicio": "2026-10-01",
+      "fim": "2026-10-07",
+      "prioridade": 100,
+      "modo": "substituir",
+      "frases": [
+        "Exemplo de mensagem especial por período definido."
+      ]
+    }
+  ]
+}
