@@ -2687,7 +2687,7 @@ margin:auto;
   }
 }
 /* =========================================================
-   HERO DINÂMICO E CAMPANHAS PROGRAMADAS — VERSÃO 22.4.0
+   HERO DINÂMICO E CAMPANHAS PROGRAMADAS — VERSÃO 22.4.1
    ========================================================= */
 
 .apresentacao-premium {
@@ -2781,5 +2781,32 @@ margin:auto;
     transform: none !important;
     animation: none !important;
     transition: none !important;
+  }
+}
+
+
+/* HERO 22.4.1 — duas mensagens sincronizadas */
+
+.hero-frase-superior {
+  min-height: 1.6em;
+}
+
+.hero-frase-inferior {
+  min-height: 3.4em;
+  max-width: 760px;
+  margin: 22px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 720px) {
+  .hero-frase-superior {
+    min-height: 3.2em;
+  }
+
+  .hero-frase-inferior {
+    min-height: 5.2em;
+    margin-top: 18px;
   }
 }
