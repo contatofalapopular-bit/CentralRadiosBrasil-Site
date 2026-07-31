@@ -213,7 +213,7 @@ async function carregarBanco() {
     estado.banco = banco;
 
     estado.radios = banco.radios.filter(radioPublicaAtiva);
-    atualizarIndicadoresNacionais(banco);
+    atualizarIndicadoresNacionais(estado.radios);
     atualizarRadioDestaque();
     estado.radiosFiltradas = [...estado.radios];
 
@@ -1343,28 +1343,78 @@ function normalizarTexto(texto) {
     .toLocaleLowerCase("pt-BR")
     .trim();
 }
-function atualizarIndicadoresNacionais(banco) {
-  const totais = banco?.totais || {};
+function atualizarIndicadoresNacionais(radios) {
+  const lista = Array.isArray(radios) ? radios : [];
 
-  animarNumero(
-    "total-emissoras",
-    totais.emissoras || 0
-  );
+  const estados = new Set();
+  const cidades = new Set();
+  const categorias = new Set();
+  let streamsAtivos = 0;
+  let verificadas = 0;
 
-  animarNumero(
-    "total-estados",
-    totais.estados || 0
-  );
+  lista.forEach(radio => {
+    const uf = String(radio?.localizacao?.uf || "").trim().toUpperCase();
+    const cidade = String(radio?.localizacao?.cidade || "").trim();
 
-  animarNumero(
-    "total-cidades",
-    totais.cidades || 0
-  );
+    if (uf) {
+      estados.add(uf);
+    }
 
-  animarNumero(
-    "total-verificadas",
-    totais.verificadas || 0
-  );
+    if (cidade) {
+      cidades.add(`${normalizarTexto(cidade)}|${uf}`);
+    }
+
+    const categoriasRadio = radio?.classificacao?.categorias;
+
+    if (Array.isArray(categoriasRadio)) {
+      categoriasRadio.forEach(categoria => {
+        const valor = String(categoria || "").trim();
+        if (valor) categorias.add(normalizarTexto(valor));
+      });
+    }
+
+    const categoriaPrincipal = String(
+      radio?.classificacao?.categoriaPrincipal || ""
+    ).trim();
+
+    if (categoriaPrincipal) {
+      categorias.add(normalizarTexto(categoriaPrincipal));
+    }
+
+    const urls = new Set();
+    const principal = String(radio?.streamPrincipal?.url || "").trim();
+
+    if (principal) {
+      urls.add(principal);
+    }
+
+    if (Array.isArray(radio?.streams)) {
+      radio.streams.forEach(stream => {
+        const url = String(stream?.url || "").trim();
+        const ativo = stream?.ativo !== false && stream?.status !== "inativo";
+        if (url && ativo) urls.add(url);
+      });
+    }
+
+    streamsAtivos += urls.size;
+
+    if (radio?.status?.verificada === true || radio?.verificada === true) {
+      verificadas += 1;
+    }
+  });
+
+  const indicadores = {
+    "total-emissoras": lista.length,
+    "total-estados": estados.size,
+    "total-cidades": cidades.size,
+    "total-categorias": categorias.size,
+    "total-streams": streamsAtivos,
+    "total-verificadas": verificadas
+  };
+
+  Object.entries(indicadores).forEach(([id, valor]) => {
+    animarNumero(id, valor);
+  });
 }
 
 function animarNumero(id, valorFinal) {
@@ -1381,9 +1431,11 @@ function animarNumero(id, valorFinal) {
 
     const progresso = Math.min((tempo - tempoInicial) / duracao, 1);
 
-    elemento.textContent = Math.round(
+    const valorAtual = Math.round(
       inicio + (valorFinal - inicio) * progresso
     );
+
+    elemento.textContent = valorAtual.toLocaleString("pt-BR");
 
     if (progresso < 1) {
       requestAnimationFrame(atualizar);
