@@ -107,6 +107,7 @@ async function carregarBanco() {
     preencherFiltros();
     renderizarRadios();
     atualizarRadioDestaque();
+    atualizarRankingNacional();
   } catch (erro) {
     console.error("Erro ao carregar o banco:", erro);
 
@@ -734,4 +735,318 @@ function animarNumero(id, valorFinal) {
 
   requestAnimationFrame(atualizar);
 
+}
+
+
+/* =========================================================
+   RANKING NACIONAL — VERSÃO 22.2.6
+========================================================= */
+
+const rankingDemonstracao = [
+  {
+    id: "demo-fala-popular",
+    nome: "Rádio Fala Popular",
+    categoria: "Sertanejo",
+    ouvintesRanking: 18452,
+    logoRanking: "logo-central-radios-brasil.jpeg.jpeg",
+    demonstrativa: true
+  },
+  {
+    id: "demo-radio-cidade",
+    nome: "Rádio Cidade",
+    categoria: "Pop",
+    ouvintesRanking: 16980,
+    logoRanking: "",
+    demonstrativa: true
+  },
+  {
+    id: "demo-radio-brasil",
+    nome: "Rádio Brasil",
+    categoria: "Jornalismo",
+    ouvintesRanking: 15770,
+    logoRanking: "",
+    demonstrativa: true
+  },
+  {
+    id: "demo-nacional-mix",
+    nome: "Rádio Nacional Mix",
+    categoria: "Variedades",
+    ouvintesRanking: 14920,
+    logoRanking: "",
+    demonstrativa: true
+  },
+  {
+    id: "demo-goias-central",
+    nome: "Rádio Goiás Central",
+    categoria: "Sertanejo",
+    ouvintesRanking: 13860,
+    logoRanking: "",
+    demonstrativa: true
+  },
+  {
+    id: "demo-popular-hits",
+    nome: "Rádio Popular Hits",
+    categoria: "Pop",
+    ouvintesRanking: 12440,
+    logoRanking: "",
+    demonstrativa: true
+  },
+  {
+    id: "demo-brasil-sertanejo",
+    nome: "Rádio Brasil Sertanejo",
+    categoria: "Sertanejo",
+    ouvintesRanking: 11980,
+    logoRanking: "",
+    demonstrativa: true
+  },
+  {
+    id: "demo-noticias-24h",
+    nome: "Rádio Notícias 24h",
+    categoria: "Jornalismo",
+    ouvintesRanking: 10750,
+    logoRanking: "",
+    demonstrativa: true
+  },
+  {
+    id: "demo-gospel-brasil",
+    nome: "Rádio Gospel Brasil",
+    categoria: "Gospel",
+    ouvintesRanking: 9820,
+    logoRanking: "",
+    demonstrativa: true
+  },
+  {
+    id: "demo-esportes-central",
+    nome: "Rádio Esportes Central",
+    categoria: "Esportes",
+    ouvintesRanking: 8940,
+    logoRanking: "",
+    demonstrativa: true
+  }
+];
+
+const rankingMedalhas = ["🥇", "🥈", "🥉"];
+const rankingClasses = ["ranking-card-ouro", "ranking-card-prata", "ranking-card-bronze"];
+let rankingAtual = [];
+let rankingEventosRegistrados = false;
+
+function obterNumeroOuvintes(radio) {
+  const candidatos = [
+    radio?.estatisticas?.ouvintes,
+    radio?.estatisticas?.ouvintesAtuais,
+    radio?.estatisticas?.totalOuvintes,
+    radio?.metricas?.ouvintes,
+    radio?.ranking?.ouvintes,
+    radio?.ouvintes
+  ];
+
+  for (const valor of candidatos) {
+    const numero = Number(valor);
+    if (Number.isFinite(numero) && numero >= 0) {
+      return numero;
+    }
+  }
+
+  return 0;
+}
+
+function normalizarRadioRanking(radio) {
+  return {
+    ...radio,
+    nome: radio.nomeFantasia || radio.nome || "Emissora",
+    categoria: radio.classificacao?.categoriaPrincipal || radio.categoria || "Rádio online",
+    ouvintesRanking: obterNumeroOuvintes(radio),
+    logoRanking:
+      radio.logo?.miniatura ||
+      radio.logo?.quadrada ||
+      radio.logo?.original ||
+      radio.logoRanking ||
+      "",
+    demonstrativa: false
+  };
+}
+
+function montarRanking() {
+  const reaisComAudiencia = estado.radios
+    .map(normalizarRadioRanking)
+    .filter(radio => radio.ouvintesRanking > 0)
+    .sort((a, b) => b.ouvintesRanking - a.ouvintesRanking);
+
+  if (reaisComAudiencia.length >= 3) {
+    return reaisComAudiencia.slice(0, 10);
+  }
+
+  const usados = new Set(reaisComAudiencia.map(radio => normalizarTexto(radio.nome)));
+  const complementos = rankingDemonstracao.filter(
+    radio => !usados.has(normalizarTexto(radio.nome))
+  );
+
+  return [...reaisComAudiencia, ...complementos].slice(0, 10);
+}
+
+function criarLogoRanking(radio, classe) {
+  const logo = document.createElement("div");
+  logo.className = classe;
+
+  if (radio.logoRanking) {
+    const imagem = document.createElement("img");
+    imagem.src = radio.logoRanking;
+    imagem.alt = `Logo da ${radio.nome}`;
+    imagem.loading = "lazy";
+    imagem.addEventListener("error", () => {
+      logo.replaceChildren();
+      logo.textContent = obterIniciais(radio.nome);
+    });
+    logo.appendChild(imagem);
+  } else {
+    logo.textContent = obterIniciais(radio.nome);
+  }
+
+  return logo;
+}
+
+function formatarOuvintesRanking(valor) {
+  return new Intl.NumberFormat("pt-BR").format(Number(valor) || 0);
+}
+
+function acionarRadioRanking(radio) {
+  if (radio.demonstrativa) {
+    alert("Esta posição está em modo demonstrativo até a plataforma registrar estatísticas reais de audiência.");
+    return;
+  }
+
+  selecionarRadio(radio);
+}
+
+function criarCardRanking(radio, indice) {
+  const card = document.createElement("article");
+  card.className = `ranking-card ${rankingClasses[indice]}`;
+  card.tabIndex = 0;
+  card.setAttribute("role", "button");
+  card.setAttribute("aria-label", `${indice + 1}º lugar: ${radio.nome}`);
+
+  const topo = document.createElement("div");
+  topo.className = "ranking-card-topo";
+
+  const vivo = document.createElement("span");
+  vivo.className = "ranking-status-vivo";
+  vivo.textContent = "AO VIVO";
+
+  const medalha = document.createElement("span");
+  medalha.className = "ranking-medalha";
+  medalha.textContent = rankingMedalhas[indice];
+  medalha.setAttribute("aria-hidden", "true");
+
+  topo.append(vivo, medalha);
+
+  const logo = criarLogoRanking(radio, "ranking-logo");
+
+  const nome = document.createElement("h3");
+  nome.textContent = radio.nome;
+
+  const segmento = document.createElement("span");
+  segmento.className = "ranking-segmento";
+  segmento.textContent = radio.categoria;
+
+  const ouvintes = document.createElement("span");
+  ouvintes.className = "ranking-ouvintes";
+  ouvintes.textContent = `🎧 ${formatarOuvintesRanking(radio.ouvintesRanking)} ouvintes`;
+
+  card.append(topo, logo, nome, segmento, ouvintes);
+
+  const abrir = () => acionarRadioRanking(radio);
+  card.addEventListener("click", abrir);
+  card.addEventListener("keydown", evento => {
+    if (evento.key === "Enter" || evento.key === " ") {
+      evento.preventDefault();
+      abrir();
+    }
+  });
+
+  return card;
+}
+
+function criarLinhaRanking(radio, indice) {
+  const item = document.createElement("li");
+  item.className = "ranking-top10-item";
+
+  const posicao = document.createElement("span");
+  posicao.className = "ranking-top10-posicao";
+  posicao.textContent = indice < 3 ? rankingMedalhas[indice] : `${indice + 1}º`;
+
+  const logo = criarLogoRanking(radio, "ranking-top10-logo");
+
+  const info = document.createElement("div");
+  info.className = "ranking-top10-info";
+
+  const nome = document.createElement("strong");
+  nome.textContent = radio.nome;
+
+  const categoria = document.createElement("small");
+  categoria.textContent = radio.categoria;
+
+  info.append(nome, categoria);
+
+  const ouvintes = document.createElement("span");
+  ouvintes.className = "ranking-top10-ouvintes";
+  ouvintes.textContent = `🎧 ${formatarOuvintesRanking(radio.ouvintesRanking)}`;
+
+  item.append(posicao, logo, info, ouvintes);
+  item.addEventListener("click", () => acionarRadioRanking(radio));
+
+  return item;
+}
+
+function registrarEventosRanking() {
+  if (rankingEventosRegistrados) return;
+
+  const modal = document.getElementById("ranking-modal");
+  const abrir = document.getElementById("btn-ranking-top10");
+  const fechar = document.getElementById("btn-fechar-ranking");
+
+  if (!modal || !abrir || !fechar) return;
+
+  const abrirModal = () => {
+    modal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+    fechar.focus();
+  };
+
+  const fecharModal = () => {
+    modal.classList.add("hidden");
+    document.body.style.overflow = "";
+    abrir.focus();
+  };
+
+  abrir.addEventListener("click", abrirModal);
+  fechar.addEventListener("click", fecharModal);
+  modal.addEventListener("click", evento => {
+    if (evento.target === modal) fecharModal();
+  });
+  document.addEventListener("keydown", evento => {
+    if (evento.key === "Escape" && !modal.classList.contains("hidden")) {
+      fecharModal();
+    }
+  });
+
+  rankingEventosRegistrados = true;
+}
+
+function atualizarRankingNacional() {
+  const top3 = document.getElementById("ranking-nacional-top3");
+  const top10 = document.getElementById("ranking-top10-lista");
+
+  if (!top3 || !top10) return;
+
+  rankingAtual = montarRanking();
+
+  top3.replaceChildren(
+    ...rankingAtual.slice(0, 3).map(criarCardRanking)
+  );
+
+  top10.replaceChildren(
+    ...rankingAtual.slice(0, 10).map(criarLinhaRanking)
+  );
+
+  registrarEventosRanking();
 }
