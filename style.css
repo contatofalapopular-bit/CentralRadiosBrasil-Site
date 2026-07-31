@@ -3304,3 +3304,214 @@ body.modal-aberto {
     min-height: 0;
   }
 }
+
+/* =========================================================
+   VERSÃO 22.4.2 — POLIMENTO VISUAL / ETAPA 1
+   Regra final canônica: cards compactos + hero refinado.
+   Este bloco fica por último para neutralizar regras antigas.
+   ========================================================= */
+
+/* CARDS: tamanho real e previsível em qualquer quantidade */
+.grade-radios,
+.grade-recentes,
+.grade-favoritas,
+.grade-mais-ouvidas,
+#grade-radios {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 330px)) !important;
+  justify-content: start !important;
+  align-items: stretch !important;
+  gap: 18px !important;
+}
+
+.grade-radios > .radio-card,
+.grade-recentes > .radio-card,
+.grade-favoritas > .radio-card,
+.grade-mais-ouvidas > .radio-card,
+#grade-radios > .radio-card {
+  width: 100% !important;
+  max-width: 330px !important;
+  min-height: 282px !important;
+  height: auto !important;
+  border-radius: 20px !important;
+}
+
+.grade-radios > .radio-card .radio-card-topo {
+  gap: 12px !important;
+  padding: 16px 16px 0 !important;
+}
+
+.grade-radios > .radio-card .radio-logo {
+  width: 64px !important;
+  height: 64px !important;
+  border-radius: 17px !important;
+}
+
+.grade-radios > .radio-card .radio-selos {
+  gap: 6px !important;
+}
+
+.grade-radios > .radio-card .radio-selo {
+  gap: 5px !important;
+  padding: 5px 8px !important;
+  font-size: .62rem !important;
+}
+
+.grade-radios > .radio-card .radio-card-corpo {
+  flex: 1 1 auto !important;
+  padding: 16px !important;
+}
+
+.grade-radios > .radio-card .radio-categoria {
+  margin-bottom: 7px !important;
+  font-size: .68rem !important;
+}
+
+.grade-radios > .radio-card h3 {
+  font-size: 1.12rem !important;
+  line-height: 1.22 !important;
+}
+
+.grade-radios > .radio-card .radio-slogan {
+  margin-top: 7px !important;
+  font-size: .79rem !important;
+  line-height: 1.42 !important;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.grade-radios > .radio-card .radio-localizacao {
+  margin-top: 11px !important;
+  font-size: .78rem !important;
+}
+
+.grade-radios > .radio-card .radio-card-rodape {
+  gap: 8px !important;
+  margin-top: auto !important;
+  padding-top: 14px !important;
+}
+
+.grade-radios > .radio-card .botao-ouvir,
+.grade-radios > .radio-card .botao-card-secundario {
+  min-height: 42px !important;
+  border-radius: 12px !important;
+}
+
+.grade-radios > .radio-card .botao-card-secundario {
+  width: 42px !important;
+}
+
+/* Novidades mantém identidade própria, sem aumentar o cartão */
+.grade-recentes > .radio-card .selo-radio-nova {
+  top: 10px !important;
+  left: 10px !important;
+  min-height: 23px !important;
+  padding: 4px 7px !important;
+  font-size: .6rem !important;
+}
+
+/* HERO — Etapa 1: mais compacto, equilibrado e com CTA principal forte */
+.apresentacao-premium {
+  min-height: 410px !important;
+  padding: 48px 24px 58px !important;
+}
+
+.apresentacao-premium .apresentacao-conteudo {
+  width: min(1120px, 100%) !important;
+}
+
+.apresentacao-premium .selo {
+  margin-bottom: 16px !important;
+  padding: 8px 13px !important;
+  font-size: .7rem !important;
+}
+
+.hero-pre-titulo {
+  margin-bottom: 10px !important;
+  font-size: clamp(.8rem, 1.3vw, .92rem) !important;
+}
+
+.apresentacao-premium h1 {
+  max-width: 790px !important;
+  font-size: clamp(2.55rem, 5.35vw, 4.9rem) !important;
+  line-height: .97 !important;
+}
+
+.apresentacao-premium h1 span {
+  margin-top: 7px !important;
+}
+
+.hero-descricao {
+  max-width: 625px !important;
+  margin-top: 20px !important;
+  font-size: clamp(.94rem, 1.65vw, 1.08rem) !important;
+  line-height: 1.6 !important;
+}
+
+.hero-acoes {
+  align-items: center !important;
+  gap: 12px !important;
+  margin-top: 26px !important;
+}
+
+.hero-botao {
+  min-height: 50px !important;
+  padding-inline: 21px !important;
+  border-radius: 14px !important;
+  font-size: .9rem !important;
+}
+
+.hero-botao-principal {
+  min-width: 166px !important;
+  box-shadow: 0 18px 42px rgba(31, 196, 255, .26), 0 0 34px rgba(70, 225, 255, .17) !important;
+}
+
+.hero-indicadores {
+  gap: 10px 22px !important;
+  margin-top: 23px !important;
+  font-size: .74rem !important;
+}
+
+@media (max-width: 720px) {
+  .grade-radios,
+  .grade-recentes,
+  .grade-favoritas,
+  .grade-mais-ouvidas,
+  #grade-radios {
+    grid-template-columns: minmax(0, 1fr) !important;
+    justify-content: stretch !important;
+  }
+
+  .grade-radios > .radio-card,
+  .grade-recentes > .radio-card,
+  .grade-favoritas > .radio-card,
+  .grade-mais-ouvidas > .radio-card,
+  #grade-radios > .radio-card {
+    max-width: none !important;
+    min-height: 0 !important;
+  }
+
+  .apresentacao-premium {
+    min-height: auto !important;
+    padding: 40px 18px 52px !important;
+  }
+
+  .apresentacao-premium h1 {
+    font-size: clamp(2.35rem, 13vw, 3.65rem) !important;
+  }
+
+  .hero-acoes {
+    align-items: stretch !important;
+    margin-top: 23px !important;
+  }
+
+  .hero-botao {
+    width: 100% !important;
+  }
+
+  .hero-indicadores {
+    margin-top: 20px !important;
+  }
+}
