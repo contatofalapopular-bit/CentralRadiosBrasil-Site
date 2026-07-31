@@ -26,7 +26,6 @@ const elementos = {
   gradeRadios: document.getElementById("grade-radios"),
   mensagemStatus: document.getElementById("mensagem-status"),
   contadorRadios: document.getElementById("contador-radios"),
-  paginacaoCatalogo: document.getElementById("paginacao-catalogo"),
   secaoFavoritas: document.getElementById("secao-favoritas"),
   gradeFavoritas: document.getElementById("grade-favoritas"),
   contadorFavoritas: document.getElementById("contador-favoritas"),
@@ -89,9 +88,7 @@ const estado = {
   favoritas: carregarIdsFavoritos(),
   reproducoes: carregarReproducoes(),
   regiaoSelecionada: "",
-  carregandoAudio: false,
-  paginaCatalogo: 1,
-  itensPorPagina: 12
+  carregandoAudio: false
 };
 
 document.addEventListener("DOMContentLoaded", iniciarPortal);
@@ -115,14 +112,6 @@ function registrarEventos() {
   elementos.filtroCategoria.addEventListener("change", aplicarFiltros);
 
   elementos.btnLimpar.addEventListener("click", limparFiltros);
-
-  document.addEventListener("click", evento => {
-    const botao = evento.target.closest("[data-prateleira]");
-    if (!botao) return;
-    const alvo = document.getElementById(botao.dataset.prateleira);
-    const direcao = Number(botao.dataset.direcao) || 1;
-    alvo?.scrollBy({ left: direcao * Math.max(280, alvo.clientWidth * 0.82), behavior: "smooth" });
-  });
   elementos.btnLimparRegiao?.addEventListener("click", limparFiltroRegiao);
   elementos.btnLimparHistorico?.addEventListener("click", limparHistoricoReproducoes);
   elementos.gradeRegioes?.addEventListener("click", evento => {
@@ -525,7 +514,6 @@ function aplicarFiltros() {
       correspondeRegiao
     );
   });
-  estado.paginaCatalogo = 1;
 
   renderizarRadios();
 }
@@ -538,7 +526,6 @@ function limparFiltros() {
   atualizarEstadoVisualRegioes();
 
   estado.radiosFiltradas = [...estado.radios];
-  estado.paginaCatalogo = 1;
 
   renderizarRadios();
   elementos.pesquisa.focus();
@@ -548,165 +535,105 @@ function renderizarRadios() {
   elementos.gradeRadios.innerHTML = "";
 
   const radios = estado.radiosFiltradas;
+
   atualizarContador(radios.length);
 
   if (radios.length === 0) {
-    mostrarMensagem("Nenhuma emissora foi encontrada com os filtros selecionados.");
-    elementos.paginacaoCatalogo?.classList.add("hidden");
+    mostrarMensagem(
+      "Nenhuma emissora foi encontrada com os filtros selecionados."
+    );
+
     return;
   }
 
   ocultarMensagem();
 
-  const totalPaginas = Math.max(1, Math.ceil(radios.length / estado.itensPorPagina));
-  estado.paginaCatalogo = Math.min(Math.max(1, estado.paginaCatalogo), totalPaginas);
-  const inicio = (estado.paginaCatalogo - 1) * estado.itensPorPagina;
-  const pagina = radios.slice(inicio, inicio + estado.itensPorPagina);
-
   const fragmento = document.createDocumentFragment();
-  pagina.forEach(radio => fragmento.appendChild(criarCardRadio(radio)));
+
+  radios.forEach(radio => {
+    fragmento.appendChild(criarCardRadio(radio));
+  });
+
   elementos.gradeRadios.appendChild(fragmento);
-  renderizarPaginacaoCatalogo(totalPaginas);
-}
-
-function renderizarPaginacaoCatalogo(totalPaginas) {
-  const nav = elementos.paginacaoCatalogo;
-  if (!nav) return;
-  nav.innerHTML = "";
-  if (totalPaginas <= 1) {
-    nav.classList.add("hidden");
-    return;
-  }
-
-  const criar = (rotulo, pagina, ativo = false, desabilitado = false) => {
-    const botao = document.createElement("button");
-    botao.type = "button";
-    botao.textContent = rotulo;
-    botao.className = "pagina-botao" + (ativo ? " ativo" : "");
-    botao.disabled = desabilitado;
-    botao.addEventListener("click", () => {
-      estado.paginaCatalogo = pagina;
-      renderizarRadios();
-      elementos.catalogoLista?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-    return botao;
-  };
-
-  nav.appendChild(criar("‹", estado.paginaCatalogo - 1, false, estado.paginaCatalogo === 1));
-  const inicio = Math.max(1, estado.paginaCatalogo - 2);
-  const fim = Math.min(totalPaginas, inicio + 4);
-  for (let pagina = Math.max(1, fim - 4); pagina <= fim; pagina += 1) {
-    nav.appendChild(criar(String(pagina), pagina, pagina === estado.paginaCatalogo));
-  }
-  nav.appendChild(criar("›", estado.paginaCatalogo + 1, false, estado.paginaCatalogo === totalPaginas));
-  nav.classList.remove("hidden");
 }
 
 function criarCardRadio(radio) {
   const artigo = document.createElement("article");
-  artigo.className = "radio-card";
+  artigo.className = "radio-card radio-card-streaming";
   artigo.dataset.radioId = obterIdRadio(radio);
-  artigo.tabIndex = -1;
-  artigo.dataset.radioId = radio.id || radio.slug || "";
+  artigo.tabIndex = 0;
 
   if (radio === estado.radioAtual) {
     artigo.classList.add("radio-card-selecionado");
   }
 
-  const topo = document.createElement("div");
-  topo.className = "radio-card-topo";
-
   const logo = criarLogoRadio(radio, "radio-logo");
+  const conteudo = document.createElement("div");
+  conteudo.className = "radio-card-conteudo";
 
-  const selos = document.createElement("div");
-  selos.className = "radio-selos";
-
-  const botaoFavorito = criarBotaoFavorito(radio);
-
-  const seloAoVivo = document.createElement("span");
-  seloAoVivo.className = "radio-selo radio-selo-ao-vivo";
-  seloAoVivo.textContent = "No ar";
-
-  selos.appendChild(seloAoVivo);
-
-  if (radio.status?.verificada === true) {
-    const seloVerificada = document.createElement("span");
-    seloVerificada.className =
-      "radio-selo radio-selo-verificada";
-    seloVerificada.textContent = "Verificada";
-
-    selos.appendChild(seloVerificada);
-  }
-
-  const acoesTopo = document.createElement("div");
-  acoesTopo.className = "radio-topo-acoes";
-  acoesTopo.append(botaoFavorito, selos);
-
-  topo.append(logo, acoesTopo);
-
-  const corpo = document.createElement("div");
-  corpo.className = "radio-card-corpo";
+  const linhaSuperior = document.createElement("div");
+  linhaSuperior.className = "radio-card-linha-superior";
 
   const categoria = document.createElement("span");
   categoria.className = "radio-categoria";
-  categoria.textContent =
-    radio.classificacao?.categoriaPrincipal ||
-    "Rádio online";
+  categoria.textContent = radio.classificacao?.categoriaPrincipal || "Rádio online";
+
+  const botaoFavorito = criarBotaoFavorito(radio);
+  linhaSuperior.append(categoria, botaoFavorito);
 
   const titulo = document.createElement("h3");
-  titulo.textContent =
-    radio.nomeFantasia ||
-    radio.nome ||
-    "Emissora";
-
-  const slogan = document.createElement("p");
-  slogan.className = "radio-slogan";
-  slogan.textContent =
-    radio.slogan ||
-    radio.descricao ||
-    "Ouça esta emissora na Central Rádios Brasil.";
+  titulo.textContent = radio.nomeFantasia || radio.nome || "Emissora";
 
   const localizacao = document.createElement("div");
   localizacao.className = "radio-localizacao";
   localizacao.textContent = montarLocalizacao(radio);
 
-  const rodape = document.createElement("div");
-  rodape.className = "radio-card-rodape";
+  const meta = document.createElement("div");
+  meta.className = "radio-card-meta";
+
+  const seloAoVivo = document.createElement("span");
+  seloAoVivo.className = "radio-selo radio-selo-ao-vivo";
+  seloAoVivo.textContent = "No ar";
+  meta.appendChild(seloAoVivo);
+
+  if (radio.status?.verificada === true) {
+    const seloVerificada = document.createElement("span");
+    seloVerificada.className = "radio-selo radio-selo-verificada";
+    seloVerificada.textContent = "Verificada";
+    meta.appendChild(seloVerificada);
+  }
+
+  const acoes = document.createElement("div");
+  acoes.className = "radio-card-acoes-streaming";
 
   const botaoOuvir = document.createElement("button");
-  botaoOuvir.className = "botao-ouvir";
+  botaoOuvir.className = "botao-ouvir botao-ouvir-compacto";
   botaoOuvir.type = "button";
-  botaoOuvir.textContent = "Ouvir agora";
-
-  botaoOuvir.addEventListener("click", () => {
+  botaoOuvir.innerHTML = '<span aria-hidden="true">▶</span><span>Ouvir</span>';
+  botaoOuvir.addEventListener("click", evento => {
+    evento.stopPropagation();
     selecionarRadio(radio);
   });
 
   const botaoCompartilhar = document.createElement("button");
-  botaoCompartilhar.className = "botao-card-secundario";
+  botaoCompartilhar.className = "botao-card-secundario botao-compartilhar-compacto";
   botaoCompartilhar.type = "button";
   botaoCompartilhar.textContent = "↗";
   botaoCompartilhar.title = "Compartilhar emissora";
-  botaoCompartilhar.setAttribute(
-    "aria-label",
-    `Compartilhar ${titulo.textContent}`
-  );
-
-  botaoCompartilhar.addEventListener("click", () => {
+  botaoCompartilhar.setAttribute("aria-label", `Compartilhar ${titulo.textContent}`);
+  botaoCompartilhar.addEventListener("click", evento => {
+    evento.stopPropagation();
     compartilharRadio(radio);
   });
 
-  rodape.append(botaoOuvir, botaoCompartilhar);
+  acoes.append(botaoOuvir, botaoCompartilhar);
+  conteudo.append(linhaSuperior, titulo, localizacao, meta, acoes);
+  artigo.append(logo, conteudo);
 
-  corpo.append(
-    categoria,
-    titulo,
-    slogan,
-    localizacao,
-    rodape
-  );
-
-  artigo.append(topo, corpo);
+  artigo.addEventListener("dblclick", () => selecionarRadio(radio));
+  artigo.addEventListener("keydown", evento => {
+    if (evento.key === "Enter") selecionarRadio(radio);
+  });
 
   return artigo;
 }
@@ -897,7 +824,7 @@ function renderizarMaisOuvidas() {
     audicoes.textContent = `${item.total} ${item.total === 1 ? "reprodução" : "reproduções"}`;
 
     card.prepend(posicao);
-    card.querySelector(".radio-card-corpo")?.appendChild(audicoes);
+    card.querySelector(".radio-card-conteudo")?.appendChild(audicoes);
     fragmento.appendChild(card);
   });
 
@@ -947,15 +874,14 @@ function renderizarRadiosRecentes() {
     seloNova.textContent = "NOVA";
     seloNova.setAttribute("aria-label", "Emissora recém-adicionada");
 
-    const topo = card.querySelector(".radio-card-topo");
-    topo?.appendChild(seloNova);
+    card.appendChild(seloNova);
 
     const dataLegivel = formatarDataPublicacaoRadio(item.radio);
     if (dataLegivel) {
       const publicada = document.createElement("span");
       publicada.className = "radio-data-publicacao";
       publicada.textContent = `Na Central desde ${dataLegivel}`;
-      card.querySelector(".radio-card-corpo")?.appendChild(publicada);
+      card.querySelector(".radio-card-conteudo")?.appendChild(publicada);
     }
 
     fragmento.appendChild(card);
