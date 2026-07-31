@@ -101,24 +101,24 @@
 
     <div class="hero-acoes">
 
-      <a
+      <button
         class="hero-botao hero-botao-principal"
         id="btn-explorar-radios"
-        href="#catalogo-emissoras"
+        type="button"
         aria-label="Ir para o catálogo de emissoras"
       >
         <span aria-hidden="true">▶</span>
         Explorar emissoras
-      </a>
+      </button>
 
-      <a
+      <button
         class="hero-botao hero-botao-secundario"
         id="btn-conhecer-plataforma"
-        href="#sobre-plataforma"
+        type="button"
         aria-label="Conhecer a Central Rádios Brasil"
       >
         Conhecer a plataforma
-      </a>
+      </button>
 
     </div>
 
@@ -198,13 +198,14 @@
 
 </section>
 
-<section class="sobre-plataforma" id="sobre-plataforma" aria-labelledby="titulo-sobre-plataforma">
-  <div class="sobre-plataforma-conteudo">
+<div class="modal-plataforma hidden" id="modal-plataforma" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-plataforma">
+  <div class="modal-plataforma-painel">
+    <button class="modal-plataforma-fechar" id="btn-fechar-plataforma" type="button" aria-label="Fechar informações da plataforma">✕</button>
     <span class="sobre-plataforma-selo">CENTRAL RÁDIOS BRASIL</span>
-    <h2 id="titulo-sobre-plataforma">Uma plataforma nacional para descobrir e ouvir rádios brasileiras</h2>
+    <h2 id="titulo-modal-plataforma">Uma plataforma nacional para descobrir e ouvir rádios brasileiras</h2>
     <p>
       Encontre emissoras por nome, estado e categoria, acompanhe dados verificados
-      e ouça a programação ao vivo em um único lugar.
+      e ouça a programação ao vivo sem sair do portal.
     </p>
     <div class="sobre-plataforma-recursos" aria-label="Recursos da plataforma">
       <article>
@@ -213,16 +214,18 @@
       </article>
       <article>
         <strong>Transmissão ao vivo</strong>
-        <span>Player integrado para ouvir a rádio sem sair do portal.</span>
+        <span>Player integrado para ouvir a rádio diretamente no portal.</span>
       </article>
       <article>
         <strong>Dados confiáveis</strong>
         <span>Informações publicadas e atualizadas pelo banco oficial.</span>
       </article>
     </div>
-    <a class="sobre-plataforma-link" href="#catalogo-emissoras">Explorar o catálogo</a>
+    <button class="hero-botao hero-botao-principal modal-plataforma-explorar" id="btn-modal-explorar" type="button">
+      ▶ Explorar emissoras
+    </button>
   </div>
-</section>
+</div>
 
 <section class="radio-destaque hidden" id="radio-destaque">
 
@@ -326,7 +329,7 @@
 
     </section>
 
-    <section class="catalogo">
+    <section class="catalogo" id="catalogo-lista">
 
       <div class="catalogo-cabecalho">
 
