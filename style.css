@@ -3109,3 +3109,72 @@ body.modal-aberto {
 
   [data-revelar] { opacity: 1; transform: none; }
 }
+
+
+/* =========================================================
+   COMMIT 22.4.1 — PARTE 8
+   HERO COMPACTO E NOVA ORDEM DA PÁGINA
+   ========================================================= */
+.apresentacao-premium {
+  min-height: 500px;
+  padding-top: 72px;
+  padding-bottom: 82px;
+}
+
+.apresentacao-premium h1 {
+  font-size: clamp(2.8rem, 6.2vw, 5.7rem);
+}
+
+.hero-descricao {
+  margin-top: 22px;
+}
+
+.hero-acoes {
+  margin-top: 28px;
+}
+
+.hero-botao-ouvir {
+  min-width: 190px;
+  min-height: 58px;
+  font-size: 1rem;
+}
+
+.estatisticas {
+  margin-top: 26px;
+  margin-bottom: 34px;
+}
+
+.radio-destaque {
+  margin-top: 0;
+}
+
+#secao-recentes,
+#explorar-regioes,
+#secao-favoritas,
+#secao-mais-ouvidas,
+#catalogo-emissoras,
+#catalogo-lista {
+  scroll-margin-top: 116px;
+}
+
+@media (max-width: 760px) {
+  .apresentacao-premium {
+    min-height: 440px;
+    padding-top: 54px;
+    padding-bottom: 62px;
+  }
+
+  .apresentacao-premium h1 {
+    font-size: clamp(2.5rem, 13vw, 4.2rem);
+  }
+
+  .hero-acoes {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .hero-botao {
+    width: 100%;
+  }
+}
