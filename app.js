@@ -3,6 +3,9 @@
 const URL_RADIOS =
   "https://raw.githubusercontent.com/contatofalapopular-bit/CentralRadiosBrasil-Dados/main/radios.json";
 
+const CHAVE_FAVORITAS = "central-radios-brasil-favoritas";
+const LIMITE_FAVORITAS = 5;
+
 const elementos = {
   pesquisa: document.getElementById("pesquisa"),
   filtroEstado: document.getElementById("filtro-estado"),
@@ -12,6 +15,9 @@ const elementos = {
   gradeRadios: document.getElementById("grade-radios"),
   mensagemStatus: document.getElementById("mensagem-status"),
   contadorRadios: document.getElementById("contador-radios"),
+  secaoFavoritas: document.getElementById("secao-favoritas"),
+  gradeFavoritas: document.getElementById("grade-favoritas"),
+  contadorFavoritas: document.getElementById("contador-favoritas"),
 
   versaoBanco: document.getElementById("versao-banco"),
   informacaoBanco: document.getElementById("informacao-banco"),
@@ -49,6 +55,7 @@ const estado = {
   radiosFiltradas: [],
   radioAtual: null,
   radioDestaque: null,
+  favoritas: carregarIdsFavoritos(),
   carregandoAudio: false
 };
 
@@ -177,6 +184,7 @@ async function carregarBanco() {
     atualizarInformacoesBanco();
     preencherFiltros();
     renderizarRadios();
+    renderizarFavoritas();
   } catch (erro) {
     console.error("Erro ao carregar o banco:", erro);
 
@@ -398,6 +406,8 @@ function renderizarRadios() {
 function criarCardRadio(radio) {
   const artigo = document.createElement("article");
   artigo.className = "radio-card";
+  artigo.dataset.radioId = obterIdRadio(radio);
+  artigo.tabIndex = -1;
   artigo.dataset.radioId = radio.id || radio.slug || "";
 
   if (radio === estado.radioAtual) {
@@ -411,6 +421,8 @@ function criarCardRadio(radio) {
 
   const selos = document.createElement("div");
   selos.className = "radio-selos";
+
+  const botaoFavorito = criarBotaoFavorito(radio);
 
   const seloAoVivo = document.createElement("span");
   seloAoVivo.className = "radio-selo radio-selo-ao-vivo";
@@ -427,7 +439,11 @@ function criarCardRadio(radio) {
     selos.appendChild(seloVerificada);
   }
 
-  topo.append(logo, selos);
+  const acoesTopo = document.createElement("div");
+  acoesTopo.className = "radio-topo-acoes";
+  acoesTopo.append(botaoFavorito, selos);
+
+  topo.append(logo, acoesTopo);
 
   const corpo = document.createElement("div");
   corpo.className = "radio-card-corpo";
@@ -494,6 +510,123 @@ function criarCardRadio(radio) {
   artigo.append(topo, corpo);
 
   return artigo;
+}
+
+function obterIdRadio(radio) {
+  return String(
+    radio?.id ||
+    radio?.slug ||
+    radio?.nomeFantasia ||
+    radio?.nome ||
+    ""
+  ).trim();
+}
+
+function carregarIdsFavoritos() {
+  try {
+    const valor = JSON.parse(localStorage.getItem(CHAVE_FAVORITAS) || "[]");
+    return Array.isArray(valor)
+      ? valor.filter(Boolean).slice(0, LIMITE_FAVORITAS)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function salvarFavoritas() {
+  localStorage.setItem(CHAVE_FAVORITAS, JSON.stringify(estado.favoritas));
+}
+
+function radioFavorita(radio) {
+  return estado.favoritas.includes(obterIdRadio(radio));
+}
+
+function criarBotaoFavorito(radio) {
+  const botao = document.createElement("button");
+  botao.type = "button";
+  botao.className = "botao-favorito";
+
+  atualizarBotaoFavorito(botao, radio);
+
+  botao.addEventListener("click", evento => {
+    evento.stopPropagation();
+    alternarFavorita(radio);
+  });
+
+  return botao;
+}
+
+function atualizarBotaoFavorito(botao, radio) {
+  const ativa = radioFavorita(radio);
+  const nome = radio.nomeFantasia || radio.nome || "emissora";
+
+  botao.classList.toggle("ativo", ativa);
+  botao.textContent = ativa ? "♥" : "♡";
+  botao.title = ativa ? "Remover das favoritas" : "Adicionar às favoritas";
+  botao.setAttribute("aria-pressed", String(ativa));
+  botao.setAttribute(
+    "aria-label",
+    ativa ? `Remover ${nome} das favoritas` : `Adicionar ${nome} às favoritas`
+  );
+}
+
+function alternarFavorita(radio) {
+  const id = obterIdRadio(radio);
+
+  if (!id) {
+    return;
+  }
+
+  const indice = estado.favoritas.indexOf(id);
+
+  if (indice >= 0) {
+    estado.favoritas.splice(indice, 1);
+  } else {
+    if (estado.favoritas.length >= LIMITE_FAVORITAS) {
+      alert("Você pode salvar até 5 rádios favoritas.");
+      return;
+    }
+
+    estado.favoritas.push(id);
+  }
+
+  salvarFavoritas();
+  renderizarRadios();
+  renderizarFavoritas();
+}
+
+function renderizarFavoritas() {
+  if (!elementos.secaoFavoritas || !elementos.gradeFavoritas) {
+    return;
+  }
+
+  const radiosFavoritas = estado.favoritas
+    .map(id => estado.radios.find(radio => obterIdRadio(radio) === id))
+    .filter(Boolean);
+
+  const idsValidos = radiosFavoritas.map(obterIdRadio);
+  if (idsValidos.length !== estado.favoritas.length) {
+    estado.favoritas = idsValidos;
+    salvarFavoritas();
+  }
+
+  elementos.contadorFavoritas.textContent =
+    `${radiosFavoritas.length} de ${LIMITE_FAVORITAS}`;
+
+  elementos.gradeFavoritas.innerHTML = "";
+
+  if (radiosFavoritas.length === 0) {
+    elementos.secaoFavoritas.classList.add("hidden");
+    return;
+  }
+
+  const fragmento = document.createDocumentFragment();
+  radiosFavoritas.forEach(radio => {
+    fragmento.appendChild(criarCardRadio(radio));
+  });
+
+  elementos.gradeFavoritas.appendChild(fragmento);
+  elementos.secaoFavoritas.classList.remove("hidden");
 }
 
 function criarLogoRadio(radio, classe) {
