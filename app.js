@@ -67,8 +67,14 @@ const elementos = {
   destaqueDescricao: document.getElementById("destaque-descricao"),
   destaqueCidade: document.getElementById("destaque-cidade"),
   destaqueUf: document.getElementById("destaque-uf"),
+  destaqueStatus: document.getElementById("destaque-status"),
+  destaqueCredencial: document.getElementById("destaque-credencial"),
+  destaqueTecnico: document.getElementById("destaque-tecnico"),
+  destaqueCategoriaPainel: document.getElementById("destaque-categoria-painel"),
+  destaqueNota: document.getElementById("destaque-nota"),
   btnOuvirDestaque: document.getElementById("btn-ouvir-destaque"),
   btnSiteDestaque: document.getElementById("btn-site-destaque"),
+  btnFavoritarDestaque: document.getElementById("btn-favoritar-destaque"),
   progressoPagina: document.getElementById("progresso-pagina"),
   btnVoltarTopo: document.getElementById("btn-voltar-topo")
 };
@@ -145,6 +151,13 @@ function registrarEventos() {
   elementos.btnOuvirDestaque?.addEventListener("click", () => {
     if (estado.radioDestaque) {
       selecionarRadio(estado.radioDestaque, { destacarCard: true });
+    }
+  });
+
+  elementos.btnFavoritarDestaque?.addEventListener("click", () => {
+    if (estado.radioDestaque) {
+      alternarFavorita(estado.radioDestaque);
+      atualizarFavoritoDestaque(estado.radioDestaque);
     }
   });
 
@@ -735,6 +748,7 @@ function alternarFavorita(radio) {
   renderizarRadios();
   renderizarFavoritas();
   renderizarMaisOuvidas();
+  if (estado.radioDestaque) atualizarFavoritoDestaque(estado.radioDestaque);
 }
 
 function renderizarFavoritas() {
@@ -1060,6 +1074,8 @@ function atualizarRadioDestaque() {
 
   atualizarLogoDestaque(radio);
   atualizarSiteDestaque(radio);
+  atualizarDetalhesDestaque(radio, categoria);
+  atualizarFavoritoDestaque(radio);
 
   elementos.btnOuvirDestaque?.setAttribute(
     "aria-label",
@@ -1068,6 +1084,63 @@ function atualizarRadioDestaque() {
 
   elementos.radioDestaque.classList.remove("hidden");
   elementos.radioDestaque.removeAttribute("aria-hidden");
+}
+
+
+function obterStreamPrincipalCompleto(radio) {
+  if (radio?.streamPrincipal && typeof radio.streamPrincipal === "object") {
+    return radio.streamPrincipal;
+  }
+
+  if (!Array.isArray(radio?.streams)) {
+    return null;
+  }
+
+  return radio.streams.find(stream => stream?.principal === true) ||
+    radio.streams.find(stream => stream?.ativo !== false) ||
+    radio.streams[0] ||
+    null;
+}
+
+function atualizarDetalhesDestaque(radio, categoria) {
+  const verificada = radio.status?.verificada === true;
+  const ativa = radio.status?.ativo !== false && radio.ativo !== false;
+  const stream = obterStreamPrincipalCompleto(radio);
+  const codec = String(stream?.codec || radio.codec || "").trim().toUpperCase();
+  const bitrateValor = stream?.bitrate || stream?.bitRate || radio.bitrate || "";
+  const bitrate = String(bitrateValor || "").replace(/\s*kbps\s*/i, "").trim();
+  const tecnico = [codec, bitrate ? `${bitrate} kbps` : ""].filter(Boolean).join(" • ") || "Áudio online";
+
+  if (elementos.destaqueStatus) {
+    elementos.destaqueStatus.classList.toggle("offline", !ativa);
+    elementos.destaqueStatus.lastChild.textContent = ativa ? " NO AR" : " INDISPONÍVEL";
+  }
+
+  if (elementos.destaqueCredencial) {
+    elementos.destaqueCredencial.textContent = verificada
+      ? "Emissora verificada"
+      : "Catálogo oficial";
+  }
+
+  if (elementos.destaqueTecnico) elementos.destaqueTecnico.textContent = tecnico;
+  if (elementos.destaqueCategoriaPainel) elementos.destaqueCategoriaPainel.textContent = categoria;
+  if (elementos.destaqueNota) {
+    elementos.destaqueNota.textContent = verificada
+      ? "Dados autenticados pela Central Rádios Brasil."
+      : "Uma emissora selecionada pela Central Rádios Brasil.";
+  }
+}
+
+function atualizarFavoritoDestaque(radio) {
+  const botao = elementos.btnFavoritarDestaque;
+  if (!botao || !radio) return;
+
+  const ativa = radioFavorita(radio);
+  const nome = radio.nomeFantasia || radio.nome || "emissora";
+  botao.classList.toggle("ativo", ativa);
+  botao.setAttribute("aria-pressed", String(ativa));
+  botao.setAttribute("aria-label", ativa ? `Remover ${nome} das favoritas` : `Adicionar ${nome} às favoritas`);
+  botao.innerHTML = `<span aria-hidden="true">${ativa ? "♥" : "♡"}</span> ${ativa ? "Favoritada" : "Favoritar"}`;
 }
 
 function compararRadiosDestaque(a, b) {
