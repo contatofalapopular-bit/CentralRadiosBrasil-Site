@@ -8,13 +8,31 @@ const URL_API =
 
 const URL_HERO_FRASES = "hero-frases.json";
 
-const HERO_FRASES_PADRAO = [
-  "Descubra rádios de todas as regiões do Brasil.",
-  "Encontre novas vozes, cidades e culturas.",
-  "Ouça sua cidade onde estiver.",
-  "Uma sintonia para cada momento do seu dia.",
-  "Conectando ouvintes e emissoras de todo o país.",
-  "Sua próxima rádio favorita está aqui."
+const HERO_MENSAGENS_PADRAO = [
+  {
+    superior: "Descubra rádios de todas as regiões do Brasil.",
+    inferior: "Encontre emissoras, cidades e estilos em um catálogo nacional."
+  },
+  {
+    superior: "Encontre novas vozes, cidades e culturas.",
+    inferior: "Cada sintonia aproxima você de uma nova região do país."
+  },
+  {
+    superior: "Ouça sua cidade onde estiver.",
+    inferior: "Leve as vozes e a programação da sua região com você."
+  },
+  {
+    superior: "Uma sintonia para cada momento do seu dia.",
+    inferior: "Música, informação, cultura e entretenimento em um só lugar."
+  },
+  {
+    superior: "Conectando ouvintes e emissoras de todo o país.",
+    inferior: "Uma plataforma criada para ampliar o alcance das rádios brasileiras."
+  },
+  {
+    superior: "Sua próxima rádio favorita está aqui.",
+    inferior: "Explore o catálogo e descubra novas emissoras ao vivo."
+  }
 ];
 
 const CHAVE_SESSAO = "centralRadiosBrasilSessaoId";
@@ -26,6 +44,7 @@ const elementos = {
   btnLimpar: document.getElementById("btn-limpar"),
 
   heroFrase: document.getElementById("hero-frase-rotativa"),
+  heroDescricao: document.getElementById("hero-descricao-rotativa"),
 
   gradeRadios: document.getElementById("grade-radios"),
   mensagemStatus: document.getElementById("mensagem-status"),
@@ -55,7 +74,7 @@ const estado = {
   radiosPorPagina: 12,
   registroPendente: false,
   hero: {
-    frases: [...HERO_FRASES_PADRAO],
+    mensagens: [...HERO_MENSAGENS_PADRAO],
     indice: 0,
     intervaloId: null,
     intervaloMs: 6000,
@@ -112,7 +131,7 @@ function registrarEventos() {
 
 
 async function iniciarHeroRotativo() {
-  if (!elementos.heroFrase) return;
+  if (!elementos.heroFrase || !elementos.heroDescricao) return;
 
   try {
     const resposta = await fetch(URL_HERO_FRASES, {
@@ -131,7 +150,7 @@ async function iniciarHeroRotativo() {
       erro
     );
 
-    estado.hero.frases = [...HERO_FRASES_PADRAO];
+    estado.hero.mensagens = [...HERO_MENSAGENS_PADRAO];
   }
 
   exibirFraseHero(0, false);
@@ -146,9 +165,16 @@ async function iniciarHeroRotativo() {
 }
 
 function aplicarConfiguracaoHero(configuracao) {
-  if (!configuracao || typeof configuracao !== "object") return;
+  if (!configuracao || typeof configuracao !== "object") {
+    estado.hero.mensagens = [...HERO_MENSAGENS_PADRAO];
+    return;
+  }
 
-  const frasesPadrao = normalizarFrases(configuracao.frasesPadrao);
+  const mensagensPadrao = normalizarMensagens(
+    configuracao.mensagensPadrao,
+    configuracao.frasesPadrao
+  );
+
   const fusoHorario = normalizarTexto(configuracao.fusoHorario) ||
     "America/Sao_Paulo";
 
@@ -162,27 +188,33 @@ function aplicarConfiguracaoHero(configuracao) {
     campanha => normalizarTexto(campanha.modo).toLowerCase() === "substituir"
   );
 
-  let frases = frasesPadrao.length > 0
-    ? frasesPadrao
-    : [...HERO_FRASES_PADRAO];
+  let mensagens = mensagensPadrao.length > 0
+    ? mensagensPadrao
+    : [...HERO_MENSAGENS_PADRAO];
 
   if (campanhaSubstituta) {
-    const especiais = normalizarFrases(campanhaSubstituta.frases);
-
-    if (especiais.length > 0) {
-      frases = especiais;
-    }
-  } else {
-    const frasesEspeciais = campanhasAtivas.flatMap(
-      campanha => normalizarFrases(campanha.frases)
+    const especiais = normalizarMensagens(
+      campanhaSubstituta.mensagens,
+      campanhaSubstituta.frases
     );
 
-    if (frasesEspeciais.length > 0) {
-      frases = [...frasesEspeciais, ...frases];
+    if (especiais.length > 0) {
+      mensagens = especiais;
+    }
+  } else {
+    const mensagensEspeciais = campanhasAtivas.flatMap(
+      campanha => normalizarMensagens(
+        campanha.mensagens,
+        campanha.frases
+      )
+    );
+
+    if (mensagensEspeciais.length > 0) {
+      mensagens = [...mensagensEspeciais, ...mensagens];
     }
   }
 
-  estado.hero.frases = removerDuplicadas(frases);
+  estado.hero.mensagens = removerMensagensDuplicadas(mensagens);
 
   const intervaloSegundos = numeroSeguro(configuracao.intervaloSegundos);
   const transicaoMs = numeroSeguro(configuracao.transicaoMilissegundos);
@@ -272,24 +304,59 @@ function intervaloIncluiValor(valor, inicio, fim) {
   return valor >= inicio || valor <= fim;
 }
 
-function normalizarFrases(lista) {
-  if (!Array.isArray(lista)) return [];
+function normalizarMensagens(listaMensagens, listaFrasesLegadas) {
+  const origem = Array.isArray(listaMensagens)
+    ? listaMensagens
+    : Array.isArray(listaFrasesLegadas)
+      ? listaFrasesLegadas
+      : [];
 
-  return lista
-    .map(item => {
-      if (typeof item === "string") return item.trim();
+  return origem
+    .map((item, indice) => {
+      if (typeof item === "string") {
+        const superior = item.trim();
+        const fallback = HERO_MENSAGENS_PADRAO[
+          indice % HERO_MENSAGENS_PADRAO.length
+        ];
 
-      if (item && typeof item === "object") {
-        return normalizarTexto(item.texto);
+        return {
+          superior,
+          inferior: fallback.inferior
+        };
       }
 
-      return "";
+      if (!item || typeof item !== "object") return null;
+
+      const superior = normalizarTexto(
+        item.superior || item.titulo || item.texto
+      );
+
+      const inferior = normalizarTexto(
+        item.inferior || item.descricao || item.subtitulo
+      );
+
+      return { superior, inferior };
     })
-    .filter(frase => frase.length >= 8 && frase.length <= 150);
+    .filter(mensagem => (
+      mensagem &&
+      mensagem.superior.length >= 8 &&
+      mensagem.superior.length <= 150 &&
+      mensagem.inferior.length >= 8 &&
+      mensagem.inferior.length <= 240
+    ));
 }
 
-function removerDuplicadas(lista) {
-  return [...new Set(lista)];
+function removerMensagensDuplicadas(lista) {
+  const chaves = new Set();
+
+  return lista.filter(mensagem => {
+    const chave = `${mensagem.superior}||${mensagem.inferior}`;
+
+    if (chaves.has(chave)) return false;
+
+    chaves.add(chave);
+    return true;
+  });
 }
 
 function normalizarTexto(valor) {
@@ -304,7 +371,7 @@ function numeroSeguro(valor) {
 function iniciarIntervaloHero() {
   pararIntervaloHero();
 
-  if (estado.hero.frases.length < 2) return;
+  if (estado.hero.mensagens.length < 2) return;
 
   estado.hero.intervaloId = window.setInterval(
     avancarFraseHero,
@@ -334,36 +401,55 @@ function controlarVisibilidadeHero() {
 
 function avancarFraseHero() {
   const proximoIndice =
-    (estado.hero.indice + 1) % estado.hero.frases.length;
+    (estado.hero.indice + 1) % estado.hero.mensagens.length;
 
   exibirFraseHero(proximoIndice, true);
 }
 
 function exibirFraseHero(indice, animar) {
-  const frase = estado.hero.frases[indice];
+  const mensagem = estado.hero.mensagens[indice];
 
-  if (!elementos.heroFrase || !frase) return;
+  if (
+    !elementos.heroFrase ||
+    !elementos.heroDescricao ||
+    !mensagem
+  ) {
+    return;
+  }
 
-  const trocarTexto = () => {
-    elementos.heroFrase.textContent = frase;
+  const alvos = [
+    elementos.heroFrase,
+    elementos.heroDescricao
+  ];
+
+  const trocarTextos = () => {
+    elementos.heroFrase.textContent = mensagem.superior;
+    elementos.heroDescricao.textContent = mensagem.inferior;
     estado.hero.indice = indice;
-    elementos.heroFrase.classList.remove("hero-frase-saindo");
-    elementos.heroFrase.classList.add("hero-frase-entrando");
+
+    alvos.forEach(elemento => {
+      elemento.classList.remove("hero-frase-saindo");
+      elemento.classList.add("hero-frase-entrando");
+    });
 
     window.setTimeout(() => {
-      elementos.heroFrase?.classList.remove("hero-frase-entrando");
+      alvos.forEach(elemento => {
+        elemento?.classList.remove("hero-frase-entrando");
+      });
     }, estado.hero.transicaoMs);
   };
 
   if (!animar) {
-    trocarTexto();
+    trocarTextos();
     return;
   }
 
-  elementos.heroFrase.classList.remove("hero-frase-entrando");
-  elementos.heroFrase.classList.add("hero-frase-saindo");
+  alvos.forEach(elemento => {
+    elemento.classList.remove("hero-frase-entrando");
+    elemento.classList.add("hero-frase-saindo");
+  });
 
-  window.setTimeout(trocarTexto, estado.hero.transicaoMs);
+  window.setTimeout(trocarTextos, estado.hero.transicaoMs);
 }
 
 async function carregarBanco() {
