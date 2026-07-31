@@ -1,280 +1,177 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <meta
-    name="description"
-    content="Ouça rádios online de todo o Brasil na Central Rádios Brasil."
-  >
-
-  <meta name="theme-color" content="#00173d">
-
-  <title>Central Rádios Brasil</title>
-
-  <link rel="stylesheet" href="style.css">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="Ouça rádios online de todo o Brasil na Central Rádios Brasil." name="description"/>
+<meta content="#00173d" name="theme-color"/>
+<title>Central Rádios Brasil</title>
+<link href="style.css" rel="stylesheet"/>
 </head>
-
 <body>
-
-  <header class="cabecalho">
-
-    <div class="cabecalho-conteudo">
-
-      <a class="marca" href="./" aria-label="Central Rádios Brasil">
-
-        <img
-          class="marca-logo"
-          src="logo-central-radios-brasil.jpeg.jpeg"
-          alt="Logo Central Rádios Brasil"
-        >
-
-        <div class="marca-texto">
-          <strong>Central Rádios Brasil</strong>
-          <span>Rádios de todo o país em um só lugar</span>
-        </div>
-
-      </a>
-
-      <nav class="navegacao-principal" aria-label="Navegação principal">
-        <a href="#radio-destaque">Destaque</a>
-        <a href="#explorar-regioes">Regiões</a>
-        <a href="#secao-recentes">Novidades</a>
-        <a href="#catalogo-lista">Emissoras</a>
-      </nav>
-
-      <div class="versao-banco" id="versao-banco">
+<header class="cabecalho">
+<div class="cabecalho-conteudo">
+<a aria-label="Central Rádios Brasil" class="marca" href="./">
+<img alt="Logo Central Rádios Brasil" class="marca-logo" src="logo-central-radios-brasil.jpeg.jpeg"/>
+<div class="marca-texto">
+<strong>Central Rádios Brasil</strong>
+<span>Rádios de todo o país em um só lugar</span>
+</div>
+</a>
+<nav aria-label="Navegação principal" class="navegacao-principal"><a href="#estatisticas-nacionais">Números</a><a href="#radio-destaque">Destaque</a><a href="#secao-recentes">Novidades</a><a href="#explorar-regioes">Regiões</a><a href="#catalogo-lista">Emissoras</a></nav>
+<div class="versao-banco" id="versao-banco">
         Banco carregando...
       </div>
-
-    </div>
-
-    <div class="progresso-pagina" id="progresso-pagina" aria-hidden="true"></div>
-
-  </header>
-
-  <main class="pagina">
-
-    <section class="apresentacao apresentacao-premium">
-
-  <div class="hero-efeitos" aria-hidden="true">
-
-    <div class="hero-orbita hero-orbita-1"></div>
-    <div class="hero-orbita hero-orbita-2"></div>
-    <div class="hero-orbita hero-orbita-3"></div>
-
-    <span class="hero-particula particula-1"></span>
-    <span class="hero-particula particula-2"></span>
-    <span class="hero-particula particula-3"></span>
-    <span class="hero-particula particula-4"></span>
-    <span class="hero-particula particula-5"></span>
-
-    <div class="hero-brasil">
-
-      <span class="hero-brasil-sinal sinal-1"></span>
-      <span class="hero-brasil-sinal sinal-2"></span>
-      <span class="hero-brasil-sinal sinal-3"></span>
-
-      <span class="hero-brasil-texto">
+</div>
+<div aria-hidden="true" class="progresso-pagina" id="progresso-pagina"></div>
+</header>
+<main class="pagina">
+<section class="apresentacao apresentacao-premium">
+<div aria-hidden="true" class="hero-efeitos">
+<div class="hero-orbita hero-orbita-1"></div>
+<div class="hero-orbita hero-orbita-2"></div>
+<div class="hero-orbita hero-orbita-3"></div>
+<span class="hero-particula particula-1"></span>
+<span class="hero-particula particula-2"></span>
+<span class="hero-particula particula-3"></span>
+<span class="hero-particula particula-4"></span>
+<span class="hero-particula particula-5"></span>
+<div class="hero-brasil">
+<span class="hero-brasil-sinal sinal-1"></span>
+<span class="hero-brasil-sinal sinal-2"></span>
+<span class="hero-brasil-sinal sinal-3"></span>
+<span class="hero-brasil-texto">
         BRASIL CONECTADO
       </span>
-
-    </div>
-
-  </div>
-
-  <div class="apresentacao-conteudo">
-
-    <span class="selo">
+</div>
+</div>
+<div class="apresentacao-conteudo">
+<span class="selo">
       A nova central brasileira de rádios
     </span>
-
-    <p class="hero-pre-titulo">
+<p class="hero-pre-titulo">
       Descubra novas vozes. Explore novas regiões.
     </p>
-
-    <h1>
+<h1>
       O Brasil inteiro
       <span>em uma só sintonia.</span>
-    </h1>
-
-    <p class="hero-descricao">
+</h1>
+<p class="hero-descricao">
       Uma plataforma nacional criada para conectar ouvintes,
       emissoras, cidades e culturas de todas as regiões do país.
     </p>
-
-    <div class="hero-acoes">
-
-      <button
-        class="hero-botao hero-botao-principal"
-        id="btn-explorar-radios"
-        type="button"
-        aria-label="Ir para o catálogo de emissoras"
-      >
-        <span aria-hidden="true">▶</span>
-        Explorar emissoras
-      </button>
-
-      <button
-        class="hero-botao hero-botao-secundario"
-        id="btn-conhecer-plataforma"
-        type="button"
-        aria-label="Conhecer a Central Rádios Brasil"
-      >
-        Conhecer a plataforma
-      </button>
-
-    </div>
-
-    <div class="hero-indicadores">
-
-      <span>
-        <i class="indicador-ao-vivo"></i>
+<div class="hero-acoes"><button aria-label="Ouvir agora a emissora em destaque" class="hero-botao hero-botao-principal hero-botao-ouvir" id="btn-hero-ouvir" type="button"><span aria-hidden="true">▶</span> Ouvir agora</button><button aria-label="Ir para o catálogo de emissoras" class="hero-botao hero-botao-secundario" id="btn-explorar-radios" type="button"><span aria-hidden="true">🗺️</span> Explorar emissoras</button></div>
+<div class="hero-indicadores">
+<span>
+<i class="indicador-ao-vivo"></i>
         Emissoras ao vivo
       </span>
-
-      <span>
+<span>
         Catálogo nacional
       </span>
-
-      <span>
+<span>
         Dados verificados
       </span>
-
-    </div>
-
-  </div>
-
-</section>
-
-<section
-  class="estatisticas"
-  id="estatisticas-nacionais"
-  aria-label="Estatísticas nacionais da Central Rádios Brasil"
->
-
-  <article class="estatistica-card">
-    <div class="estatistica-icone" aria-hidden="true">📻</div>
-    <div class="estatistica-conteudo">
-      <strong id="total-emissoras">0</strong>
-      <span>Emissoras</span>
-      <small>Publicadas no catálogo</small>
-    </div>
-  </article>
-
-  <article class="estatistica-card">
-    <div class="estatistica-icone" aria-hidden="true">🗺️</div>
-    <div class="estatistica-conteudo">
-      <strong id="total-estados">0</strong>
-      <span>Estados</span>
-      <small>Com emissoras publicadas</small>
-    </div>
-  </article>
-
-  <article class="estatistica-card">
-    <div class="estatistica-icone" aria-hidden="true">🏙️</div>
-    <div class="estatistica-conteudo">
-      <strong id="total-cidades">0</strong>
-      <span>Cidades</span>
-      <small>Representadas no Brasil</small>
-    </div>
-  </article>
-
-  <article class="estatistica-card">
-    <div class="estatistica-icone" aria-hidden="true">🏷️</div>
-    <div class="estatistica-conteudo">
-      <strong id="total-categorias">0</strong>
-      <span>Categorias</span>
-      <small>Disponíveis para explorar</small>
-    </div>
-  </article>
-
-  <article class="estatistica-card">
-    <div class="estatistica-icone" aria-hidden="true">🌐</div>
-    <div class="estatistica-conteudo">
-      <strong id="total-streams">0</strong>
-      <span>Streams ativos</span>
-      <small>Transmissões disponíveis</small>
-    </div>
-  </article>
-
-  <article class="estatistica-card estatistica-destaque">
-    <div class="estatistica-icone" aria-hidden="true">✓</div>
-    <div class="estatistica-conteudo">
-      <strong id="total-verificadas">0</strong>
-      <span>Verificadas</span>
-      <small>Emissoras autenticadas</small>
-    </div>
-  </article>
-
-</section>
-
-<div class="modal-plataforma hidden" id="modal-plataforma" role="dialog" aria-modal="true" aria-labelledby="titulo-modal-plataforma">
-  <div class="modal-plataforma-painel">
-    <button class="modal-plataforma-fechar" id="btn-fechar-plataforma" type="button" aria-label="Fechar informações da plataforma">✕</button>
-    <span class="sobre-plataforma-selo">CENTRAL RÁDIOS BRASIL</span>
-    <h2 id="titulo-modal-plataforma">Uma plataforma nacional para descobrir e ouvir rádios brasileiras</h2>
-    <p>
+</div>
+</div>
+</section><section aria-label="Estatísticas nacionais da Central Rádios Brasil" class="estatisticas" id="estatisticas-nacionais">
+<article class="estatistica-card">
+<div aria-hidden="true" class="estatistica-icone">📻</div>
+<div class="estatistica-conteudo">
+<strong id="total-emissoras">0</strong>
+<span>Emissoras</span>
+<small>Publicadas no catálogo</small>
+</div>
+</article>
+<article class="estatistica-card">
+<div aria-hidden="true" class="estatistica-icone">🗺️</div>
+<div class="estatistica-conteudo">
+<strong id="total-estados">0</strong>
+<span>Estados</span>
+<small>Com emissoras publicadas</small>
+</div>
+</article>
+<article class="estatistica-card">
+<div aria-hidden="true" class="estatistica-icone">🏙️</div>
+<div class="estatistica-conteudo">
+<strong id="total-cidades">0</strong>
+<span>Cidades</span>
+<small>Representadas no Brasil</small>
+</div>
+</article>
+<article class="estatistica-card">
+<div aria-hidden="true" class="estatistica-icone">🏷️</div>
+<div class="estatistica-conteudo">
+<strong id="total-categorias">0</strong>
+<span>Categorias</span>
+<small>Disponíveis para explorar</small>
+</div>
+</article>
+<article class="estatistica-card">
+<div aria-hidden="true" class="estatistica-icone">🌐</div>
+<div class="estatistica-conteudo">
+<strong id="total-streams">0</strong>
+<span>Streams ativos</span>
+<small>Transmissões disponíveis</small>
+</div>
+</article>
+<article class="estatistica-card estatistica-destaque">
+<div aria-hidden="true" class="estatistica-icone">✓</div>
+<div class="estatistica-conteudo">
+<strong id="total-verificadas">0</strong>
+<span>Verificadas</span>
+<small>Emissoras autenticadas</small>
+</div>
+</article>
+</section><div aria-labelledby="titulo-modal-plataforma" aria-modal="true" class="modal-plataforma hidden" id="modal-plataforma" role="dialog">
+<div class="modal-plataforma-painel">
+<button aria-label="Fechar informações da plataforma" class="modal-plataforma-fechar" id="btn-fechar-plataforma" type="button">✕</button>
+<span class="sobre-plataforma-selo">CENTRAL RÁDIOS BRASIL</span>
+<h2 id="titulo-modal-plataforma">Uma plataforma nacional para descobrir e ouvir rádios brasileiras</h2>
+<p>
       Encontre emissoras por nome, estado e categoria, acompanhe dados verificados
       e ouça a programação ao vivo sem sair do portal.
     </p>
-    <div class="sobre-plataforma-recursos" aria-label="Recursos da plataforma">
-      <article>
-        <strong>Catálogo nacional</strong>
-        <span>Emissoras organizadas por cidade, estado e categoria.</span>
-      </article>
-      <article>
-        <strong>Transmissão ao vivo</strong>
-        <span>Player integrado para ouvir a rádio diretamente no portal.</span>
-      </article>
-      <article>
-        <strong>Dados confiáveis</strong>
-        <span>Informações publicadas e atualizadas pelo banco oficial.</span>
-      </article>
-    </div>
-    <button class="hero-botao hero-botao-principal modal-plataforma-explorar" id="btn-modal-explorar" type="button">
+<div aria-label="Recursos da plataforma" class="sobre-plataforma-recursos">
+<article>
+<strong>Catálogo nacional</strong>
+<span>Emissoras organizadas por cidade, estado e categoria.</span>
+</article>
+<article>
+<strong>Transmissão ao vivo</strong>
+<span>Player integrado para ouvir a rádio diretamente no portal.</span>
+</article>
+<article>
+<strong>Dados confiáveis</strong>
+<span>Informações publicadas e atualizadas pelo banco oficial.</span>
+</article>
+</div>
+<button class="hero-botao hero-botao-principal modal-plataforma-explorar" id="btn-modal-explorar" type="button">
       ▶ Explorar emissoras
     </button>
-  </div>
 </div>
-
-<section class="radio-destaque hidden" id="radio-destaque">
-
-  <div class="radio-destaque-conteudo">
-
-    <span class="radio-destaque-selo" id="destaque-selo">
+</div><section class="radio-destaque hidden" id="radio-destaque">
+<div class="radio-destaque-conteudo">
+<span class="radio-destaque-selo" id="destaque-selo">
       ⭐ RÁDIO EM DESTAQUE
     </span>
-
-    <div class="radio-destaque-grid">
-
-      <div class="radio-destaque-logo" id="destaque-logo">
+<div class="radio-destaque-grid">
+<div class="radio-destaque-logo" id="destaque-logo">
         CRB
       </div>
-
-      <div class="radio-destaque-info">
-
-        <span class="radio-destaque-categoria"
-              id="destaque-categoria">
+<div class="radio-destaque-info">
+<span class="radio-destaque-categoria" id="destaque-categoria">
           Categoria
         </span>
-
-        <h2 id="destaque-nome">
+<h2 id="destaque-nome">
           Nome da Rádio
         </h2>
-
-        <p id="destaque-descricao">
+<p id="destaque-descricao">
           Descrição da emissora
         </p>
-
-        <div class="radio-destaque-local" aria-label="Localização da emissora">
-
-          <span id="destaque-cidade">
+<div aria-label="Localização da emissora" class="radio-destaque-local">
+<span id="destaque-cidade">
             Cidade
           </span>
 
@@ -283,263 +180,149 @@
           <span id="destaque-uf">
             UF
           </span>
-
-        </div>
-
-        <div class="radio-destaque-acoes">
-          <button
-            id="btn-ouvir-destaque"
-            class="hero-botao hero-botao-principal"
-            type="button"
-          >
-            <span aria-hidden="true">▶</span>
+</div>
+<div class="radio-destaque-acoes">
+<button class="hero-botao hero-botao-principal" id="btn-ouvir-destaque" type="button">
+<span aria-hidden="true">▶</span>
             Ouvir agora
           </button>
-
-          <a
-            id="btn-site-destaque"
-            class="hero-botao hero-botao-secundario radio-destaque-site hidden"
-            href="#"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+<a class="hero-botao hero-botao-secundario radio-destaque-site hidden" href="#" id="btn-site-destaque" rel="noopener noreferrer" target="_blank">
             Visitar site ↗
           </a>
-        </div>
-
-      </div>
-
-    </div>
-
-  </div>
-
-</section>
-
-    <section class="regioes" id="explorar-regioes" aria-labelledby="titulo-regioes">
-
-      <div class="regioes-cabecalho">
-        <div>
-          <span class="titulo-menor">Explore o país</span>
-          <h2 id="titulo-regioes">Emissoras por região</h2>
-          <p>Escolha uma região para filtrar automaticamente o catálogo nacional.</p>
-        </div>
-
-        <button class="botao-limpar-regiao hidden" id="btn-limpar-regiao" type="button">
+</div>
+</div>
+</div>
+</div>
+</section><section aria-labelledby="titulo-recentes" class="recentes hidden" id="secao-recentes">
+<div class="recentes-cabecalho">
+<div>
+<span class="titulo-menor">Novidades no catálogo</span>
+<h2 id="titulo-recentes">Recém-chegadas à Central</h2>
+<p>Conheça as emissoras publicadas mais recentemente na plataforma.</p>
+</div>
+<div class="recentes-contador" id="contador-recentes">0 emissoras</div>
+</div>
+<div aria-live="polite" class="grade-radios grade-recentes" id="grade-recentes"></div>
+</section><section aria-labelledby="titulo-regioes" class="regioes" id="explorar-regioes">
+<div class="regioes-cabecalho">
+<div>
+<span class="titulo-menor">Explore o país</span>
+<h2 id="titulo-regioes">Emissoras por região</h2>
+<p>Escolha uma região para filtrar automaticamente o catálogo nacional.</p>
+</div>
+<button class="botao-limpar-regiao hidden" id="btn-limpar-regiao" type="button">
           Mostrar todas
         </button>
-      </div>
-
-      <div class="grade-regioes" id="grade-regioes" aria-label="Regiões do Brasil"></div>
-
-    </section>
-
-    <section class="filtros" id="catalogo-emissoras" aria-label="Filtros de emissoras">
-
-      <div class="campo campo-pesquisa">
-
-        <label for="pesquisa">Pesquisar rádio</label>
-
-        <input
-          type="search"
-          id="pesquisa"
-          placeholder="Nome, cidade, estado ou categoria"
-          autocomplete="off"
-        >
-
-      </div>
-
-      <div class="campo">
-
-        <label for="filtro-estado">Estado</label>
-
-        <select id="filtro-estado">
-          <option value="">Todos os estados</option>
-        </select>
-
-      </div>
-
-      <div class="campo">
-
-        <label for="filtro-categoria">Categoria</label>
-
-        <select id="filtro-categoria">
-          <option value="">Todas as categorias</option>
-        </select>
-
-      </div>
-
-      <button
-        class="botao-limpar"
-        type="button"
-        id="btn-limpar"
-      >
+</div>
+<div aria-label="Regiões do Brasil" class="grade-regioes" id="grade-regioes"></div>
+</section><section aria-labelledby="titulo-favoritas" class="favoritas hidden" id="secao-favoritas">
+<div class="favoritas-cabecalho">
+<div>
+<span class="titulo-menor">Sua seleção</span>
+<h2 id="titulo-favoritas">Rádios favoritas</h2>
+<p>Salvas neste navegador. Você pode guardar até 5 emissoras.</p>
+</div>
+<div class="favoritas-contador" id="contador-favoritas">0 de 5</div>
+</div>
+<div aria-live="polite" class="grade-radios grade-favoritas" id="grade-favoritas"></div>
+</section><section aria-labelledby="titulo-mais-ouvidas" class="mais-ouvidas hidden" id="secao-mais-ouvidas">
+<div class="mais-ouvidas-cabecalho">
+<div>
+<span class="titulo-menor">Seu histórico</span>
+<h2 id="titulo-mais-ouvidas">Mais ouvidas por você</h2>
+<p>Ranking criado automaticamente conforme você escuta as emissoras neste navegador.</p>
+</div>
+<div class="mais-ouvidas-acoes">
+<div class="mais-ouvidas-contador" id="contador-mais-ouvidas">0 emissoras</div>
+<button class="botao-limpar-historico" id="btn-limpar-historico" type="button">Limpar histórico</button>
+</div>
+</div>
+<div aria-live="polite" class="grade-radios grade-mais-ouvidas" id="grade-mais-ouvidas"></div>
+</section><section aria-label="Filtros de emissoras" class="filtros" id="catalogo-emissoras">
+<div class="campo campo-pesquisa">
+<label for="pesquisa">Pesquisar rádio</label>
+<input autocomplete="off" id="pesquisa" placeholder="Nome, cidade, estado ou categoria" type="search"/>
+</div>
+<div class="campo">
+<label for="filtro-estado">Estado</label>
+<select id="filtro-estado">
+<option value="">Todos os estados</option>
+</select>
+</div>
+<div class="campo">
+<label for="filtro-categoria">Categoria</label>
+<select id="filtro-categoria">
+<option value="">Todas as categorias</option>
+</select>
+</div>
+<button class="botao-limpar" id="btn-limpar" type="button">
         Limpar filtros
       </button>
-
-    </section>
-
-    <section class="favoritas hidden" id="secao-favoritas" aria-labelledby="titulo-favoritas">
-
-      <div class="favoritas-cabecalho">
-        <div>
-          <span class="titulo-menor">Sua seleção</span>
-          <h2 id="titulo-favoritas">Rádios favoritas</h2>
-          <p>Salvas neste navegador. Você pode guardar até 5 emissoras.</p>
-        </div>
-
-        <div class="favoritas-contador" id="contador-favoritas">0 de 5</div>
-      </div>
-
-      <div class="grade-radios grade-favoritas" id="grade-favoritas" aria-live="polite"></div>
-
-    </section>
-
-
-    <section class="mais-ouvidas hidden" id="secao-mais-ouvidas" aria-labelledby="titulo-mais-ouvidas">
-
-      <div class="mais-ouvidas-cabecalho">
-        <div>
-          <span class="titulo-menor">Seu histórico</span>
-          <h2 id="titulo-mais-ouvidas">Mais ouvidas por você</h2>
-          <p>Ranking criado automaticamente conforme você escuta as emissoras neste navegador.</p>
-        </div>
-
-        <div class="mais-ouvidas-acoes">
-          <div class="mais-ouvidas-contador" id="contador-mais-ouvidas">0 emissoras</div>
-          <button class="botao-limpar-historico" id="btn-limpar-historico" type="button">Limpar histórico</button>
-        </div>
-      </div>
-
-      <div class="grade-radios grade-mais-ouvidas" id="grade-mais-ouvidas" aria-live="polite"></div>
-
-    </section>
-
-    <section class="recentes hidden" id="secao-recentes" aria-labelledby="titulo-recentes">
-
-      <div class="recentes-cabecalho">
-        <div>
-          <span class="titulo-menor">Novidades no catálogo</span>
-          <h2 id="titulo-recentes">Recém-chegadas à Central</h2>
-          <p>Conheça as emissoras publicadas mais recentemente na plataforma.</p>
-        </div>
-
-        <div class="recentes-contador" id="contador-recentes">0 emissoras</div>
-      </div>
-
-      <div class="grade-radios grade-recentes" id="grade-recentes" aria-live="polite"></div>
-
-    </section>
-
-    <section class="catalogo" id="catalogo-lista">
-
-      <div class="catalogo-cabecalho">
-
-        <div>
-          <span class="titulo-menor">Catálogo oficial</span>
-          <h2>Emissoras disponíveis</h2>
-        </div>
-
-        <div class="contador" id="contador-radios">
+</section><section class="catalogo" id="catalogo-lista">
+<div class="catalogo-cabecalho">
+<div>
+<span class="titulo-menor">Catálogo oficial</span>
+<h2>Emissoras disponíveis</h2>
+</div>
+<div class="contador" id="contador-radios">
           0 emissoras
         </div>
-
-      </div>
-
-      <div
-        class="mensagem-status"
-        id="mensagem-status"
-        role="status"
-      >
+</div>
+<div class="mensagem-status" id="mensagem-status" role="status">
         Carregando emissoras...
       </div>
+<div aria-live="polite" class="grade-radios" id="grade-radios"></div>
+</section>
 
-      <div
-        class="grade-radios"
-        id="grade-radios"
-        aria-live="polite"
-      ></div>
 
-    </section>
 
-  </main>
 
-  <aside
-    class="player hidden"
-    id="player"
-    aria-label="Player da rádio"
-  >
 
-    <div class="player-conteudo">
 
-      <div class="player-identidade">
 
-        <div class="player-logo" id="player-logo">
+
+
+</main>
+<aside aria-label="Player da rádio" class="player hidden" id="player">
+<div class="player-conteudo">
+<div class="player-identidade">
+<div class="player-logo" id="player-logo">
           CRB
         </div>
-
-        <div class="player-informacoes">
-
-          <span class="player-status" id="player-status">
+<div class="player-informacoes">
+<span class="player-status" id="player-status">
             Pronto para ouvir
           </span>
-
-          <strong id="player-nome">
+<strong id="player-nome">
             Selecione uma rádio
           </strong>
-
-          <small id="player-localizacao">
+<small id="player-localizacao">
             Central Rádios Brasil
           </small>
-
-        </div>
-
-      </div>
-
-      <div class="player-acoes">
-
-        <button
-          class="botao-player"
-          type="button"
-          id="btn-play-pause"
-          aria-label="Reproduzir rádio"
-        >
+</div>
+</div>
+<div class="player-acoes">
+<button aria-label="Reproduzir rádio" class="botao-player" id="btn-play-pause" type="button">
           ▶
         </button>
-
-        <button
-          class="botao-fechar"
-          type="button"
-          id="btn-fechar-player"
-          aria-label="Fechar player"
-        >
+<button aria-label="Fechar player" class="botao-fechar" id="btn-fechar-player" type="button">
           ✕
         </button>
-
-      </div>
-
-    </div>
-
-    <audio id="audio-player" preload="none"></audio>
-
-  </aside>
-
-  <button class="botao-voltar-topo" id="btn-voltar-topo" type="button" aria-label="Voltar ao topo">
-    <span aria-hidden="true">↑</span>
-  </button>
-
-  <footer class="rodape">
-
-    <p>
+</div>
+</div>
+<audio id="audio-player" preload="none"></audio>
+</aside>
+<button aria-label="Voltar ao topo" class="botao-voltar-topo" id="btn-voltar-topo" type="button">
+<span aria-hidden="true">↑</span>
+</button>
+<footer class="rodape">
+<p>
       © 2026 Central Rádios Brasil. Todos os direitos reservados.
     </p>
-
-    <p id="informacao-banco">
+<p id="informacao-banco">
       Dados oficiais da Central Rádios Brasil.
     </p>
-
-  </footer>
-
-  <script src="app.js"></script>
-
+</footer>
+<script src="app.js"></script>
 </body>
 </html>
