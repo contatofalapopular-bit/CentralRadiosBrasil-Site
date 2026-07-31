@@ -17,7 +17,7 @@
 
   <title>Central Rádios Brasil</title>
 
-  <link rel="stylesheet" href="style.css?v=22.3.6">
+  <link rel="stylesheet" href="style.css?v=22.3.9">
 </head>
 
 <body>
@@ -101,22 +101,24 @@
 
     <div class="hero-acoes">
 
-      <button
+      <a
         class="hero-botao hero-botao-principal"
-        type="button"
+        href="#catalogo-emissoras"
         id="btn-explorar-radios"
+        aria-label="Ir para o catálogo de emissoras"
       >
-        <span>▶</span>
+        <span aria-hidden="true">▶</span>
         Explorar emissoras
-      </button>
+      </a>
 
-      <button
+      <a
         class="hero-botao hero-botao-secundario"
-        type="button"
+        href="#sobre-plataforma"
         id="btn-conhecer-plataforma"
+        aria-label="Conhecer os indicadores da plataforma"
       >
         Conhecer a plataforma
-      </button>
+      </a>
 
       <a
         class="hero-botao hero-botao-cadastro"
@@ -129,7 +131,7 @@
       </a>
 
       <a
-        class="hero-botao hero-botao-secundario"
+        class="hero-botao hero-botao-secundario hero-botao-acompanhar"
         href="acompanhar/"
         id="btn-acompanhar-cadastro"
         aria-label="Acompanhar solicitação de cadastro da emissora"
@@ -163,6 +165,7 @@
 
 <section
   class="estatisticas"
+  id="sobre-plataforma"
   aria-label="Indicadores da Central Rádios Brasil"
 >
 
@@ -338,7 +341,7 @@
 
     </section>
 
-    <section class="catalogo">
+    <section class="catalogo" id="catalogo-emissoras">
 
       <div class="catalogo-cabecalho">
 
