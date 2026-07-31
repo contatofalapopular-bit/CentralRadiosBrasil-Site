@@ -1,3 +1,16 @@
+# CHANGELOG — Central Rádios Brasil
+
+## 22.3.1 — Parte 5: Rádios recém-adicionadas
+
+- Nova seção “Recém-chegadas à Central”.
+- Exibição automática de até 10 emissoras mais recentes.
+- Ordenação por `dataPublicacao` e campos de data compatíveis.
+- Selo visual “NOVA” em cada emissora da seção.
+- Data de entrada na Central exibida quando disponível.
+- Fallback seguro para a ordem do `radios.json` quando não houver data.
+- Integração preservada com player, favoritas e compartilhamento.
+- Layout responsivo para computador e celular.
+
 # Histórico de versões
 
 ## 22.3.0 — Parte 4: Rádio em Destaque dinâmica
