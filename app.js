@@ -7,6 +7,7 @@ const CHAVE_FAVORITAS = "central-radios-brasil-favoritas";
 const LIMITE_FAVORITAS = 5;
 const CHAVE_REPRODUCOES = "central-radios-brasil-reproducoes";
 const LIMITE_MAIS_OUVIDAS = 5;
+const LIMITE_RADIOS_RECENTES = 10;
 
 const REGIOES_BRASIL = {
   "Norte": ["AC", "AP", "AM", "PA", "RO", "RR", "TO"],
@@ -32,6 +33,9 @@ const elementos = {
   gradeMaisOuvidas: document.getElementById("grade-mais-ouvidas"),
   contadorMaisOuvidas: document.getElementById("contador-mais-ouvidas"),
   btnLimparHistorico: document.getElementById("btn-limpar-historico"),
+  secaoRecentes: document.getElementById("secao-recentes"),
+  gradeRecentes: document.getElementById("grade-recentes"),
+  contadorRecentes: document.getElementById("contador-recentes"),
   gradeRegioes: document.getElementById("grade-regioes"),
   btnLimparRegiao: document.getElementById("btn-limpar-regiao"),
 
@@ -219,6 +223,7 @@ async function carregarBanco() {
     renderizarRadios();
     renderizarFavoritas();
     renderizarMaisOuvidas();
+    renderizarRadiosRecentes();
   } catch (erro) {
     console.error("Erro ao carregar o banco:", erro);
 
@@ -817,6 +822,101 @@ function renderizarMaisOuvidas() {
 
   elementos.gradeMaisOuvidas.appendChild(fragmento);
   elementos.secaoMaisOuvidas.classList.remove("hidden");
+}
+
+function renderizarRadiosRecentes() {
+  if (!elementos.secaoRecentes || !elementos.gradeRecentes) {
+    return;
+  }
+
+  const recentes = estado.radios
+    .map((radio, indice) => ({
+      radio,
+      indice,
+      data: obterDataPublicacaoRadio(radio)
+    }))
+    .sort((a, b) => {
+      if (a.data !== b.data) {
+        return b.data - a.data;
+      }
+
+      // Na ausência de uma data registrada, preserva a prioridade da ordem
+      // publicada no radios.json, sem inventar uma data para a emissora.
+      return a.indice - b.indice;
+    })
+    .slice(0, LIMITE_RADIOS_RECENTES);
+
+  elementos.gradeRecentes.innerHTML = "";
+  elementos.contadorRecentes.textContent =
+    `${recentes.length} ${recentes.length === 1 ? "emissora" : "emissoras"}`;
+
+  if (recentes.length === 0) {
+    elementos.secaoRecentes.classList.add("hidden");
+    return;
+  }
+
+  const fragmento = document.createDocumentFragment();
+
+  recentes.forEach(item => {
+    const card = criarCardRadio(item.radio);
+    card.classList.add("radio-card-recente");
+
+    const seloNova = document.createElement("span");
+    seloNova.className = "selo-radio-nova";
+    seloNova.textContent = "NOVA";
+    seloNova.setAttribute("aria-label", "Emissora recém-adicionada");
+
+    const topo = card.querySelector(".radio-card-topo");
+    topo?.appendChild(seloNova);
+
+    const dataLegivel = formatarDataPublicacaoRadio(item.radio);
+    if (dataLegivel) {
+      const publicada = document.createElement("span");
+      publicada.className = "radio-data-publicacao";
+      publicada.textContent = `Na Central desde ${dataLegivel}`;
+      card.querySelector(".radio-card-corpo")?.appendChild(publicada);
+    }
+
+    fragmento.appendChild(card);
+  });
+
+  elementos.gradeRecentes.appendChild(fragmento);
+  elementos.secaoRecentes.classList.remove("hidden");
+}
+
+function obterDataPublicacaoRadio(radio) {
+  const candidatos = [
+    radio.dataPublicacao,
+    radio.publicadoEm,
+    radio.publicadaEm,
+    radio.status?.dataPublicacao,
+    radio.status?.publicadoEm,
+    radio.criadoEm,
+    radio.createdAt,
+    radio.atualizadoEm
+  ];
+
+  for (const valor of candidatos) {
+    if (!valor) continue;
+
+    const timestamp = Date.parse(valor);
+    if (!Number.isNaN(timestamp)) {
+      return timestamp;
+    }
+  }
+
+  return 0;
+}
+
+function formatarDataPublicacaoRadio(radio) {
+  const timestamp = obterDataPublicacaoRadio(radio);
+  if (!timestamp) return "";
+
+  return new Intl.DateTimeFormat("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric"
+  }).format(new Date(timestamp));
 }
 
 function criarLogoRadio(radio, classe) {
