@@ -2655,3 +2655,104 @@ body.modal-aberto {
     margin-top: 28px;
   }
 }
+
+
+/* ==========================================================
+   COMMIT 22.3.1 — PARTE 5: RÁDIOS RECÉM-ADICIONADAS
+========================================================== */
+
+.recentes {
+  position: relative;
+  margin-top: 34px;
+  padding: 28px;
+  overflow: hidden;
+  border: 1px solid rgba(94, 190, 255, 0.18);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(35, 152, 255, 0.13), transparent 34%),
+    linear-gradient(145deg, rgba(10, 35, 65, 0.92), rgba(7, 24, 46, 0.96));
+  box-shadow: 0 22px 64px rgba(0, 0, 0, 0.24);
+}
+
+.recentes-cabecalho {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.recentes-cabecalho h2 {
+  margin: 4px 0 7px;
+}
+
+.recentes-cabecalho p {
+  margin: 0;
+  color: var(--texto-suave, #a9bad0);
+}
+
+.recentes-contador {
+  flex: 0 0 auto;
+  padding: 8px 12px;
+  border: 1px solid rgba(111, 213, 255, 0.2);
+  border-radius: 999px;
+  color: #bfeaff;
+  background: rgba(31, 132, 196, 0.12);
+  font-size: 0.78rem;
+  font-weight: 850;
+}
+
+.grade-recentes {
+  margin-top: 0;
+}
+
+.radio-card-recente {
+  position: relative;
+  border-color: rgba(78, 191, 255, 0.24);
+}
+
+.radio-card-recente:hover {
+  border-color: rgba(105, 213, 255, 0.48);
+}
+
+.selo-radio-nova {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 4;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 27px;
+  padding: 5px 9px;
+  border: 1px solid rgba(123, 239, 255, 0.5);
+  border-radius: 999px;
+  color: #d9fbff;
+  background: rgba(0, 121, 177, 0.88);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.28);
+  font-size: 0.68rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+}
+
+.radio-data-publicacao {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 12px;
+  color: #91cce9;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+@media (max-width: 760px) {
+  .recentes {
+    margin-top: 28px;
+    padding: 22px 16px;
+    border-radius: 22px;
+  }
+
+  .recentes-cabecalho {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
