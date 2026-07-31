@@ -11,3 +11,10 @@
 - Nova seção “Para Emissoras”.
 - Novo CSS escrito do zero, responsivo para computador, tablet e celular.
 - Player, favoritos, filtros, destaque e leitura do `radios.json` preservados.
+
+
+## 22.2.6 — Ranking Nacional
+- Top 3 com medalhas, bordas ouro/prata/bronze e audiência.
+- Botão Ver Top 10 com modal completo.
+- Integração com o player para emissoras reais.
+- Dados demonstrativos usados somente enquanto não houver métricas reais suficientes.
