@@ -852,7 +852,7 @@ function animarNumero(id, valorFinal) {
 
 
 /* =========================================================
-   RANKING NACIONAL — VERSÃO 22.3.2
+   RANKING NACIONAL — VERSÃO 22.3.4
 ========================================================= */
 
 const rankingDemonstracao = [
@@ -1056,7 +1056,8 @@ function acionarRadioRanking(radio) {
 
 function criarCardRanking(radio, indice) {
   const card = document.createElement("article");
-  card.className = `ranking-card ${rankingClasses[indice]}`;
+  card.className =
+    `ranking-card ${rankingClasses[indice] || "ranking-card-padrao"}`;
   card.tabIndex = 0;
   card.setAttribute("role", "button");
   card.setAttribute("aria-label", `${indice + 1}º lugar: ${radio.nome}`);
@@ -1070,7 +1071,8 @@ function criarCardRanking(radio, indice) {
 
   const medalha = document.createElement("span");
   medalha.className = "ranking-medalha";
-  medalha.textContent = rankingMedalhas[indice];
+  medalha.textContent =
+    rankingMedalhas[indice] || `${indice + 1}º`;
   medalha.setAttribute("aria-hidden", "true");
 
   topo.append(vivo, medalha);
@@ -1105,30 +1107,44 @@ function criarCardRanking(radio, indice) {
 function criarLinhaRanking(radio, indice) {
   const item = document.createElement("li");
   item.className = "ranking-top10-item";
+  item.tabIndex = 0;
+  item.setAttribute("role", "button");
+  item.setAttribute(
+    "aria-label",
+    `${indice + 1}º lugar: ${radio.nome}`
+  );
 
   const posicao = document.createElement("span");
   posicao.className = "ranking-top10-posicao";
-  posicao.textContent = indice < 3 ? rankingMedalhas[indice] : `${indice + 1}º`;
+  posicao.textContent =
+    indice < 3 ? rankingMedalhas[indice] : `${indice + 1}º`;
 
   const logo = criarLogoRanking(radio, "ranking-top10-logo");
 
-  const info = document.createElement("div");
-  info.className = "ranking-top10-info";
-
   const nome = document.createElement("strong");
+  nome.className = "ranking-top10-nome";
   nome.textContent = radio.nome;
 
-  const categoria = document.createElement("small");
+  const categoria = document.createElement("span");
+  categoria.className = "ranking-top10-categoria";
   categoria.textContent = radio.categoria;
-
-  info.append(nome, categoria);
 
   const ouvintes = document.createElement("span");
   ouvintes.className = "ranking-top10-ouvintes";
-  ouvintes.textContent = `🎧 ${formatarOuvintesRanking(radio.ouvintesRanking)}`;
+  ouvintes.textContent =
+    `🎧 ${formatarOuvintesRanking(radio.ouvintesRanking)} ` +
+    `${Number(radio.ouvintesRanking) === 1 ? "ouvinte" : "ouvintes"}`;
 
-  item.append(posicao, logo, info, ouvintes);
-  item.addEventListener("click", () => acionarRadioRanking(radio));
+  item.append(posicao, logo, nome, categoria, ouvintes);
+
+  const abrir = () => acionarRadioRanking(radio);
+  item.addEventListener("click", abrir);
+  item.addEventListener("keydown", evento => {
+    if (evento.key === "Enter" || evento.key === " ") {
+      evento.preventDefault();
+      abrir();
+    }
+  });
 
   return item;
 }
@@ -1195,7 +1211,7 @@ async function atualizarRankingNacional() {
     }
 
     top3.replaceChildren(
-      ...rankingAtual.slice(0, 3).map(criarCardRanking)
+      ...rankingAtual.slice(0, 5).map(criarCardRanking)
     );
 
     top10.replaceChildren(
