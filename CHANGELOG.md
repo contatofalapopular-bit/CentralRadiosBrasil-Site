@@ -1,80 +1,24 @@
-# 📻 Central Rádios Brasil
+Central Rádios Brasil — Commit 22.2.6
+Rádio em Destaque completa
 
-> Histórico oficial de versões do Portal Público (PWA).
+Base utilizada
+- Versão 22.2.5 validada pelo usuário.
 
----
+Arquivos alterados
+- index.html
+- app.js
+- style.css
 
-# Versão 22.2.6
-**Data:** 30/07/2026
+Implementações
+- Leitura automática de status.destaque no banco oficial.
+- Exibição automática de nome, categoria, slogan/descrição, cidade e UF.
+- Logo da emissora com fallback seguro para as iniciais.
+- Botão Ouvir agora integrado ao player existente.
+- Botão Visitar site exibido somente quando houver endereço válido.
+- Seção escondida quando nenhuma emissora publicada estiver em destaque.
+- Critério seguro quando houver mais de uma emissora marcada: verificada, atualização mais recente e nome.
+- Card da emissora selecionada recebe identificação visual.
+- Layout aprimorado e responsivo para computador e celular.
 
-## ✨ Novidades
-
-- Hero Premium concluído
-- Indicadores nacionais automáticos
-- Modal "Conhecer a Plataforma"
-- Correção dos botões do Hero
-- Navegação com rolagem suave
-- Estrutura da Rádio em Destaque
-- Melhorias no layout responsivo
-- Organização do código do Portal
-
-## 🔧 Correções
-
-- Corrigida navegação do botão "Explorar Emissoras"
-- Corrigida navegação do botão "Conhecer a Plataforma"
-- Corrigido comportamento do modal
-- Ajustes visuais no Hero
-- Melhorias na experiência do usuário
-
----
-
-# Versão 22.2.5
-
-## ✨ Novidades
-
-- Modal "Conhecer a Plataforma"
-- Novo visual institucional
-
-## 🔧 Correções
-
-- Correção dos botões principais
-- Correção da navegação da página
-
----
-
-# Versão 22.2.4
-
-## ✨ Novidades
-
-- Hero Premium
-- Indicadores nacionais automáticos
-
----
-
-# Versão 22.2.3
-
-## ✨ Novidades
-
-- Estrutura da Rádio em Destaque
-- Melhorias gerais do Portal
-
----
-
-# Versão 22.2.2
-
-## ✨ Novidades
-
-- Novo Hero
-- Novo visual
-
----
-
-# Versão 22.2.1
-
-## 🚀 Primeira versão pública do Portal
-
-- Catálogo Nacional
-- Pesquisa
-- Player integrado
-- Cards de emissoras
-- Layout inicial
+Observação
+- No banco 3.1.3 consultado durante o desenvolvimento, a emissora atual estava com destaque=false. A seção só aparece depois que o Painel Administrativo publicar uma emissora com status.destaque=true.
