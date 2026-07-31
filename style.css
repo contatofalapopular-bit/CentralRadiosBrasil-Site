@@ -2508,3 +2508,112 @@ body.modal-aberto {
     margin-top: 24px;
   }
 }
+
+
+/* =========================================================
+   PARTE 3 — MAIS OUVIDAS NESTE NAVEGADOR
+   ========================================================= */
+.mais-ouvidas {
+  margin: 34px 0 42px;
+  padding: 28px;
+  border: 1px solid rgba(65, 167, 255, 0.2);
+  border-radius: 28px;
+  background: linear-gradient(145deg, rgba(8, 31, 66, 0.96), rgba(3, 17, 37, 0.96));
+  box-shadow: 0 22px 55px rgba(0, 0, 0, 0.24);
+}
+
+.mais-ouvidas.hidden { display: none; }
+
+.mais-ouvidas-cabecalho {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 22px;
+}
+
+.mais-ouvidas-cabecalho h2 {
+  margin: 5px 0 7px;
+  font-size: clamp(1.55rem, 3vw, 2.25rem);
+}
+
+.mais-ouvidas-cabecalho p {
+  margin: 0;
+  color: var(--texto-suave, #9eb3d1);
+}
+
+.mais-ouvidas-acoes {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.mais-ouvidas-contador {
+  padding: 9px 13px;
+  border: 1px solid rgba(85, 176, 255, 0.25);
+  border-radius: 999px;
+  color: #d8ecff;
+  background: rgba(25, 81, 143, 0.24);
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.botao-limpar-historico {
+  min-height: 40px;
+  padding: 0 15px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: #c8d6ea;
+  background: rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.botao-limpar-historico:hover {
+  color: #fff;
+  border-color: rgba(82, 181, 255, 0.46);
+  background: rgba(36, 116, 190, 0.18);
+}
+
+.grade-mais-ouvidas { margin-top: 0; }
+
+.radio-card-ranking { position: relative; overflow: visible; }
+
+.ranking-posicao {
+  position: absolute;
+  top: -13px;
+  left: 18px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  min-width: 48px;
+  height: 31px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 216, 94, 0.48);
+  border-radius: 999px;
+  color: #ffe38a;
+  background: #122a4d;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.28);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.ranking-audicoes {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 13px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  color: #9ed4ff;
+  background: rgba(23, 118, 195, 0.14);
+  font-size: 0.76rem;
+  font-weight: 800;
+}
+
+@media (max-width: 760px) {
+  .mais-ouvidas { padding: 22px 16px; border-radius: 22px; }
+  .mais-ouvidas-cabecalho { align-items: flex-start; flex-direction: column; }
+  .mais-ouvidas-acoes { justify-content: flex-start; }
+}
