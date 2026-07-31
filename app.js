@@ -12,6 +12,7 @@ const elementos = {
   gradeRadios: document.getElementById("grade-radios"),
   mensagemStatus: document.getElementById("mensagem-status"),
   contadorRadios: document.getElementById("contador-radios"),
+  paginacaoRadios: document.getElementById("paginacao-radios"),
 
   versaoBanco: document.getElementById("versao-banco"),
   informacaoBanco: document.getElementById("informacao-banco"),
@@ -31,7 +32,9 @@ const estado = {
   radios: [],
   radiosFiltradas: [],
   radioAtual: null,
-  carregandoAudio: false
+  carregandoAudio: false,
+  paginaAtual: 1,
+  radiosPorPagina: 12
 };
 
 document.addEventListener("DOMContentLoaded", iniciarPortal);
@@ -244,6 +247,7 @@ function preencherSelect(select, valores, textoInicial) {
 }
 
 function aplicarFiltros() {
+  estado.paginaAtual = 1;
   const termo = normalizarTexto(elementos.pesquisa.value);
   const estadoSelecionado = elementos.filtroEstado.value;
   const categoriaSelecionada = elementos.filtroCategoria.value;
@@ -286,6 +290,7 @@ function aplicarFiltros() {
 }
 
 function limparFiltros() {
+  estado.paginaAtual = 1;
   elementos.pesquisa.value = "";
   elementos.filtroEstado.value = "";
   elementos.filtroCategoria.value = "";
@@ -298,36 +303,110 @@ function limparFiltros() {
 
 function renderizarRadios() {
   elementos.gradeRadios.innerHTML = "";
+  elementos.paginacaoRadios.innerHTML = "";
 
   const radios = estado.radiosFiltradas;
-
   atualizarContador(radios.length);
 
   if (radios.length === 0) {
     mostrarMensagem(
       "Nenhuma emissora foi encontrada com os filtros selecionados."
     );
-
     return;
   }
 
   ocultarMensagem();
 
+  const totalPaginas = Math.max(
+    1,
+    Math.ceil(radios.length / estado.radiosPorPagina)
+  );
+
+  if (estado.paginaAtual > totalPaginas) {
+    estado.paginaAtual = totalPaginas;
+  }
+
+  const inicio = (estado.paginaAtual - 1) * estado.radiosPorPagina;
+  const radiosDaPagina = radios.slice(
+    inicio,
+    inicio + estado.radiosPorPagina
+  );
+
   const fragmento = document.createDocumentFragment();
 
-  radios.forEach(radio => {
+  radiosDaPagina.forEach(radio => {
     fragmento.appendChild(criarCardRadio(radio));
   });
 
   elementos.gradeRadios.appendChild(fragmento);
+  renderizarPaginacao(totalPaginas);
+}
+
+function renderizarPaginacao(totalPaginas) {
+  if (totalPaginas <= 1) {
+    return;
+  }
+
+  const criarBotao = (texto, pagina, classe = "") => {
+    const botao = document.createElement("button");
+    botao.type = "button";
+    botao.className = `botao-pagina ${classe}`.trim();
+    botao.textContent = texto;
+    botao.disabled = pagina === estado.paginaAtual && classe !== "navegacao";
+
+    if (pagina === estado.paginaAtual && classe !== "navegacao") {
+      botao.classList.add("ativo");
+      botao.setAttribute("aria-current", "page");
+    }
+
+    botao.addEventListener("click", () => {
+      estado.paginaAtual = pagina;
+      renderizarRadios();
+      document.querySelector(".catalogo")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    });
+
+    return botao;
+  };
+
+  const anterior = criarBotao(
+    "← Anterior",
+    Math.max(1, estado.paginaAtual - 1),
+    "navegacao"
+  );
+  anterior.disabled = estado.paginaAtual === 1;
+  elementos.paginacaoRadios.appendChild(anterior);
+
+  const janelaInicio = Math.max(1, estado.paginaAtual - 2);
+  const janelaFim = Math.min(totalPaginas, janelaInicio + 4);
+  const inicioAjustado = Math.max(1, janelaFim - 4);
+
+  for (let pagina = inicioAjustado; pagina <= janelaFim; pagina += 1) {
+    elementos.paginacaoRadios.appendChild(
+      criarBotao(String(pagina), pagina)
+    );
+  }
+
+  const proxima = criarBotao(
+    "Próxima →",
+    Math.min(totalPaginas, estado.paginaAtual + 1),
+    "navegacao"
+  );
+  proxima.disabled = estado.paginaAtual === totalPaginas;
+  elementos.paginacaoRadios.appendChild(proxima);
 }
 
 function criarCardRadio(radio) {
   const artigo = document.createElement("article");
-  artigo.className = "radio-card";
+  artigo.className = "radio-card radio-card-compacto";
+  artigo.tabIndex = 0;
+  artigo.setAttribute("role", "button");
 
-  const topo = document.createElement("div");
-  topo.className = "radio-card-topo";
+  const nome = radio.nomeFantasia || radio.nome || "Emissora";
+  artigo.setAttribute("aria-label", `Ouvir ${nome}`);
+  artigo.title = `Ouvir ${nome}`;
 
   const logo = criarLogoRadio(radio, "radio-logo");
 
@@ -337,83 +416,30 @@ function criarCardRadio(radio) {
   const seloAoVivo = document.createElement("span");
   seloAoVivo.className = "radio-selo radio-selo-ao-vivo";
   seloAoVivo.textContent = "No ar";
-
   selos.appendChild(seloAoVivo);
 
   if (radio.status?.verificada === true) {
     const seloVerificada = document.createElement("span");
-    seloVerificada.className =
-      "radio-selo radio-selo-verificada";
+    seloVerificada.className = "radio-selo radio-selo-verificada";
     seloVerificada.textContent = "Verificada";
-
     selos.appendChild(seloVerificada);
   }
-
-  topo.append(logo, selos);
-
-  const corpo = document.createElement("div");
-  corpo.className = "radio-card-corpo";
 
   const categoria = document.createElement("span");
   categoria.className = "radio-categoria";
   categoria.textContent =
-    radio.classificacao?.categoriaPrincipal ||
-    "Rádio online";
+    radio.classificacao?.categoriaPrincipal || "Rádio online";
 
-  const titulo = document.createElement("h3");
-  titulo.textContent =
-    radio.nomeFantasia ||
-    radio.nome ||
-    "Emissora";
+  artigo.append(logo, selos, categoria);
 
-  const slogan = document.createElement("p");
-  slogan.className = "radio-slogan";
-  slogan.textContent =
-    radio.slogan ||
-    radio.descricao ||
-    "Ouça esta emissora na Central Rádios Brasil.";
-
-  const localizacao = document.createElement("div");
-  localizacao.className = "radio-localizacao";
-  localizacao.textContent = montarLocalizacao(radio);
-
-  const rodape = document.createElement("div");
-  rodape.className = "radio-card-rodape";
-
-  const botaoOuvir = document.createElement("button");
-  botaoOuvir.className = "botao-ouvir";
-  botaoOuvir.type = "button";
-  botaoOuvir.textContent = "Ouvir agora";
-
-  botaoOuvir.addEventListener("click", () => {
-    selecionarRadio(radio);
+  const ouvir = () => selecionarRadio(radio);
+  artigo.addEventListener("click", ouvir);
+  artigo.addEventListener("keydown", evento => {
+    if (evento.key === "Enter" || evento.key === " ") {
+      evento.preventDefault();
+      ouvir();
+    }
   });
-
-  const botaoCompartilhar = document.createElement("button");
-  botaoCompartilhar.className = "botao-card-secundario";
-  botaoCompartilhar.type = "button";
-  botaoCompartilhar.textContent = "↗";
-  botaoCompartilhar.title = "Compartilhar emissora";
-  botaoCompartilhar.setAttribute(
-    "aria-label",
-    `Compartilhar ${titulo.textContent}`
-  );
-
-  botaoCompartilhar.addEventListener("click", () => {
-    compartilharRadio(radio);
-  });
-
-  rodape.append(botaoOuvir, botaoCompartilhar);
-
-  corpo.append(
-    categoria,
-    titulo,
-    slogan,
-    localizacao,
-    rodape
-  );
-
-  artigo.append(topo, corpo);
 
   return artigo;
 }
