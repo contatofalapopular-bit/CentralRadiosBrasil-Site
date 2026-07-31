@@ -1,3 +1,16 @@
+# Changelog — Central Rádios Brasil
+
+## 22.4.1 — Parte 8: Hero compacto e reorganização da página
+
+- Hero reduzido para mostrar mais conteúdo já na primeira tela.
+- Novo botão principal **Ouvir agora**, ligado automaticamente à Rádio em Destaque.
+- Botão **Explorar emissoras** levando diretamente ao catálogo completo.
+- Indicadores nacionais mantidos imediatamente abaixo do Hero.
+- Nova ordem editorial: Destaque, Recém-chegadas, Regiões, Favoritas, Mais ouvidas e catálogo completo.
+- Favoritas continuam aparecendo somente quando o usuário possuir emissoras salvas.
+- Navegação superior atualizada para refletir a nova organização.
+- Melhorias responsivas nos botões do Hero para celular.
+
 # CHANGELOG — Central Rádios Brasil
 
 ## 22.4.0 — Parte 7: Visual Premium 2026
