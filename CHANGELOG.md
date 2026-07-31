@@ -1,4 +1,12 @@
-# Histórico de versões — Central Rádios Brasil
+# Histórico de versões
+
+## 22.3.0 — Parte 4: Rádio em Destaque dinâmica
+
+- Exibe automaticamente a emissora marcada com `status.destaque: true`.
+- Usa uma emissora pública e ativa como destaque automático enquanto não houver destaque oficial.
+- Mostra logo, categoria, descrição, cidade, UF e link do site quando disponível.
+- Botão **Ouvir agora** integrado ao player e ao contador de reproduções.
+- Layout premium e responsivo com melhor acessibilidade.
 
 ## 22.2.9 — Parte 3: Mais ouvidas por você
 - Ranking automático baseado nas reproduções feitas neste navegador.
