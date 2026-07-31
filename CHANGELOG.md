@@ -1,5 +1,14 @@
 # Changelog
 
+## 22.3.6 — Acesso ao Portal da Emissora
+
+- Novo botão com ícone “Cadastre sua rádio” na área principal.
+- Link preparado para `centralradiosbrasil.com.br/cadastro/`.
+- Criada página temporária da rota de cadastro para evitar link quebrado.
+- O formulário completo será implantado na Etapa 2.
+- Identidade visual e responsividade preservadas.
+
+
 ## Home 2.0 — Fase 1 (31/07/2026)
 
 - Reconstrução real do `index.html`.
