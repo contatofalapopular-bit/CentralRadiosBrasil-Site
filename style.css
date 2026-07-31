@@ -3178,3 +3178,78 @@ body.modal-aberto {
     width: 100%;
   }
 }
+
+/* =========================================================
+   CORREÇÃO 22.4.1.1 — AJUSTES VISUAIS DA PARTE 8
+   Apenas CSS: corrige sobreposição e reduz espaços excessivos.
+   ========================================================= */
+
+/* A barra de filtros não pode herdar a margem negativa antiga,
+   pois agora existem outras seções entre Regiões e Catálogo. */
+.filtros {
+  margin-top: 36px;
+}
+
+/* Mantém distância correta quando seções opcionais estão ocultas. */
+.regioes + .filtros,
+.favoritas + .filtros,
+.mais-ouvidas + .filtros,
+.recentes + .filtros {
+  margin-top: 36px;
+}
+
+/* Catálogo mais próximo da barra de filtros. */
+.catalogo {
+  padding-top: 38px;
+}
+
+/* Hero um pouco mais compacto em telas de computador. */
+.apresentacao-premium {
+  min-height: 460px;
+  padding-top: 58px;
+  padding-bottom: 64px;
+}
+
+.apresentacao-premium h1 {
+  font-size: clamp(2.7rem, 5.7vw, 5.25rem);
+}
+
+/* Evita áreas exageradamente altas quando há somente uma emissora. */
+.recentes,
+.radio-destaque {
+  min-height: 0;
+}
+
+.grade-recentes:has(.radio-card:only-child),
+.grade-favoritas:has(.radio-card:only-child),
+.grade-mais-ouvidas:has(.radio-card:only-child),
+#grade-radios:has(.radio-card:only-child) {
+  grid-template-columns: minmax(320px, 400px);
+}
+
+@media (max-width: 760px) {
+  .filtros,
+  .regioes + .filtros,
+  .favoritas + .filtros,
+  .mais-ouvidas + .filtros,
+  .recentes + .filtros {
+    margin-top: 26px;
+  }
+
+  .catalogo {
+    padding-top: 30px;
+  }
+
+  .apresentacao-premium {
+    min-height: 410px;
+    padding-top: 44px;
+    padding-bottom: 52px;
+  }
+
+  .grade-recentes:has(.radio-card:only-child),
+  .grade-favoritas:has(.radio-card:only-child),
+  .grade-mais-ouvidas:has(.radio-card:only-child),
+  #grade-radios:has(.radio-card:only-child) {
+    grid-template-columns: 1fr;
+  }
+}
