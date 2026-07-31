@@ -3588,242 +3588,105 @@ body.modal-aberto {
   .radio-destaque-acoes .hero-botao { width: 100%; }
 }
 
+
 /* =========================================================
-   VERSÃO 22.4.2.1 — SEÇÕES COMPACTAS E ALTURA PREVISÍVEL
-   Destaque menor + listas em uma única faixa horizontal.
-   A altura visual não cresce com a quantidade de emissoras.
+   CENTRAL RÁDIOS BRASIL 23.0 — HOME STREAMING
+   Prateleiras inspiradas em streaming + catálogo paginado.
    ========================================================= */
+:root { --card-radio-largura: 252px; --card-radio-altura: 232px; }
 
-/* DESTAQUE: mantém todas as informações, mas sem ocupar uma tela inteira */
-.radio-destaque {
-  min-height: 0 !important;
+.recentes,.favoritas,.mais-ouvidas,.catalogo { min-height: 0; }
+.recentes,.favoritas,.mais-ouvidas { padding: 28px 30px; overflow: hidden; }
+.recentes-cabecalho,.favoritas-cabecalho,.mais-ouvidas-cabecalho,.catalogo-cabecalho { margin-bottom: 18px; align-items: end; }
+.prateleira-acoes,.mais-ouvidas-acoes { display:flex; align-items:center; justify-content:flex-end; gap:8px; flex-wrap:wrap; }
+.seta-prateleira { width:38px; height:38px; border-radius:50%; border:1px solid rgba(91,211,255,.26); color:#e8f8ff; background:rgba(11,38,70,.82); font-size:1.55rem; line-height:1; cursor:pointer; transition:.2s ease; }
+.seta-prateleira:hover { transform:scale(1.08); background:rgba(37,135,207,.38); box-shadow:0 0 22px rgba(58,194,255,.18); }
+
+/* Prateleiras: largura invariável, independente da quantidade. */
+.grade-recentes,.grade-favoritas,.grade-mais-ouvidas {
+  display:flex !important; grid-template-columns:none !important; flex-flow:row nowrap; gap:14px;
+  overflow-x:auto; overflow-y:visible; padding:5px 3px 14px; scroll-snap-type:x mandatory;
+  scrollbar-width:none; overscroll-behavior-inline:contain;
+}
+.grade-recentes::-webkit-scrollbar,.grade-favoritas::-webkit-scrollbar,.grade-mais-ouvidas::-webkit-scrollbar { display:none; }
+.grade-recentes>.radio-card,.grade-favoritas>.radio-card,.grade-mais-ouvidas>.radio-card {
+  flex:0 0 var(--card-radio-largura) !important; width:var(--card-radio-largura) !important;
+  max-width:var(--card-radio-largura) !important; min-height:var(--card-radio-altura) !important;
+  height:var(--card-radio-altura) !important; scroll-snap-align:start;
 }
 
-.radio-destaque-conteudo {
-  padding: 24px 28px !important;
+/* Catálogo: grade fixa, nunca estica um único card. */
+#grade-radios.grade-catalogo {
+  display:grid !important; grid-template-columns:repeat(auto-fill, minmax(240px, 268px)) !important;
+  justify-content:start !important; align-items:stretch; gap:18px !important; overflow:visible !important;
+  padding:4px 0 8px !important;
+}
+#grade-radios.grade-catalogo>.radio-card {
+  width:100% !important; max-width:268px !important; min-height:var(--card-radio-altura) !important;
+  height:var(--card-radio-altura) !important;
 }
 
-.radio-destaque-topo {
-  margin-bottom: 18px !important;
+/* Componente único, compacto e com identidade própria. */
+.grade-radios>.radio-card {
+  position:relative; overflow:hidden; display:flex; flex-direction:column;
+  border-radius:18px !important; border:1px solid rgba(95,190,255,.18) !important;
+  background:linear-gradient(155deg,rgba(17,47,82,.98),rgba(5,24,48,.98)) !important;
+  box-shadow:0 12px 30px rgba(0,0,0,.2) !important; transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease;
 }
+.grade-radios>.radio-card::after { content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(120deg,transparent 0 60%,rgba(74,219,255,.045)); }
+.grade-radios>.radio-card:hover { transform:translateY(-5px) scale(1.015); border-color:rgba(82,220,255,.48) !important; box-shadow:0 19px 42px rgba(0,0,0,.29),0 0 24px rgba(42,169,255,.1) !important; z-index:2; }
+.grade-radios>.radio-card .radio-card-topo { min-height:76px; gap:10px !important; padding:14px 14px 0 !important; }
+.grade-radios>.radio-card .radio-logo { width:58px !important; height:58px !important; min-width:58px; border-radius:15px !important; box-shadow:0 8px 20px rgba(0,0,0,.24); }
+.grade-radios>.radio-card .radio-topo-acoes { gap:7px; }
+.grade-radios>.radio-card .botao-favorito { width:31px; height:31px; min-width:31px; }
+.grade-radios>.radio-card .radio-selos { gap:5px !important; }
+.grade-radios>.radio-card .radio-selo { padding:4px 7px !important; font-size:.57rem !important; }
+.grade-radios>.radio-card .radio-card-corpo { display:flex; flex-direction:column; min-height:0; flex:1; padding:12px 14px 14px !important; }
+.grade-radios>.radio-card .radio-categoria { margin-bottom:5px !important; font-size:.61rem !important; }
+.grade-radios>.radio-card h3 { margin:0; font-size:1rem !important; line-height:1.18 !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.grade-radios>.radio-card .radio-slogan { margin:5px 0 0 !important; font-size:.72rem !important; line-height:1.3 !important; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:1; overflow:hidden; color:#91a7c4; }
+.grade-radios>.radio-card .radio-localizacao { margin-top:7px !important; font-size:.7rem !important; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.grade-radios>.radio-card .radio-card-rodape { gap:8px !important; margin-top:auto !important; padding-top:10px !important; }
+.grade-radios>.radio-card .botao-ouvir { min-height:36px !important; border-radius:10px !important; font-size:.76rem !important; }
+.grade-radios>.radio-card .botao-card-secundario { width:36px !important; min-width:36px; min-height:36px !important; border-radius:10px !important; }
+.radio-data-publicacao,.ranking-audicoes { margin-top:6px !important; font-size:.62rem !important; }
+.ranking-posicao { width:34px !important; height:34px !important; font-size:.72rem !important; }
+.selo-radio-nova { top:8px !important; left:8px !important; padding:4px 7px !important; font-size:.56rem !important; }
 
-.radio-destaque-vitrine {
-  grid-template-columns: minmax(0, 1.65fr) minmax(270px, .72fr) !important;
-  gap: 24px !important;
-  align-items: center !important;
+/* Destaque continua exclusivo, porém compacto. */
+.radio-destaque-conteudo { padding:22px 26px !important; }
+.radio-destaque-topo { margin-bottom:14px !important; }
+.radio-destaque-vitrine { grid-template-columns:minmax(0,1.6fr) minmax(255px,.72fr) !important; gap:20px !important; align-items:center !important; }
+.radio-destaque-identidade { grid-template-columns:118px minmax(0,1fr) !important; gap:20px !important; }
+.radio-destaque-logo { width:118px !important; height:118px !important; min-width:118px !important; border-radius:22px !important; }
+.radio-destaque-info h2 { margin:7px 0 6px !important; font-size:clamp(1.7rem,2.6vw,2.5rem) !important; }
+.radio-destaque-info p { margin-bottom:10px !important; line-height:1.42 !important; }
+.radio-destaque-painel { padding:14px !important; }
+.radio-destaque-detalhe { padding:7px 9px !important; }
+.radio-destaque-nota { display:none; }
+.radio-destaque-acoes { margin-top:14px !important; }
+.radio-destaque-acoes .hero-botao { min-height:43px !important; }
+
+.paginacao-catalogo { display:flex; align-items:center; justify-content:center; gap:8px; margin:24px 0 4px; }
+.pagina-botao { min-width:38px; height:38px; padding:0 11px; border-radius:11px; border:1px solid rgba(83,194,255,.2); color:#ccecff; background:rgba(10,37,68,.72); cursor:pointer; font-weight:800; }
+.pagina-botao:hover:not(:disabled),.pagina-botao.ativo { color:#031426; background:linear-gradient(135deg,#44dbff,#6e8fff); border-color:transparent; }
+.pagina-botao:disabled { opacity:.35; cursor:not-allowed; }
+
+@media (max-width:980px) {
+  :root { --card-radio-largura:236px; }
+  .radio-destaque-vitrine { grid-template-columns:1fr !important; }
+  .radio-destaque-painel { display:none !important; }
+  #grade-radios.grade-catalogo { grid-template-columns:repeat(auto-fill,minmax(220px,1fr)) !important; }
+  #grade-radios.grade-catalogo>.radio-card { max-width:none !important; }
 }
-
-.radio-destaque-identidade {
-  grid-template-columns: 136px minmax(0, 1fr) !important;
-  gap: 24px !important;
-}
-
-.radio-destaque-logo {
-  width: 136px !important;
-  height: 136px !important;
-  min-width: 136px !important;
-  border-radius: 24px !important;
-  font-size: 2.3rem !important;
-}
-
-.radio-destaque-info h2 {
-  margin: 8px 0 7px !important;
-  font-size: clamp(1.8rem, 3vw, 2.75rem) !important;
-}
-
-.radio-destaque-info p {
-  margin-bottom: 12px !important;
-  line-height: 1.5 !important;
-}
-
-.radio-destaque-painel {
-  padding: 16px !important;
-  border-radius: 18px !important;
-}
-
-.radio-destaque-painel-titulo {
-  margin-bottom: 10px !important;
-}
-
-.radio-destaque-detalhes {
-  gap: 7px !important;
-}
-
-.radio-destaque-detalhe {
-  grid-template-columns: 34px 1fr !important;
-  gap: 10px !important;
-  padding: 8px 10px !important;
-  border-radius: 13px !important;
-}
-
-.radio-destaque-detalhe .detalhe-icone {
-  width: 34px !important;
-  height: 34px !important;
-  border-radius: 10px !important;
-}
-
-.radio-destaque-nota {
-  margin-top: 10px !important;
-}
-
-.radio-destaque-acoes {
-  gap: 10px !important;
-  margin-top: 18px !important;
-}
-
-.radio-destaque-acoes .hero-botao {
-  min-height: 46px !important;
-}
-
-/*
-  NOVAS, FAVORITAS, MAIS OUVIDAS E CATÁLOGO:
-  uma única faixa horizontal. Com 1 ou 1.000 rádios, a seção mantém
-  a mesma altura; novas emissoras entram para o lado, sem alongar a página.
-*/
-.recentes,
-.favoritas,
-.mais-ouvidas,
-.catalogo {
-  min-height: 0 !important;
-}
-
-.recentes,
-.mais-ouvidas {
-  padding: 22px 28px !important;
-}
-
-.catalogo {
-  padding-top: 28px !important;
-  padding-bottom: 20px !important;
-}
-
-.recentes-cabecalho,
-.mais-ouvidas-cabecalho,
-.catalogo-cabecalho {
-  margin-bottom: 16px !important;
-}
-
-.grade-recentes,
-.grade-favoritas,
-.grade-mais-ouvidas,
-#grade-radios {
-  display: flex !important;
-  flex-flow: row nowrap !important;
-  align-items: stretch !important;
-  justify-content: flex-start !important;
-  gap: 16px !important;
-  width: 100% !important;
-  padding: 3px 4px 12px !important;
-  overflow-x: auto !important;
-  overflow-y: hidden !important;
-  scroll-snap-type: x proximity;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(62, 196, 255, .48) rgba(255, 255, 255, .05);
-  overscroll-behavior-inline: contain;
-}
-
-.grade-recentes::-webkit-scrollbar,
-.grade-favoritas::-webkit-scrollbar,
-.grade-mais-ouvidas::-webkit-scrollbar,
-#grade-radios::-webkit-scrollbar {
-  height: 8px;
-}
-
-.grade-recentes::-webkit-scrollbar-track,
-.grade-favoritas::-webkit-scrollbar-track,
-.grade-mais-ouvidas::-webkit-scrollbar-track,
-#grade-radios::-webkit-scrollbar-track {
-  border-radius: 999px;
-  background: rgba(255, 255, 255, .045);
-}
-
-.grade-recentes::-webkit-scrollbar-thumb,
-.grade-favoritas::-webkit-scrollbar-thumb,
-.grade-mais-ouvidas::-webkit-scrollbar-thumb,
-#grade-radios::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: rgba(62, 196, 255, .42);
-}
-
-.grade-recentes > .radio-card,
-.grade-favoritas > .radio-card,
-.grade-mais-ouvidas > .radio-card,
-#grade-radios > .radio-card {
-  flex: 0 0 300px !important;
-  width: 300px !important;
-  max-width: 300px !important;
-  min-height: 270px !important;
-  height: 270px !important;
-  scroll-snap-align: start;
-}
-
-.grade-recentes > .radio-card .radio-card-corpo,
-.grade-favoritas > .radio-card .radio-card-corpo,
-.grade-mais-ouvidas > .radio-card .radio-card-corpo,
-#grade-radios > .radio-card .radio-card-corpo {
-  min-height: 0 !important;
-}
-
-/* Não deixa o rodapé gerar uma área vazia enorme após o catálogo. */
-.catalogo + .rodape,
-footer.rodape {
-  margin-top: 26px !important;
-}
-
-@media (max-width: 980px) {
-  .radio-destaque-vitrine {
-    grid-template-columns: 1fr !important;
-  }
-
-  .radio-destaque-painel {
-    display: block !important;
-  }
-
-  .radio-destaque-detalhes {
-    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-  }
-}
-
-@media (max-width: 700px) {
-  .radio-destaque-conteudo {
-    padding: 21px 18px !important;
-  }
-
-  .radio-destaque-identidade {
-    grid-template-columns: 96px minmax(0, 1fr) !important;
-    gap: 16px !important;
-    align-items: start !important;
-  }
-
-  .radio-destaque-logo {
-    width: 96px !important;
-    height: 96px !important;
-    min-width: 96px !important;
-    border-radius: 19px !important;
-    font-size: 1.7rem !important;
-  }
-
-  .radio-destaque-info h2 {
-    font-size: clamp(1.65rem, 8.2vw, 2.35rem) !important;
-  }
-
-  .radio-destaque-detalhes {
-    grid-template-columns: 1fr !important;
-  }
-
-  .recentes,
-  .mais-ouvidas {
-    padding: 20px 16px !important;
-  }
-
-  .grade-recentes > .radio-card,
-  .grade-favoritas > .radio-card,
-  .grade-mais-ouvidas > .radio-card,
-  #grade-radios > .radio-card {
-    flex-basis: min(300px, calc(100vw - 72px)) !important;
-    width: min(300px, calc(100vw - 72px)) !important;
-    max-width: min(300px, calc(100vw - 72px)) !important;
-    height: auto !important;
-    min-height: 270px !important;
-  }
+@media (max-width:700px) {
+  .recentes,.favoritas,.mais-ouvidas { padding:22px 16px; }
+  .seta-prateleira { display:none; }
+  :root { --card-radio-largura:min(82vw,248px); --card-radio-altura:228px; }
+  #grade-radios.grade-catalogo { grid-template-columns:1fr !important; }
+  #grade-radios.grade-catalogo>.radio-card { max-width:none !important; height:auto !important; min-height:224px !important; }
+  .radio-destaque-identidade { grid-template-columns:88px minmax(0,1fr) !important; gap:14px !important; }
+  .radio-destaque-logo { width:88px !important; height:88px !important; min-width:88px !important; }
+  .radio-destaque-info p { display:none; }
+  .radio-destaque-acoes { display:grid !important; grid-template-columns:1fr !important; }
 }
