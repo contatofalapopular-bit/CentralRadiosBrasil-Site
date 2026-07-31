@@ -2494,3 +2494,17 @@ body.modal-aberto {
   .grade-regioes { grid-template-columns: 1fr; }
   .card-regiao { min-height: 118px; }
 }
+
+/* ==========================================================
+   CORREÇÃO 22.2.8.1 — ESPAÇAMENTO ENTRE REGIÕES E FILTROS
+   Impede que a barra de filtros fique sobre os cards regionais.
+========================================================== */
+.regioes + .filtros {
+  margin-top: 32px;
+}
+
+@media (max-width: 720px) {
+  .regioes + .filtros {
+    margin-top: 24px;
+  }
+}
