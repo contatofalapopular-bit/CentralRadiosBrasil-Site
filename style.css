@@ -1986,3 +1986,115 @@ margin:auto;
 }
 
 }
+
+/* ==========================================================
+   COMMIT 22.2.4 — NAVEGAÇÃO DOS BOTÕES DO HERO
+========================================================== */
+
+html {
+  scroll-behavior: smooth;
+}
+
+#catalogo-emissoras,
+#sobre-plataforma {
+  scroll-margin-top: 110px;
+}
+
+.hero-botao {
+  text-decoration: none;
+}
+
+.sobre-plataforma {
+  width: min(1180px, calc(100% - 32px));
+  margin: 0 auto 36px;
+  padding: 38px;
+  border: 1px solid rgba(96, 226, 255, 0.14);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 90% 10%, rgba(75, 220, 255, 0.1), transparent 32%),
+    linear-gradient(145deg, rgba(13, 34, 65, 0.96), rgba(6, 18, 36, 0.98));
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.22);
+}
+
+.sobre-plataforma-conteudo {
+  max-width: 1000px;
+}
+
+.sobre-plataforma-selo {
+  display: inline-block;
+  margin-bottom: 14px;
+  color: #65e6ff;
+  font-size: 0.78rem;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+}
+
+.sobre-plataforma h2 {
+  max-width: 850px;
+  margin: 0 0 16px;
+  color: #fff;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  line-height: 1.12;
+}
+
+.sobre-plataforma > .sobre-plataforma-conteudo > p {
+  max-width: 760px;
+  margin: 0;
+  color: #b8c9df;
+  font-size: 1.02rem;
+  line-height: 1.7;
+}
+
+.sobre-plataforma-recursos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.sobre-plataforma-recursos article {
+  padding: 20px;
+  border: 1px solid rgba(114, 233, 255, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.sobre-plataforma-recursos strong,
+.sobre-plataforma-recursos span {
+  display: block;
+}
+
+.sobre-plataforma-recursos strong {
+  margin-bottom: 8px;
+  color: #fff;
+}
+
+.sobre-plataforma-recursos span {
+  color: #9eb2cc;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.sobre-plataforma-link {
+  display: inline-flex;
+  margin-top: 24px;
+  color: #6ce9ff;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.sobre-plataforma-link:hover,
+.sobre-plataforma-link:focus-visible {
+  text-decoration: underline;
+}
+
+@media (max-width: 760px) {
+  .sobre-plataforma {
+    width: calc(100% - 24px);
+    padding: 26px;
+  }
+
+  .sobre-plataforma-recursos {
+    grid-template-columns: 1fr;
+  }
+}
