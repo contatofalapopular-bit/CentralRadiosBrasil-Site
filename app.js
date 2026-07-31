@@ -23,7 +23,14 @@ const elementos = {
   playerLocalizacao: document.getElementById("player-localizacao"),
   playerStatus: document.getElementById("player-status"),
   btnPlayPause: document.getElementById("btn-play-pause"),
-  btnFecharPlayer: document.getElementById("btn-fechar-player")
+  btnFecharPlayer: document.getElementById("btn-fechar-player"),
+
+  btnExplorarRadios: document.getElementById("btn-explorar-radios"),
+  btnConhecerPlataforma: document.getElementById("btn-conhecer-plataforma"),
+  modalPlataforma: document.getElementById("modal-plataforma"),
+  btnFecharPlataforma: document.getElementById("btn-fechar-plataforma"),
+  btnModalExplorar: document.getElementById("btn-modal-explorar"),
+  catalogoLista: document.getElementById("catalogo-lista")
 };
 
 const estado = {
@@ -51,6 +58,26 @@ function registrarEventos() {
   elementos.btnPlayPause.addEventListener("click", alternarReproducao);
   elementos.btnFecharPlayer.addEventListener("click", fecharPlayer);
 
+  elementos.btnExplorarRadios?.addEventListener("click", irParaCatalogo);
+  elementos.btnConhecerPlataforma?.addEventListener("click", abrirModalPlataforma);
+  elementos.btnFecharPlataforma?.addEventListener("click", fecharModalPlataforma);
+  elementos.btnModalExplorar?.addEventListener("click", () => {
+    fecharModalPlataforma();
+    irParaCatalogo();
+  });
+
+  elementos.modalPlataforma?.addEventListener("click", evento => {
+    if (evento.target === elementos.modalPlataforma) {
+      fecharModalPlataforma();
+    }
+  });
+
+  document.addEventListener("keydown", evento => {
+    if (evento.key === "Escape" && !elementos.modalPlataforma?.classList.contains("hidden")) {
+      fecharModalPlataforma();
+    }
+  });
+
   elementos.audio.addEventListener("play", () => {
     estado.carregandoAudio = false;
     atualizarEstadoPlayer("AO VIVO", "⏸");
@@ -76,6 +103,35 @@ function registrarEventos() {
     estado.carregandoAudio = false;
     atualizarEstadoPlayer("Não foi possível reproduzir", "▶");
   });
+}
+
+function irParaCatalogo() {
+  const destino = elementos.catalogoLista || elementos.gradeRadios;
+
+  destino?.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+function abrirModalPlataforma() {
+  if (!elementos.modalPlataforma) {
+    return;
+  }
+
+  elementos.modalPlataforma.classList.remove("hidden");
+  document.body.classList.add("modal-aberto");
+  elementos.btnFecharPlataforma?.focus();
+}
+
+function fecharModalPlataforma() {
+  if (!elementos.modalPlataforma) {
+    return;
+  }
+
+  elementos.modalPlataforma.classList.add("hidden");
+  document.body.classList.remove("modal-aberto");
+  elementos.btnConhecerPlataforma?.focus();
 }
 
 async function carregarBanco() {
