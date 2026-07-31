@@ -2617,3 +2617,41 @@ body.modal-aberto {
   .mais-ouvidas-cabecalho { align-items: flex-start; flex-direction: column; }
   .mais-ouvidas-acoes { justify-content: flex-start; }
 }
+
+
+/* ==========================================================
+   COMMIT 22.3.0 — PARTE 4: RÁDIO EM DESTAQUE DINÂMICA
+========================================================== */
+
+.radio-destaque {
+  margin-top: 34px;
+  border-color: rgba(103, 226, 255, 0.26);
+  box-shadow:
+    0 28px 84px rgba(0, 0, 0, 0.34),
+    0 0 0 1px rgba(103, 226, 255, 0.04) inset;
+}
+
+.radio-destaque-selo {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 7px 12px;
+  border: 1px solid rgba(114, 233, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(18, 67, 102, 0.34);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.radio-destaque-logo {
+  flex: 0 0 auto;
+}
+
+.radio-destaque-info h2 {
+  text-wrap: balance;
+}
+
+@media (max-width: 900px) {
+  .radio-destaque {
+    margin-top: 28px;
+  }
+}
