@@ -7,6 +7,8 @@ const LIMITE_LOGO_BYTES = 2 * 1024 * 1024;
 const RESOLUCAO_MINIMA_LOGO = 512;
 const RESOLUCAO_MAXIMA_LOGO = 4096;
 const TEMPO_MAXIMO_TESTE_STREAM_MS = 15000;
+const TEMPO_MAXIMO_REPRODUCAO_STREAM_MS = 20000;
+const TEMPO_CONFIRMACAO_REPRODUCAO_MS = 3500;
 
 const formulario = document.getElementById(
   "form-cadastro-emissora"
@@ -47,6 +49,7 @@ let logoValidada = null;
 let urlPreviewAtual = "";
 let streamValidado = null;
 let testeStreamEmAndamento = false;
+let audioTesteStream = null;
 
 campoDescricao.addEventListener("input", () => {
   contadorDescricao.textContent =
@@ -69,7 +72,8 @@ function obterStreamDigitado() {
 function streamEstaValidado() {
   return Boolean(
     streamValidado &&
-    streamValidado.url === obterStreamDigitado()
+    streamValidado.url === obterStreamDigitado() &&
+    streamValidado.reproducaoConfirmada === true
   );
 }
 
@@ -89,6 +93,7 @@ function definirMensagemStream(texto, classe = "aguardando") {
 }
 
 function invalidarTesteStream() {
+  encerrarAudioTesteStream();
   streamValidado = null;
   campoStream.classList.remove("campo-invalido");
 
@@ -130,8 +135,214 @@ function validarFormatoInicialStream(valor) {
   return url.href;
 }
 
+function encerrarAudioTesteStream() {
+  if (!audioTesteStream) return;
+
+  try {
+    audioTesteStream.pause();
+    audioTesteStream.removeAttribute("src");
+    audioTesteStream.load();
+  } catch {
+    // O encerramento do teste não deve interromper o formulário.
+  }
+
+  audioTesteStream = null;
+}
+
+async function consultarStreamNoWorker(
+  urlNormalizada,
+  signal
+) {
+  const resposta = await fetch(
+    `${URL_API_CADASTRO}/api/streams/testar`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        streamUrl: urlNormalizada
+      }),
+      signal
+    }
+  );
+
+  let resultado;
+
+  try {
+    resultado = await resposta.json();
+  } catch {
+    resultado = null;
+  }
+
+  if (
+    !resposta.ok ||
+    !resultado?.ok ||
+    !resultado?.compativel
+  ) {
+    throw new Error(
+      resultado?.erro ||
+      "O endereço não foi reconhecido como áudio direto compatível."
+    );
+  }
+
+  return resultado;
+}
+
+function confirmarReproducaoNoNavegador(
+  urlNormalizada
+) {
+  encerrarAudioTesteStream();
+
+  const audio = new Audio();
+  audioTesteStream = audio;
+
+  audio.preload = "auto";
+  audio.volume = 0.35;
+  audio.src = urlNormalizada;
+  audio.setAttribute("playsinline", "");
+
+  return new Promise((resolve, reject) => {
+    let finalizado = false;
+    let reproducaoIniciada = false;
+    let temporizadorConfirmacao = null;
+
+    const temporizadorLimite = window.setTimeout(() => {
+      falhar(
+        "O servidor respondeu, mas o navegador não conseguiu reproduzir o áudio em até 20 segundos."
+      );
+    }, TEMPO_MAXIMO_REPRODUCAO_STREAM_MS);
+
+    function limparEventos() {
+      window.clearTimeout(temporizadorLimite);
+
+      if (temporizadorConfirmacao) {
+        window.clearTimeout(temporizadorConfirmacao);
+      }
+
+      audio.removeEventListener(
+        "playing",
+        confirmarInicio
+      );
+      audio.removeEventListener(
+        "timeupdate",
+        confirmarPeloTempo
+      );
+      audio.removeEventListener(
+        "error",
+        tratarErroAudio
+      );
+      audio.removeEventListener(
+        "abort",
+        tratarInterrupcao
+      );
+    }
+
+    function concluir() {
+      if (finalizado) return;
+
+      finalizado = true;
+      limparEventos();
+      encerrarAudioTesteStream();
+      resolve(true);
+    }
+
+    function falhar(mensagem) {
+      if (finalizado) return;
+
+      finalizado = true;
+      limparEventos();
+      encerrarAudioTesteStream();
+      reject(new Error(mensagem));
+    }
+
+    function confirmarInicio() {
+      if (reproducaoIniciada || finalizado) return;
+
+      reproducaoIniciada = true;
+
+      definirMensagemStream(
+        "🔊 O áudio está tocando. Confirmando por alguns segundos...",
+        "testando"
+      );
+
+      temporizadorConfirmacao = window.setTimeout(
+        concluir,
+        TEMPO_CONFIRMACAO_REPRODUCAO_MS
+      );
+    }
+
+    function confirmarPeloTempo() {
+      if (
+        Number.isFinite(audio.currentTime) &&
+        audio.currentTime > 0
+      ) {
+        confirmarInicio();
+      }
+    }
+
+    function tratarErroAudio() {
+      const codigo = audio.error?.code || 0;
+
+      const mensagens = {
+        1: "O teste de áudio foi interrompido.",
+        2: "O navegador encontrou uma falha de rede ao abrir o stream.",
+        3: "O navegador recebeu o stream, mas não conseguiu decodificar o áudio.",
+        4: "O formato do áudio não é compatível com este navegador."
+      };
+
+      falhar(
+        mensagens[codigo] ||
+        "O navegador não conseguiu reproduzir este endereço."
+      );
+    }
+
+    function tratarInterrupcao() {
+      if (!finalizado && !reproducaoIniciada) {
+        falhar("A reprodução do stream foi interrompida.");
+      }
+    }
+
+    audio.addEventListener(
+      "playing",
+      confirmarInicio
+    );
+    audio.addEventListener(
+      "timeupdate",
+      confirmarPeloTempo
+    );
+    audio.addEventListener(
+      "error",
+      tratarErroAudio
+    );
+    audio.addEventListener(
+      "abort",
+      tratarInterrupcao
+    );
+
+    const tentativa = audio.play();
+
+    if (
+      tentativa &&
+      typeof tentativa.catch === "function"
+    ) {
+      tentativa.catch((erro) => {
+        const mensagem =
+          erro?.name === "NotAllowedError"
+            ? "O navegador bloqueou o teste com som. Clique novamente em Testar transmissão."
+            : erro?.name === "NotSupportedError"
+              ? "O navegador não reconheceu este endereço como áudio reproduzível."
+              : "Não foi possível iniciar a reprodução real deste stream.";
+
+        falhar(mensagem);
+      });
+    }
+  });
+}
+
 async function testarStream() {
   ocultarAlerta();
+  encerrarAudioTesteStream();
   streamValidado = null;
   atualizarEstadoBotaoEnviar();
 
@@ -150,7 +361,9 @@ async function testarStream() {
   let urlNormalizada;
 
   try {
-    urlNormalizada = validarFormatoInicialStream(valor);
+    urlNormalizada = validarFormatoInicialStream(
+      valor
+    );
   } catch (erro) {
     campoStream.classList.add("campo-invalido");
     definirMensagemStream(
@@ -168,81 +381,75 @@ async function testarStream() {
   botaoTestarStream.disabled = true;
   botaoTestarStream.textContent = "Testando...";
   definirMensagemStream(
-    "Conectando ao servidor e verificando se o endereço entrega áudio direto...",
+    "Etapa 1 de 2: verificando o servidor. O áudio deverá tocar por alguns segundos.",
     "testando"
   );
   atualizarEstadoBotaoEnviar();
 
   const controlador = new AbortController();
-  const temporizador = window.setTimeout(
+  const temporizadorWorker = window.setTimeout(
     () => controlador.abort(),
     TEMPO_MAXIMO_TESTE_STREAM_MS
   );
 
   try {
-    const resposta = await fetch(
-      `${URL_API_CADASTRO}/api/streams/testar`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          streamUrl: urlNormalizada
-        }),
-        signal: controlador.signal
-      }
+    /*
+      As duas verificações começam no mesmo clique:
+      1. o Worker confere HTTPS e resposta do servidor;
+      2. o navegador tenta reproduzir e decodificar o áudio.
+    */
+    const promessaWorker = consultarStreamNoWorker(
+      urlNormalizada,
+      controlador.signal
     );
 
-    let resultado;
-
-    try {
-      resultado = await resposta.json();
-    } catch {
-      resultado = null;
-    }
-
-    if (!resposta.ok || !resultado?.ok || !resultado?.compativel) {
-      throw new Error(
-        resultado?.erro ||
-        "O endereço não foi reconhecido como áudio direto compatível."
+    const promessaNavegador =
+      confirmarReproducaoNoNavegador(
+        urlNormalizada
       );
-    }
+
+    const [resultado] = await Promise.all([
+      promessaWorker,
+      promessaNavegador
+    ]);
 
     streamValidado = {
       url: obterStreamDigitado(),
       formato: resultado.formato || "Áudio",
-      contentType: resultado.contentType || ""
+      contentType: resultado.contentType || "",
+      reproducaoConfirmada: true
     };
 
     const detalhes = [
       resultado.formato,
       resultado.contentType,
-      resultado.redirecionamentos > 0
-        ? `${resultado.redirecionamentos} redirecionamento(s) seguro(s)`
-        : "HTTPS direto"
+      "reprodução confirmada no navegador"
     ].filter(Boolean);
 
     definirMensagemStream(
-      `✅ Stream testado e compatível${detalhes.length ? `: ${detalhes.join(" • ")}` : "."}`,
+      `✅ Stream testado e compatível: ${detalhes.join(" • ")}`,
       "sucesso"
     );
   } catch (erro) {
     streamValidado = null;
     campoStream.classList.add("campo-invalido");
 
-    const mensagem = erro?.name === "AbortError"
-      ? "O servidor demorou demais para responder. Confirme a URL direta HTTPS com a hospedagem."
-      : erro instanceof Error
-        ? erro.message
-        : "Não foi possível testar o stream agora.";
+    const mensagem =
+      erro?.name === "AbortError"
+        ? "O servidor demorou demais para responder. Confirme a URL direta HTTPS com a hospedagem."
+        : erro instanceof Error
+          ? erro.message
+          : "Não foi possível testar o stream agora.";
 
     definirMensagemStream(mensagem, "erro");
   } finally {
-    window.clearTimeout(temporizador);
+    window.clearTimeout(temporizadorWorker);
+    controlador.abort();
+    encerrarAudioTesteStream();
     testeStreamEmAndamento = false;
     botaoTestarStream.disabled = false;
-    botaoTestarStream.textContent = "🔊 Testar transmissão";
+    botaoTestarStream.textContent =
+      "🔊 Testar transmissão";
     atualizarEstadoBotaoEnviar();
   }
 }
