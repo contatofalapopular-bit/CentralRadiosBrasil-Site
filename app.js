@@ -816,15 +816,45 @@ function criarCardRadio(radio) {
   return artigo;
 }
 
+function obterUrlLogo(radio) {
+  const logo = radio?.logo;
+
+  if (typeof logo === "string") {
+    return logo.trim();
+  }
+
+  if (logo && typeof logo === "object") {
+    const candidatos = [
+      logo.miniatura,
+      logo.quadrada,
+      logo.original,
+      logo.url
+    ];
+
+    const encontrado = candidatos.find(
+      valor => typeof valor === "string" && valor.trim()
+    );
+
+    if (encontrado) {
+      return encontrado.trim();
+    }
+  }
+
+  if (
+    typeof radio?.logoRanking === "string" &&
+    radio.logoRanking.trim()
+  ) {
+    return radio.logoRanking.trim();
+  }
+
+  return "";
+}
+
 function criarLogoRadio(radio, classe) {
   const container = document.createElement("div");
   container.className = classe;
 
-  const urlLogo =
-    radio.logo?.miniatura ||
-    radio.logo?.quadrada ||
-    radio.logo?.original ||
-    "";
+  const urlLogo = obterUrlLogo(radio);
 
   if (urlLogo) {
     const imagem = document.createElement("img");
@@ -1171,20 +1201,64 @@ function atualizarIndicadoresNacionais(banco) {
 }
 
 
-function atualizarRadioDestaque(){
- const sec=document.getElementById("radio-destaque");
- if(!sec||!estado.radios)return;
- const radio=estado.radios.find(r=>r.status&&r.status.destaque);
- if(!radio){sec.classList.add("hidden");return;}
- sec.classList.remove("hidden");
- document.getElementById("destaque-categoria").textContent=radio.categoria||"";
- document.getElementById("destaque-nome").textContent=radio.nome||"";
- document.getElementById("destaque-descricao").textContent=radio.descricao||radio.slogan||"Ouça esta emissora em destaque.";
- document.getElementById("destaque-cidade").textContent=radio.cidade||"";
- document.getElementById("destaque-uf").textContent=radio.uf||"";
- const logo=document.getElementById("destaque-logo");
- if(radio.logo){logo.innerHTML=`<img src="${radio.logo}" alt="${radio.nome}">`;}else{logo.textContent=(radio.nome||'CR').split(' ').map(x=>x[0]).join('').slice(0,3).toUpperCase();}
- document.getElementById("btn-ouvir-destaque").onclick=()=>selecionarRadio(radio);
+function atualizarRadioDestaque() {
+  const secao = document.getElementById("radio-destaque");
+
+  if (!secao || !estado.radios) return;
+
+  const radio = estado.radios.find(
+    item => item.status?.destaque === true
+  );
+
+  if (!radio) {
+    secao.classList.add("hidden");
+    return;
+  }
+
+  secao.classList.remove("hidden");
+
+  document.getElementById("destaque-categoria").textContent =
+    radio.classificacao?.categoriaPrincipal ||
+    radio.categoria ||
+    "Rádio online";
+
+  document.getElementById("destaque-nome").textContent =
+    radio.nomeFantasia || radio.nome || "Emissora";
+
+  document.getElementById("destaque-descricao").textContent =
+    radio.descricao ||
+    radio.slogan ||
+    "Ouça esta emissora em destaque.";
+
+  document.getElementById("destaque-cidade").textContent =
+    radio.localizacao?.cidade || radio.cidade || "";
+
+  document.getElementById("destaque-uf").textContent =
+    radio.localizacao?.uf || radio.uf || "";
+
+  const logo = document.getElementById("destaque-logo");
+  const urlLogo = obterUrlLogo(radio);
+
+  logo.replaceChildren();
+
+  if (urlLogo) {
+    const imagem = document.createElement("img");
+    imagem.src = urlLogo;
+    imagem.alt = `Logo da ${radio.nome || "emissora"}`;
+
+    imagem.addEventListener("error", () => {
+      logo.replaceChildren();
+      logo.textContent = obterIniciais(radio.nome);
+    });
+
+    logo.appendChild(imagem);
+  } else {
+    logo.textContent = obterIniciais(radio.nome);
+  }
+
+  document.getElementById("btn-ouvir-destaque").onclick = () => {
+    selecionarRadio(radio);
+  };
 }
 function animarNumero(id, valorFinal) {
 
@@ -1333,12 +1407,7 @@ function normalizarRadioRanking(radio) {
     nome: radio.nomeFantasia || radio.nome || "Emissora",
     categoria: radio.classificacao?.categoriaPrincipal || radio.categoria || "Rádio online",
     ouvintesRanking: obterNumeroOuvintes(radio),
-    logoRanking:
-      radio.logo?.miniatura ||
-      radio.logo?.quadrada ||
-      radio.logo?.original ||
-      radio.logoRanking ||
-      "",
+    logoRanking: obterUrlLogo(radio),
     demonstrativa: false
   };
 }
