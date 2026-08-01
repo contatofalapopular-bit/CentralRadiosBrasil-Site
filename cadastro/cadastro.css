@@ -603,3 +603,115 @@
     grid-column: 1 / -1;
   }
 }
+
+
+/* =========================================================
+   VALIDAÇÃO OBRIGATÓRIA DO STREAM — VERSÃO 22.5.0
+========================================================= */
+
+.cadastro-stream-orientacao {
+  display: grid;
+  gap: 8px;
+  margin-top: 2px;
+  padding: 15px 16px;
+  border: 1px solid rgba(55, 230, 255, 0.2);
+  border-radius: 14px;
+  background: rgba(55, 230, 255, 0.055);
+  color: #a9bfd6;
+  font-size: 0.75rem;
+  line-height: 1.55;
+}
+
+.cadastro-stream-orientacao strong {
+  color: #dff8ff;
+  font-size: 0.78rem;
+}
+
+.cadastro-stream-orientacao code {
+  padding: 1px 5px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  background: rgba(0, 0, 0, 0.22);
+  color: #c9f7ff;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 0.7rem;
+}
+
+.cadastro-stream-teste {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: stretch;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.cadastro-botao-stream {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 18px;
+  border: 1px solid rgba(55, 230, 255, 0.34);
+  border-radius: 14px;
+  background: rgba(39, 181, 255, 0.12);
+  color: #e1f9ff;
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 850;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.cadastro-botao-stream:hover:not(:disabled) {
+  border-color: rgba(55, 230, 255, 0.66);
+  background: rgba(39, 181, 255, 0.2);
+}
+
+.cadastro-botao-stream:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.cadastro-stream-resultado {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border: 1px solid var(--borda);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.035);
+  color: #9db2ca;
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+.cadastro-stream-resultado.testando {
+  border-color: rgba(55, 230, 255, 0.3);
+  color: #bcefff;
+}
+
+.cadastro-stream-resultado.sucesso {
+  border-color: rgba(66, 245, 158, 0.34);
+  background: rgba(66, 245, 158, 0.075);
+  color: #7fffc0;
+}
+
+.cadastro-stream-resultado.erro {
+  border-color: rgba(255, 77, 109, 0.34);
+  background: rgba(255, 77, 109, 0.075);
+  color: #ffacbb;
+}
+
+.cadastro-botao:disabled {
+  cursor: not-allowed;
+}
+
+@media (max-width: 760px) {
+  .cadastro-stream-teste {
+    grid-template-columns: 1fr;
+  }
+
+  .cadastro-botao-stream {
+    width: 100%;
+  }
+}
