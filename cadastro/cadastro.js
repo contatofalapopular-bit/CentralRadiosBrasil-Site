@@ -6,6 +6,7 @@ const URL_API_CADASTRO =
 const LIMITE_LOGO_BYTES = 2 * 1024 * 1024;
 const RESOLUCAO_MINIMA_LOGO = 512;
 const RESOLUCAO_MAXIMA_LOGO = 4096;
+const TEMPO_MAXIMO_TESTE_STREAM_MS = 15000;
 
 const formulario = document.getElementById(
   "form-cadastro-emissora"
@@ -14,6 +15,13 @@ const formulario = document.getElementById(
 const campoLogo = document.getElementById("logo");
 const previewLogo = document.getElementById("logo-preview");
 const mensagemLogo = document.getElementById("mensagem-logo");
+const campoStream = document.getElementById("stream-url");
+const botaoTestarStream = document.getElementById(
+  "btn-testar-stream"
+);
+const mensagemStream = document.getElementById(
+  "mensagem-stream"
+);
 const campoDescricao = document.getElementById("descricao");
 const contadorDescricao = document.getElementById(
   "contador-descricao"
@@ -37,6 +45,8 @@ const botaoCopiar = document.getElementById(
 
 let logoValidada = null;
 let urlPreviewAtual = "";
+let streamValidado = null;
+let testeStreamEmAndamento = false;
 
 campoDescricao.addEventListener("input", () => {
   contadorDescricao.textContent =
@@ -44,10 +54,198 @@ campoDescricao.addEventListener("input", () => {
 });
 
 campoLogo.addEventListener("change", validarLogoSelecionada);
+campoStream.addEventListener("input", invalidarTesteStream);
+botaoTestarStream.addEventListener("click", testarStream);
 
 formulario.addEventListener("submit", enviarCadastro);
+atualizarEstadoBotaoEnviar();
 
 botaoCopiar.addEventListener("click", copiarProtocolo);
+
+function obterStreamDigitado() {
+  return String(campoStream.value || "").trim();
+}
+
+function streamEstaValidado() {
+  return Boolean(
+    streamValidado &&
+    streamValidado.url === obterStreamDigitado()
+  );
+}
+
+function atualizarEstadoBotaoEnviar() {
+  if (testeStreamEmAndamento) {
+    botaoEnviar.disabled = true;
+    return;
+  }
+
+  botaoEnviar.disabled = !streamEstaValidado();
+}
+
+function definirMensagemStream(texto, classe = "aguardando") {
+  mensagemStream.textContent = texto;
+  mensagemStream.className =
+    `cadastro-stream-resultado ${classe}`.trim();
+}
+
+function invalidarTesteStream() {
+  streamValidado = null;
+  campoStream.classList.remove("campo-invalido");
+
+  definirMensagemStream(
+    "O endereço foi alterado. Teste novamente para liberar o envio.",
+    "aguardando"
+  );
+
+  atualizarEstadoBotaoEnviar();
+}
+
+function validarFormatoInicialStream(valor) {
+  let url;
+
+  try {
+    url = new URL(valor);
+  } catch {
+    throw new Error("Informe uma URL de stream válida.");
+  }
+
+  if (url.protocol !== "https:") {
+    throw new Error(
+      "O stream precisa começar com https://. Endereços HTTP são bloqueados pelo portal seguro."
+    );
+  }
+
+  if (url.username || url.password) {
+    throw new Error(
+      "O stream não pode exigir usuário ou senha no endereço."
+    );
+  }
+
+  if (/\.(pls|m3u|m3u8)$/i.test(url.pathname)) {
+    throw new Error(
+      "Envie a URL direta do áudio, não um arquivo .pls, .m3u ou .m3u8."
+    );
+  }
+
+  return url.href;
+}
+
+async function testarStream() {
+  ocultarAlerta();
+  streamValidado = null;
+  atualizarEstadoBotaoEnviar();
+
+  const valor = obterStreamDigitado();
+
+  if (!valor) {
+    campoStream.classList.add("campo-invalido");
+    definirMensagemStream(
+      "Informe primeiro a URL direta da transmissão.",
+      "erro"
+    );
+    campoStream.focus();
+    return;
+  }
+
+  let urlNormalizada;
+
+  try {
+    urlNormalizada = validarFormatoInicialStream(valor);
+  } catch (erro) {
+    campoStream.classList.add("campo-invalido");
+    definirMensagemStream(
+      erro instanceof Error
+        ? erro.message
+        : "A URL do stream é inválida.",
+      "erro"
+    );
+    return;
+  }
+
+  campoStream.value = urlNormalizada;
+  campoStream.classList.remove("campo-invalido");
+  testeStreamEmAndamento = true;
+  botaoTestarStream.disabled = true;
+  botaoTestarStream.textContent = "Testando...";
+  definirMensagemStream(
+    "Conectando ao servidor e verificando se o endereço entrega áudio direto...",
+    "testando"
+  );
+  atualizarEstadoBotaoEnviar();
+
+  const controlador = new AbortController();
+  const temporizador = window.setTimeout(
+    () => controlador.abort(),
+    TEMPO_MAXIMO_TESTE_STREAM_MS
+  );
+
+  try {
+    const resposta = await fetch(
+      `${URL_API_CADASTRO}/api/streams/testar`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          streamUrl: urlNormalizada
+        }),
+        signal: controlador.signal
+      }
+    );
+
+    let resultado;
+
+    try {
+      resultado = await resposta.json();
+    } catch {
+      resultado = null;
+    }
+
+    if (!resposta.ok || !resultado?.ok || !resultado?.compativel) {
+      throw new Error(
+        resultado?.erro ||
+        "O endereço não foi reconhecido como áudio direto compatível."
+      );
+    }
+
+    streamValidado = {
+      url: obterStreamDigitado(),
+      formato: resultado.formato || "Áudio",
+      contentType: resultado.contentType || ""
+    };
+
+    const detalhes = [
+      resultado.formato,
+      resultado.contentType,
+      resultado.redirecionamentos > 0
+        ? `${resultado.redirecionamentos} redirecionamento(s) seguro(s)`
+        : "HTTPS direto"
+    ].filter(Boolean);
+
+    definirMensagemStream(
+      `✅ Stream testado e compatível${detalhes.length ? `: ${detalhes.join(" • ")}` : "."}`,
+      "sucesso"
+    );
+  } catch (erro) {
+    streamValidado = null;
+    campoStream.classList.add("campo-invalido");
+
+    const mensagem = erro?.name === "AbortError"
+      ? "O servidor demorou demais para responder. Confirme a URL direta HTTPS com a hospedagem."
+      : erro instanceof Error
+        ? erro.message
+        : "Não foi possível testar o stream agora.";
+
+    definirMensagemStream(mensagem, "erro");
+  } finally {
+    window.clearTimeout(temporizador);
+    testeStreamEmAndamento = false;
+    botaoTestarStream.disabled = false;
+    botaoTestarStream.textContent = "🔊 Testar transmissão";
+    atualizarEstadoBotaoEnviar();
+  }
+}
 
 async function validarLogoSelecionada() {
   limparPreviewLogo();
@@ -203,6 +401,18 @@ async function enviarCadastro(evento) {
     return;
   }
 
+  if (!streamEstaValidado()) {
+    campoStream.classList.add("campo-invalido");
+    mostrarAlerta(
+      "Teste a transmissão e aguarde a confirmação de compatibilidade antes de enviar o cadastro."
+    );
+    campoStream.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+    return;
+  }
+
   if (campoLogo.files?.[0] && !logoValidada) {
     mostrarAlerta(
       "A logomarca selecionada ainda não passou pela validação."
@@ -253,8 +463,8 @@ async function enviarCadastro(evento) {
         : "Não foi possível enviar o cadastro agora."
     );
   } finally {
-    botaoEnviar.disabled = false;
     botaoEnviar.textContent = "Enviar para análise";
+    atualizarEstadoBotaoEnviar();
   }
 }
 
