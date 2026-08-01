@@ -24,7 +24,7 @@
 
   <link
     rel="stylesheet"
-    href="cadastro.css?v=22.3.7"
+    href="cadastro.css?v=22.5.0"
   >
 </head>
 
@@ -310,13 +310,51 @@
               name="streamUrl"
               maxlength="500"
               placeholder="https://servidor.com.br:porta/stream"
+              inputmode="url"
+              autocomplete="url"
+              aria-describedby="orientacao-stream mensagem-stream"
               required
             >
 
-            <p class="cadastro-ajuda">
-              Informe o endereço direto do áudio, não a página do site.
-              São aceitos endereços HTTP ou HTTPS.
-            </p>
+            <div
+              class="cadastro-stream-orientacao"
+              id="orientacao-stream"
+            >
+              <strong>Informe a URL direta do áudio em HTTPS.</strong>
+
+              <p>
+                MP3 é o formato recomendado. Também podem ser aceitos
+                AAC, AAC+, HE-AAC, OGG ou Opus quando o servidor entregar
+                áudio compatível com o navegador.
+              </p>
+
+              <p>
+                Não envie o site da rádio, página de status do Shoutcast
+                ou Icecast, painel da hospedagem, arquivo
+                <code>listen.pls</code>, <code>.m3u</code>,
+                <code>.m3u8</code> ou endereço iniciado por
+                <code>http://</code>.
+              </p>
+            </div>
+
+            <div class="cadastro-stream-teste">
+              <button
+                class="cadastro-botao-stream"
+                type="button"
+                id="btn-testar-stream"
+              >
+                🔊 Testar transmissão
+              </button>
+
+              <div
+                class="cadastro-stream-resultado aguardando"
+                id="mensagem-stream"
+                role="status"
+                aria-live="polite"
+              >
+                O teste do stream é obrigatório para liberar o envio.
+              </div>
+            </div>
 
           </div>
 
@@ -477,10 +515,11 @@
             <summary>Condições do cadastro</summary>
 
             <p>
-              O envio não garante publicação. A Central Rádios Brasil
-              poderá validar o stream, a identidade da emissora e a
-              qualidade da logomarca antes da aprovação. Dados
-              incompletos permanecerão pendentes.
+              O envio não garante publicação. O stream precisa ser
+              direto, funcionar em HTTPS e passar pela validação técnica.
+              A Central Rádios Brasil também poderá validar a identidade
+              da emissora e a qualidade da logomarca antes da aprovação.
+              Dados incompletos permanecerão pendentes.
             </p>
 
           </details>
@@ -506,6 +545,7 @@
             class="cadastro-botao cadastro-botao-principal"
             type="submit"
             id="btn-enviar-cadastro"
+            disabled
           >
             Enviar para análise
           </button>
@@ -591,7 +631,7 @@
 
   </footer>
 
-  <script src="cadastro.js?v=22.3.7"></script>
+  <script src="cadastro.js?v=22.5.0"></script>
 
 </body>
 </html>
