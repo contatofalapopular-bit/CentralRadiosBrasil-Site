@@ -73,6 +73,11 @@ const estado = {
   paginaAtual: 1,
   radiosPorPagina: 12,
   registroPendente: false,
+  monitoramentoStreams: {
+    atualizadoEm: null,
+    indisponiveis: new Set(),
+    totalIndisponiveis: 0
+  },
   hero: {
     mensagens: [...HERO_MENSAGENS_PADRAO],
     indice: 0,
@@ -456,9 +461,10 @@ async function carregarBanco() {
   mostrarMensagem("Carregando emissoras...");
 
   try {
-    const resposta = await fetch(URL_RADIOS, {
-      cache: "no-store"
-    });
+    const [resposta, statusMonitoramento] = await Promise.all([
+      fetch(URL_RADIOS, { cache: "no-store" }),
+      carregarStatusMonitoramentoStreams()
+    ]);
 
     if (!resposta.ok) {
       throw new Error(`Erro HTTP ${resposta.status}`);
@@ -469,8 +475,13 @@ async function carregarBanco() {
     validarBanco(banco);
 
     estado.banco = banco;
+    estado.monitoramentoStreams = statusMonitoramento;
 
-    estado.radios = banco.radios.filter(radioPublicaAtiva);
+    estado.radios = banco.radios
+      .filter(radioPublicaAtiva)
+      .filter((radio) =>
+        !statusMonitoramento.indisponiveis.has(radio.id)
+      );
    atualizarIndicadoresNacionais(banco);
     estado.radiosFiltradas = [...estado.radios];
 
@@ -489,6 +500,48 @@ async function carregarBanco() {
     );
 
     atualizarContador(0);
+  }
+}
+
+async function carregarStatusMonitoramentoStreams() {
+  const fallback = {
+    atualizadoEm: null,
+    indisponiveis: new Set(),
+    totalIndisponiveis: 0
+  };
+
+  try {
+    const resposta = await fetch(
+      `${URL_API}/api/streams/status`,
+      { cache: "no-store" }
+    );
+
+    if (!resposta.ok) return fallback;
+
+    const dados = await resposta.json();
+    const lista = Array.isArray(dados?.streams)
+      ? dados.streams
+      : [];
+    const indisponiveis = new Set(
+      lista
+        .filter((item) =>
+          item?.disponivelNoPortal === false
+        )
+        .map((item) => item.radioId)
+        .filter(Boolean)
+    );
+
+    return {
+      atualizadoEm: dados?.atualizadoEm || null,
+      indisponiveis,
+      totalIndisponiveis: indisponiveis.size
+    };
+  } catch (erro) {
+    console.warn(
+      "Monitoramento de streams temporariamente indisponível:",
+      erro
+    );
+    return fallback;
   }
 }
 
@@ -546,8 +599,14 @@ function atualizarInformacoesBanco() {
   const total = estado.radios.length;
   const data = formatarData(estado.banco.generatedAt);
 
+  const temporariamenteIndisponiveis =
+    estado.monitoramentoStreams.totalIndisponiveis || 0;
+
   elementos.informacaoBanco.textContent =
-    `${total} ${total === 1 ? "emissora publicada" : "emissoras publicadas"}` +
+    `${total} ${total === 1 ? "emissora disponível" : "emissoras disponíveis"}` +
+    (temporariamenteIndisponiveis
+      ? ` • ${temporariamenteIndisponiveis} temporariamente fora do ar`
+      : "") +
     (data ? ` • Atualizado em ${data}` : "");
 }
 

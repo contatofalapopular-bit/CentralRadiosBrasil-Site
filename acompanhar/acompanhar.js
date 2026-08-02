@@ -6,6 +6,9 @@ const URL_API_ACOMPANHAMENTO =
 const LIMITE_LOGO_BYTES = 2 * 1024 * 1024;
 const RESOLUCAO_MINIMA_LOGO = 512;
 const RESOLUCAO_MAXIMA_LOGO = 4096;
+const TEMPO_MAXIMO_TESTE_STREAM_MS = 15000;
+const TEMPO_MAXIMO_REPRODUCAO_STREAM_MS = 20000;
+const TEMPO_CONFIRMACAO_REPRODUCAO_MS = 3500;
 
 const formularioConsulta = document.getElementById("form-acompanhar");
 const campoProtocolo = document.getElementById("protocolo");
@@ -36,15 +39,40 @@ const logoConfirmada = document.getElementById("logo-confirmada");
 const logoDimensoes = document.getElementById("logo-dimensoes");
 const mensagemCadastroAprovado = document.getElementById("mensagem-cadastro-aprovado");
 
+const secaoAlteracao = document.getElementById("secao-alteracao-emissora");
+const formularioAlteracao = document.getElementById("form-alteracao-emissora");
+const avisoAlteracaoPendente = document.getElementById("alteracao-pendente-aviso");
+const textoAlteracaoPendente = document.getElementById("alteracao-pendente-texto");
+const campoAlteracaoNome = document.getElementById("alteracao-nome-radio");
+const campoAlteracaoCategoria = document.getElementById("alteracao-categoria");
+const campoAlteracaoCidade = document.getElementById("alteracao-cidade");
+const campoAlteracaoEstado = document.getElementById("alteracao-estado");
+const campoAlteracaoEmail = document.getElementById("alteracao-email");
+const campoAlteracaoWhatsapp = document.getElementById("alteracao-whatsapp");
+const campoAlteracaoSite = document.getElementById("alteracao-site");
+const campoAlteracaoStream = document.getElementById("alteracao-stream");
+const campoAlteracaoDescricao = document.getElementById("alteracao-descricao");
+const campoAlteracaoLogo = document.getElementById("alteracao-logo");
+const botaoTestarStreamAlteracao = document.getElementById("btn-testar-stream-alteracao");
+const mensagemStreamAlteracao = document.getElementById("mensagem-stream-alteracao");
+const alertaAlteracao = document.getElementById("alerta-alteracao");
+const botaoEnviarAlteracao = document.getElementById("btn-enviar-alteracao");
+
 let credenciaisAtuais = null;
 let solicitacaoAtual = null;
 let logoValidada = null;
 let urlPreviewAtual = "";
+let streamAlteracaoValidado = null;
+let testeStreamAlteracaoEmAndamento = false;
+let audioTesteAlteracao = null;
 
 formularioConsulta.addEventListener("submit", consultarCadastro);
 formularioLogo.addEventListener("submit", enviarLogomarca);
 campoLogo.addEventListener("change", validarLogoSelecionada);
 botaoNovaConsulta.addEventListener("click", iniciarNovaConsulta);
+formularioAlteracao.addEventListener("submit", enviarAlteracao);
+campoAlteracaoStream.addEventListener("input", invalidarTesteStreamAlteracao);
+botaoTestarStreamAlteracao.addEventListener("click", testarStreamAlteracao);
 
 preencherProtocoloDaUrl();
 
@@ -147,6 +175,7 @@ function renderizarSolicitacao(solicitacao) {
       "A logomarca foi recebida e o cadastro está aprovado.";
   }
 
+  renderizarAlteracaoEmissora(solicitacao, aprovada);
   limparSelecaoLogo();
 }
 
@@ -296,9 +325,554 @@ async function enviarLogomarca(evento) {
   }
 }
 
+function renderizarAlteracaoEmissora(solicitacao, aprovada) {
+  secaoAlteracao.classList.toggle("hidden", !aprovada);
+
+  if (!aprovada) {
+    formularioAlteracao.classList.add("hidden");
+    avisoAlteracaoPendente.classList.add("hidden");
+    return;
+  }
+
+  const pendente = solicitacao.alteracao_pendente;
+
+  if (pendente) {
+    formularioAlteracao.classList.add("hidden");
+    avisoAlteracaoPendente.classList.remove("hidden");
+    textoAlteracaoPendente.textContent =
+      `Protocolo ${pendente.id} • ${formatarStatus(pendente.status)} • ` +
+      `enviada em ${formatarData(pendente.criado_em)}. ` +
+      "A emissora permanece publicada com os dados anteriores até a conclusão da análise.";
+    return;
+  }
+
+  avisoAlteracaoPendente.classList.add("hidden");
+  formularioAlteracao.classList.remove("hidden");
+  preencherFormularioAlteracao(solicitacao);
+}
+
+function preencherFormularioAlteracao(solicitacao) {
+  campoAlteracaoNome.value = solicitacao.nome_radio || "";
+  campoAlteracaoCategoria.value =
+    solicitacao.categoria_principal || "";
+  campoAlteracaoCidade.value = solicitacao.cidade || "";
+  campoAlteracaoEstado.value = solicitacao.estado || "";
+  campoAlteracaoEmail.value = solicitacao.email || "";
+  campoAlteracaoWhatsapp.value = solicitacao.whatsapp || "";
+  campoAlteracaoSite.value = solicitacao.site || "";
+  campoAlteracaoStream.value = solicitacao.stream_url || "";
+  campoAlteracaoDescricao.value = solicitacao.descricao || "";
+  campoAlteracaoLogo.value = "";
+  streamAlteracaoValidado = {
+    url: obterStreamAlteracaoDigitado(),
+    reproducaoConfirmada: true,
+    original: true
+  };
+  definirMensagemStreamAlteracao(
+    "O stream atual já foi validado. Teste novamente apenas se alterar o endereço.",
+    "aguardando"
+  );
+  campoAlteracaoStream.classList.remove("campo-invalido");
+  atualizarBotaoAlteracao();
+}
+
+function obterStreamAlteracaoDigitado() {
+  return String(campoAlteracaoStream.value || "").trim();
+}
+
+function streamAlteracaoEstaValidado() {
+  return Boolean(
+    streamAlteracaoValidado &&
+    streamAlteracaoValidado.url ===
+      obterStreamAlteracaoDigitado() &&
+    streamAlteracaoValidado.reproducaoConfirmada === true
+  );
+}
+
+function atualizarBotaoAlteracao() {
+  botaoEnviarAlteracao.disabled =
+    testeStreamAlteracaoEmAndamento ||
+    !streamAlteracaoEstaValidado();
+}
+
+function definirMensagemStreamAlteracao(
+  texto,
+  classe = "aguardando"
+) {
+  mensagemStreamAlteracao.textContent = texto;
+  mensagemStreamAlteracao.className =
+    `cadastro-stream-resultado ${classe}`.trim();
+}
+
+function invalidarTesteStreamAlteracao() {
+  encerrarAudioTesteAlteracao();
+  streamAlteracaoValidado = null;
+  campoAlteracaoStream.classList.remove("campo-invalido");
+  definirMensagemStreamAlteracao(
+    "O endereço foi alterado. Teste novamente para liberar o envio.",
+    "aguardando"
+  );
+  atualizarBotaoAlteracao();
+}
+
+function validarFormatoStreamAlteracao(valor) {
+  let url;
+
+  try {
+    url = new URL(valor);
+  } catch {
+    throw new Error("Informe uma URL de stream válida.");
+  }
+
+  if (url.protocol !== "https:") {
+    throw new Error(
+      "O stream precisa começar com https://. Endereços HTTP não são aceitos."
+    );
+  }
+
+  if (url.username || url.password) {
+    throw new Error(
+      "O stream não pode exigir usuário ou senha no endereço."
+    );
+  }
+
+  if (/\.(pls|m3u|m3u8)$/i.test(url.pathname)) {
+    throw new Error(
+      "Envie a URL direta do áudio, não um arquivo .pls, .m3u ou .m3u8."
+    );
+  }
+
+  return url.href;
+}
+
+function encerrarAudioTesteAlteracao() {
+  if (!audioTesteAlteracao) return;
+
+  try {
+    audioTesteAlteracao.pause();
+    audioTesteAlteracao.removeAttribute("src");
+    audioTesteAlteracao.load();
+  } catch {
+    // O encerramento não deve interromper o formulário.
+  }
+
+  audioTesteAlteracao = null;
+}
+
+async function consultarStreamAlteracaoNoWorker(
+  urlNormalizada,
+  signal
+) {
+  const resposta = await fetch(
+    `${URL_API_ACOMPANHAMENTO}/api/streams/testar`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ streamUrl: urlNormalizada }),
+      signal
+    }
+  );
+
+  const resultado = await lerRespostaJson(resposta);
+
+  if (
+    !resposta.ok ||
+    !resultado?.ok ||
+    !resultado?.compativel
+  ) {
+    throw new Error(
+      resultado?.erro ||
+      "O endereço não foi reconhecido como áudio direto compatível."
+    );
+  }
+
+  return resultado;
+}
+
+function confirmarStreamAlteracaoNoNavegador(
+  urlNormalizada
+) {
+  encerrarAudioTesteAlteracao();
+
+  const audio = new Audio();
+  audioTesteAlteracao = audio;
+  audio.preload = "auto";
+  audio.volume = 0.35;
+  audio.src = urlNormalizada;
+  audio.setAttribute("playsinline", "");
+
+  return new Promise((resolve, reject) => {
+    let finalizado = false;
+    let iniciou = false;
+    let timerConfirmacao = null;
+
+    const timerLimite = window.setTimeout(() => {
+      falhar(
+        "O servidor respondeu, mas o navegador não reproduziu o áudio em até 20 segundos."
+      );
+    }, TEMPO_MAXIMO_REPRODUCAO_STREAM_MS);
+
+    function limpar() {
+      window.clearTimeout(timerLimite);
+      if (timerConfirmacao) {
+        window.clearTimeout(timerConfirmacao);
+      }
+      audio.removeEventListener("playing", confirmarInicio);
+      audio.removeEventListener("timeupdate", confirmarPeloTempo);
+      audio.removeEventListener("error", tratarErro);
+      audio.removeEventListener("abort", tratarInterrupcao);
+    }
+
+    function concluir() {
+      if (finalizado) return;
+      finalizado = true;
+      limpar();
+      encerrarAudioTesteAlteracao();
+      resolve(true);
+    }
+
+    function falhar(mensagem) {
+      if (finalizado) return;
+      finalizado = true;
+      limpar();
+      encerrarAudioTesteAlteracao();
+      reject(new Error(mensagem));
+    }
+
+    function confirmarInicio() {
+      if (iniciou || finalizado) return;
+      iniciou = true;
+      definirMensagemStreamAlteracao(
+        "🔊 O áudio está tocando. Confirmando por alguns segundos...",
+        "testando"
+      );
+      timerConfirmacao = window.setTimeout(
+        concluir,
+        TEMPO_CONFIRMACAO_REPRODUCAO_MS
+      );
+    }
+
+    function confirmarPeloTempo() {
+      if (
+        Number.isFinite(audio.currentTime) &&
+        audio.currentTime > 0
+      ) {
+        confirmarInicio();
+      }
+    }
+
+    function tratarErro() {
+      const codigo = audio.error?.code || 0;
+      const mensagens = {
+        1: "O teste de áudio foi interrompido.",
+        2: "O navegador encontrou uma falha de rede ao abrir o stream.",
+        3: "O navegador recebeu o stream, mas não decodificou o áudio.",
+        4: "O formato do áudio não é compatível com este navegador."
+      };
+      falhar(
+        mensagens[codigo] ||
+        "O navegador não conseguiu reproduzir este endereço."
+      );
+    }
+
+    function tratarInterrupcao() {
+      if (!finalizado && !iniciou) {
+        falhar("A reprodução do stream foi interrompida.");
+      }
+    }
+
+    audio.addEventListener("playing", confirmarInicio);
+    audio.addEventListener("timeupdate", confirmarPeloTempo);
+    audio.addEventListener("error", tratarErro);
+    audio.addEventListener("abort", tratarInterrupcao);
+
+    const tentativa = audio.play();
+
+    if (
+      tentativa &&
+      typeof tentativa.catch === "function"
+    ) {
+      tentativa.catch((erro) => {
+        const mensagem =
+          erro?.name === "NotAllowedError"
+            ? "O navegador bloqueou o som. Clique novamente em Testar transmissão."
+            : erro?.name === "NotSupportedError"
+              ? "O navegador não reconheceu este endereço como áudio."
+              : "Não foi possível iniciar a reprodução real deste stream.";
+        falhar(mensagem);
+      });
+    }
+  });
+}
+
+async function testarStreamAlteracao() {
+  ocultarAlerta(alertaAlteracao);
+  encerrarAudioTesteAlteracao();
+  streamAlteracaoValidado = null;
+
+  const valor = obterStreamAlteracaoDigitado();
+
+  if (!valor) {
+    campoAlteracaoStream.classList.add("campo-invalido");
+    definirMensagemStreamAlteracao(
+      "Informe primeiro a URL direta da transmissão.",
+      "erro"
+    );
+    return;
+  }
+
+  let urlNormalizada;
+
+  try {
+    urlNormalizada = validarFormatoStreamAlteracao(valor);
+  } catch (erro) {
+    campoAlteracaoStream.classList.add("campo-invalido");
+    definirMensagemStreamAlteracao(
+      erro instanceof Error
+        ? erro.message
+        : "A URL do stream é inválida.",
+      "erro"
+    );
+    return;
+  }
+
+  campoAlteracaoStream.value = urlNormalizada;
+  campoAlteracaoStream.classList.remove("campo-invalido");
+  testeStreamAlteracaoEmAndamento = true;
+  botaoTestarStreamAlteracao.disabled = true;
+  botaoTestarStreamAlteracao.textContent = "Testando...";
+  definirMensagemStreamAlteracao(
+    "Verificando o servidor e a reprodução real do áudio...",
+    "testando"
+  );
+  atualizarBotaoAlteracao();
+
+  const controlador = new AbortController();
+  const timer = window.setTimeout(
+    () => controlador.abort(),
+    TEMPO_MAXIMO_TESTE_STREAM_MS
+  );
+
+  try {
+    const [resultado] = await Promise.all([
+      consultarStreamAlteracaoNoWorker(
+        urlNormalizada,
+        controlador.signal
+      ),
+      confirmarStreamAlteracaoNoNavegador(
+        urlNormalizada
+      )
+    ]);
+
+    streamAlteracaoValidado = {
+      url: obterStreamAlteracaoDigitado(),
+      reproducaoConfirmada: true,
+      formato: resultado.formato || "Áudio"
+    };
+
+    definirMensagemStreamAlteracao(
+      `✅ Stream compatível: ${resultado.formato || "Áudio"} • reprodução confirmada`,
+      "sucesso"
+    );
+  } catch (erro) {
+    streamAlteracaoValidado = null;
+    campoAlteracaoStream.classList.add("campo-invalido");
+    definirMensagemStreamAlteracao(
+      erro?.name === "AbortError"
+        ? "O servidor demorou demais para responder."
+        : erro instanceof Error
+          ? erro.message
+          : "Não foi possível testar o stream.",
+      "erro"
+    );
+  } finally {
+    window.clearTimeout(timer);
+    controlador.abort();
+    encerrarAudioTesteAlteracao();
+    testeStreamAlteracaoEmAndamento = false;
+    botaoTestarStreamAlteracao.disabled = false;
+    botaoTestarStreamAlteracao.textContent =
+      "🔊 Testar transmissão";
+    atualizarBotaoAlteracao();
+  }
+}
+
+async function validarLogoAlteracaoSelecionada() {
+  const arquivo = campoAlteracaoLogo.files?.[0];
+
+  if (!arquivo) return true;
+
+  if (
+    !["image/png", "image/jpeg", "image/webp"].includes(
+      arquivo.type
+    )
+  ) {
+    throw new Error(
+      "A nova logomarca deve ser PNG, JPG, JPEG ou WebP."
+    );
+  }
+
+  if (arquivo.size > LIMITE_LOGO_BYTES) {
+    throw new Error(
+      "A nova logomarca ultrapassa o limite de 2 MB."
+    );
+  }
+
+  const dimensoes = await obterDimensoesImagem(arquivo);
+
+  if (dimensoes.largura !== dimensoes.altura) {
+    throw new Error(
+      "A nova logomarca precisa ser quadrada, com proporção 1:1."
+    );
+  }
+
+  if (
+    dimensoes.largura < RESOLUCAO_MINIMA_LOGO ||
+    dimensoes.largura > RESOLUCAO_MAXIMA_LOGO
+  ) {
+    throw new Error(
+      "A nova logomarca deve ter entre 512 × 512 e 4096 × 4096 pixels."
+    );
+  }
+
+  return true;
+}
+
+function existemMudancasNaAlteracao() {
+  if (!solicitacaoAtual) return false;
+
+  const valores = {
+    nome_radio: campoAlteracaoNome.value.trim(),
+    categoria_principal: campoAlteracaoCategoria.value.trim(),
+    cidade: campoAlteracaoCidade.value.trim(),
+    estado: campoAlteracaoEstado.value,
+    email: campoAlteracaoEmail.value.trim().toLowerCase(),
+    whatsapp: campoAlteracaoWhatsapp.value.trim(),
+    site: campoAlteracaoSite.value.trim(),
+    stream_url: campoAlteracaoStream.value.trim(),
+    descricao: campoAlteracaoDescricao.value.trim()
+  };
+
+  const mudouCampo = Object.entries(valores).some(
+    ([chave, valor]) =>
+      String(solicitacaoAtual[chave] || "").trim() !==
+      String(valor || "").trim()
+  );
+
+  return mudouCampo || Boolean(campoAlteracaoLogo.files?.[0]);
+}
+
+async function enviarAlteracao(evento) {
+  evento.preventDefault();
+  ocultarAlerta(alertaAlteracao);
+
+  if (!credenciaisAtuais || !solicitacaoAtual) {
+    mostrarAlerta(
+      alertaAlteracao,
+      "Consulte novamente o cadastro antes de enviar a alteração."
+    );
+    return;
+  }
+
+  if (!formularioAlteracao.checkValidity()) {
+    formularioAlteracao.reportValidity();
+    return;
+  }
+
+  if (!streamAlteracaoEstaValidado()) {
+    mostrarAlerta(
+      alertaAlteracao,
+      "Teste a transmissão e aguarde a confirmação antes de enviar."
+    );
+    campoAlteracaoStream.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+    return;
+  }
+
+  if (!existemMudancasNaAlteracao()) {
+    mostrarAlerta(
+      alertaAlteracao,
+      "Nenhuma alteração foi informada."
+    );
+    return;
+  }
+
+  try {
+    await validarLogoAlteracaoSelecionada();
+  } catch (erro) {
+    mostrarAlerta(
+      alertaAlteracao,
+      erro instanceof Error
+        ? erro.message
+        : "A nova logomarca é inválida."
+    );
+    return;
+  }
+
+  const dados = new FormData(formularioAlteracao);
+  dados.append("protocolo", credenciaisAtuais.protocolo);
+  dados.append(
+    "emailAutenticacao",
+    credenciaisAtuais.email
+  );
+
+  if (!campoAlteracaoLogo.files?.[0]) {
+    dados.delete("logo");
+  }
+
+  botaoEnviarAlteracao.disabled = true;
+  botaoEnviarAlteracao.textContent = "Enviando...";
+
+  try {
+    const resposta = await fetch(
+      `${URL_API_ACOMPANHAMENTO}/api/solicitacoes/alteracoes`,
+      {
+        method: "POST",
+        body: dados
+      }
+    );
+    const resultado = await lerRespostaJson(resposta);
+
+    if (!resposta.ok || !resultado?.ok) {
+      throw new Error(
+        resultado?.erro ||
+        `Não foi possível enviar a alteração (HTTP ${resposta.status}).`
+      );
+    }
+
+    solicitacaoAtual.alteracao_pendente =
+      resultado.alteracao;
+    renderizarSolicitacao(solicitacaoAtual);
+    mostrarAlerta(
+      alertaAlteracao,
+      "Alteração recebida. A emissora continua publicada com os dados anteriores até a aprovação.",
+      "sucesso"
+    );
+  } catch (erro) {
+    mostrarAlerta(
+      alertaAlteracao,
+      erro instanceof Error
+        ? erro.message
+        : "Não foi possível enviar a alteração agora."
+    );
+  } finally {
+    botaoEnviarAlteracao.textContent =
+      "Enviar alteração para análise";
+    atualizarBotaoAlteracao();
+  }
+}
+
 function iniciarNovaConsulta() {
   credenciaisAtuais = null;
   solicitacaoAtual = null;
+  streamAlteracaoValidado = null;
+  encerrarAudioTesteAlteracao();
+  secaoAlteracao.classList.add("hidden");
+  ocultarAlerta(alertaAlteracao);
   limparSelecaoLogo();
   resultadoCadastro.classList.add("hidden");
   formularioConsulta.classList.remove("hidden");

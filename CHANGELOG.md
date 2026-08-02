@@ -1,3 +1,11 @@
+## 22.5.2 — Alterações da emissora e proteção contra streams fora do ar
+
+- Página Acompanhar cadastro permite solicitar alterações após a aprovação.
+- Dados já publicados permanecem ativos até a análise administrativa e uma nova publicação.
+- Novo teste obrigatório de reprodução quando a URL do stream é alterada.
+- Portal consulta o monitoramento automático e oculta temporariamente emissoras sem áudio por 12 horas.
+- Emissoras reaparecem após duas verificações consecutivas com áudio.
+
 # Changelog
 
 ## 22.3.6 — Acesso ao Portal da Emissora

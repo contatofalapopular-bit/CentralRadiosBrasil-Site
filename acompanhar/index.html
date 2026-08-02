@@ -11,9 +11,9 @@
 
   <title>Acompanhar cadastro — Central Rádios Brasil</title>
 
-  <link rel="stylesheet" href="../style.css?v=22.3.8">
-  <link rel="stylesheet" href="../cadastro/cadastro.css?v=22.3.8">
-  <link rel="stylesheet" href="acompanhar.css?v=22.3.8">
+  <link rel="stylesheet" href="../style.css?v=22.5.2">
+  <link rel="stylesheet" href="../cadastro/cadastro.css?v=22.5.2">
+  <link rel="stylesheet" href="acompanhar.css?v=22.5.2">
 </head>
 
 <body>
@@ -265,12 +265,151 @@
             >
               <strong>Cadastro aprovado</strong>
               <p>
-                Para alterar dados ou logomarca após a aprovação,
-                entre em contato com o suporte da Central Rádios Brasil.
+                A emissora pode solicitar alterações sem sair do catálogo.
+                Os dados publicados permanecem ativos até a nova aprovação.
               </p>
             </div>
           </div>
         </div>
+
+        <section
+          class="acompanhar-alteracao hidden"
+          id="secao-alteracao-emissora"
+        >
+          <div class="cadastro-divisor"></div>
+
+          <div class="cadastro-secao-titulo">
+            <span>03</span>
+            <div>
+              <h2>Solicitar alteração dos dados</h2>
+              <p>
+                A versão atual continuará publicada até a análise e a
+                próxima publicação oficial.
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="acompanhar-alteracao-pendente hidden"
+            id="alteracao-pendente-aviso"
+          >
+            <strong>Alteração aguardando análise</strong>
+            <p id="alteracao-pendente-texto"></p>
+          </div>
+
+          <form
+            class="cadastro-formulario acompanhar-form-alteracao"
+            id="form-alteracao-emissora"
+            enctype="multipart/form-data"
+            novalidate
+          >
+            <div class="cadastro-grade cadastro-grade-dupla">
+              <div class="cadastro-campo">
+                <label for="alteracao-nome-radio">Nome da rádio <em>*</em></label>
+                <input id="alteracao-nome-radio" name="nomeRadio" maxlength="120" required>
+              </div>
+
+              <div class="cadastro-campo">
+                <label for="alteracao-categoria">Categoria principal <em>*</em></label>
+                <input id="alteracao-categoria" name="categoriaPrincipal" maxlength="60" required>
+              </div>
+
+              <div class="cadastro-campo">
+                <label for="alteracao-cidade">Cidade <em>*</em></label>
+                <input id="alteracao-cidade" name="cidade" maxlength="80" required>
+              </div>
+
+              <div class="cadastro-campo">
+                <label for="alteracao-estado">Estado <em>*</em></label>
+                <select id="alteracao-estado" name="estado" required>
+                  <option value="">Selecione</option>
+                  <option value="AC">AC</option><option value="AL">AL</option>
+                  <option value="AP">AP</option><option value="AM">AM</option>
+                  <option value="BA">BA</option><option value="CE">CE</option>
+                  <option value="DF">DF</option><option value="ES">ES</option>
+                  <option value="GO">GO</option><option value="MA">MA</option>
+                  <option value="MT">MT</option><option value="MS">MS</option>
+                  <option value="MG">MG</option><option value="PA">PA</option>
+                  <option value="PB">PB</option><option value="PR">PR</option>
+                  <option value="PE">PE</option><option value="PI">PI</option>
+                  <option value="RJ">RJ</option><option value="RN">RN</option>
+                  <option value="RS">RS</option><option value="RO">RO</option>
+                  <option value="RR">RR</option><option value="SC">SC</option>
+                  <option value="SP">SP</option><option value="SE">SE</option>
+                  <option value="TO">TO</option>
+                </select>
+              </div>
+
+              <div class="cadastro-campo">
+                <label for="alteracao-email">E-mail de contato <em>*</em></label>
+                <input id="alteracao-email" name="email" type="email" maxlength="160" required>
+              </div>
+
+              <div class="cadastro-campo">
+                <label for="alteracao-whatsapp">WhatsApp <em>*</em></label>
+                <input id="alteracao-whatsapp" name="whatsapp" maxlength="24" required>
+              </div>
+
+              <div class="cadastro-campo cadastro-campo-largo">
+                <label for="alteracao-site">Site</label>
+                <input id="alteracao-site" name="site" type="url" maxlength="240" placeholder="https://">
+              </div>
+
+              <div class="cadastro-campo cadastro-campo-largo">
+                <label for="alteracao-stream">URL direta do stream <em>*</em></label>
+                <div class="acompanhar-stream-linha">
+                  <input id="alteracao-stream" name="streamUrl" type="url" maxlength="500" required>
+                  <button
+                    class="cadastro-botao cadastro-botao-secundario"
+                    type="button"
+                    id="btn-testar-stream-alteracao"
+                  >
+                    🔊 Testar transmissão
+                  </button>
+                </div>
+                <p
+                  class="cadastro-stream-resultado aguardando"
+                  id="mensagem-stream-alteracao"
+                  role="status"
+                >
+                  O stream atual já foi validado. Teste novamente apenas se alterar o endereço.
+                </p>
+              </div>
+
+              <div class="cadastro-campo cadastro-campo-largo">
+                <label for="alteracao-descricao">Descrição</label>
+                <textarea id="alteracao-descricao" name="descricao" rows="4" maxlength="600"></textarea>
+              </div>
+
+              <div class="cadastro-campo cadastro-campo-largo">
+                <label for="alteracao-logo">Nova logomarca (opcional)</label>
+                <input
+                  id="alteracao-logo"
+                  name="logo"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                >
+                <small>Quadrada, entre 512 × 512 e 4096 × 4096 pixels, até 2 MB.</small>
+              </div>
+            </div>
+
+            <div
+              class="cadastro-alerta hidden"
+              id="alerta-alteracao"
+              role="alert"
+            ></div>
+
+            <div class="cadastro-acoes">
+              <button
+                class="cadastro-botao cadastro-botao-principal"
+                type="submit"
+                id="btn-enviar-alteracao"
+              >
+                Enviar alteração para análise
+              </button>
+            </div>
+          </form>
+        </section>
 
         <div class="cadastro-acoes">
           <button
@@ -290,6 +429,6 @@
     <p>Seus dados são usados somente para localizar e analisar o cadastro.</p>
   </footer>
 
-  <script src="acompanhar.js?v=22.3.8"></script>
+  <script src="acompanhar.js?v=22.5.2"></script>
 </body>
 </html>
