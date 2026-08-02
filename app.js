@@ -1712,7 +1712,7 @@ function animarNumero(id, valorFinal) {
 
 
 /* =========================================================
-   RANKING NACIONAL — VERSÃO 22.6.0
+   RANKING NACIONAL — VERSÃO 22.7.0
 ========================================================= */
 
 const rankingDemonstracao = [

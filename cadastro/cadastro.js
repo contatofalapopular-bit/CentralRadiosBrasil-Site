@@ -9,10 +9,34 @@ const RESOLUCAO_MAXIMA_LOGO = 4096;
 const TEMPO_MAXIMO_TESTE_STREAM_MS = 15000;
 const TEMPO_MAXIMO_REPRODUCAO_STREAM_MS = 20000;
 const TEMPO_CONFIRMACAO_REPRODUCAO_MS = 3500;
+const CHAVE_RASCUNHO_CADASTRO = "crb-cadastro-rascunho-v1";
+const TEMPO_ESPERA_DUPLICIDADE_MS = 650;
+
+const CODIGOS_IBGE_UF = {
+  AC: 12, AL: 27, AP: 16, AM: 13, BA: 29,
+  CE: 23, DF: 53, ES: 32, GO: 52, MA: 21,
+  MT: 51, MS: 50, MG: 31, PA: 15, PB: 25,
+  PR: 41, PE: 26, PI: 22, RJ: 33, RN: 24,
+  RS: 43, RO: 11, RR: 14, SC: 42, SP: 35,
+  SE: 28, TO: 17
+};
 
 const formulario = document.getElementById(
   "form-cadastro-emissora"
 );
+
+const campoNomeRadio = document.getElementById("nome-radio");
+const campoCidade = document.getElementById("cidade");
+const listaMunicipios = document.getElementById("municipios-sugeridos");
+const mensagemCidade = document.getElementById("mensagem-cidade");
+const campoEstado = document.getElementById("estado");
+const campoCategoria = document.getElementById("categoria-principal");
+const campoSite = document.getElementById("site");
+const campoEmail = document.getElementById("email");
+const campoWhatsapp = document.getElementById("whatsapp");
+const mensagemDuplicidade = document.getElementById("mensagem-duplicidade");
+const mensagemRascunho = document.getElementById("mensagem-rascunho");
+const botaoLimparRascunho = document.getElementById("btn-limpar-rascunho");
 
 const campoLogo = document.getElementById("logo");
 const previewLogo = document.getElementById("logo-preview");
@@ -50,6 +74,17 @@ let urlPreviewAtual = "";
 let streamValidado = null;
 let testeStreamEmAndamento = false;
 let audioTesteStream = null;
+let municipiosCarregados = [];
+let controladorMunicipios = null;
+let temporizadorDuplicidade = null;
+let verificacaoDuplicidadeEmAndamento = false;
+let duplicidadeCadastro = {
+  verificada: false,
+  bloqueado: false,
+  motivos: [],
+  avisos: []
+};
+let temporizadorRascunho = null;
 
 campoDescricao.addEventListener("input", () => {
   contadorDescricao.textContent =
@@ -57,13 +92,57 @@ campoDescricao.addEventListener("input", () => {
 });
 
 campoLogo.addEventListener("change", validarLogoSelecionada);
-campoStream.addEventListener("input", invalidarTesteStream);
+campoStream.addEventListener("input", () => {
+  invalidarTesteStream();
+  agendarVerificacaoDuplicidade();
+});
 botaoTestarStream.addEventListener("click", testarStream);
 
-formulario.addEventListener("submit", enviarCadastro);
-atualizarEstadoBotaoEnviar();
+campoEstado.addEventListener("change", async () => {
+  campoCidade.value = "";
+  await carregarMunicipiosDoEstado();
+  agendarVerificacaoDuplicidade();
+});
 
+campoCidade.addEventListener("input", () => {
+  validarCidadeOficial(false);
+  agendarVerificacaoDuplicidade();
+});
+
+campoCidade.addEventListener("blur", () => {
+  validarCidadeOficial(true);
+  agendarVerificacaoDuplicidade(true);
+});
+
+[campoNomeRadio, campoEmail].forEach((campo) => {
+  campo.addEventListener("input", agendarVerificacaoDuplicidade);
+  campo.addEventListener("blur", () =>
+    agendarVerificacaoDuplicidade(true)
+  );
+});
+
+campoSite.addEventListener("blur", () => {
+  normalizarSiteDigitado();
+  agendarVerificacaoDuplicidade(true);
+});
+
+campoWhatsapp.addEventListener("input", formatarWhatsapp);
+
+formulario.addEventListener("input", agendarSalvamentoRascunho);
+formulario.addEventListener("change", agendarSalvamentoRascunho);
+formulario.addEventListener("submit", enviarCadastro);
+botaoLimparRascunho.addEventListener("click", limparRascunho);
 botaoCopiar.addEventListener("click", copiarProtocolo);
+
+restaurarRascunho();
+contadorDescricao.textContent =
+  `${campoDescricao.value.length}/600`;
+
+if (campoEstado.value) {
+  carregarMunicipiosDoEstado(campoCidade.value);
+}
+
+atualizarEstadoBotaoEnviar();
 
 function obterStreamDigitado() {
   return String(campoStream.value || "").trim();
@@ -78,12 +157,12 @@ function streamEstaValidado() {
 }
 
 function atualizarEstadoBotaoEnviar() {
-  if (testeStreamEmAndamento) {
-    botaoEnviar.disabled = true;
-    return;
-  }
-
-  botaoEnviar.disabled = !streamEstaValidado();
+  botaoEnviar.disabled = Boolean(
+    testeStreamEmAndamento ||
+    verificacaoDuplicidadeEmAndamento ||
+    duplicidadeCadastro.bloqueado ||
+    !streamEstaValidado()
+  );
 }
 
 function definirMensagemStream(texto, classe = "aguardando") {
@@ -95,6 +174,7 @@ function definirMensagemStream(texto, classe = "aguardando") {
 function invalidarTesteStream() {
   encerrarAudioTesteStream();
   streamValidado = null;
+  duplicidadeCadastro.verificada = false;
   campoStream.classList.remove("campo-invalido");
 
   definirMensagemStream(
@@ -430,6 +510,8 @@ async function testarStream() {
       `✅ Stream testado e compatível: ${detalhes.join(" • ")}`,
       "sucesso"
     );
+
+    await verificarDuplicidadeCadastro(true);
   } catch (erro) {
     streamValidado = null;
     campoStream.classList.add("campo-invalido");
@@ -452,6 +534,397 @@ async function testarStream() {
       "🔊 Testar transmissão";
     atualizarEstadoBotaoEnviar();
   }
+}
+
+
+async function carregarMunicipiosDoEstado(cidadePreservada = "") {
+  const uf = campoEstado.value;
+  const codigo = CODIGOS_IBGE_UF[uf];
+
+  municipiosCarregados = [];
+  listaMunicipios.replaceChildren();
+  campoCidade.setCustomValidity("");
+
+  if (!codigo) {
+    campoCidade.placeholder = "Selecione primeiro o estado";
+    mensagemCidade.textContent =
+      "Ao escolher o estado, carregaremos as cidades oficiais do IBGE.";
+    return;
+  }
+
+  if (controladorMunicipios) {
+    controladorMunicipios.abort();
+  }
+
+  controladorMunicipios = new AbortController();
+  campoCidade.placeholder = "Carregando cidades...";
+  mensagemCidade.textContent = "Carregando cidades oficiais...";
+
+  try {
+    const resposta = await fetch(
+      `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${codigo}/municipios?orderBy=nome`,
+      { signal: controladorMunicipios.signal }
+    );
+
+    if (!resposta.ok) {
+      throw new Error(`HTTP ${resposta.status}`);
+    }
+
+    const dados = await resposta.json();
+    municipiosCarregados = Array.isArray(dados)
+      ? dados
+        .map((municipio) => String(municipio?.nome || "").trim())
+        .filter(Boolean)
+      : [];
+
+    const fragmento = document.createDocumentFragment();
+
+    for (const municipio of municipiosCarregados) {
+      const opcao = document.createElement("option");
+      opcao.value = municipio;
+      fragmento.appendChild(opcao);
+    }
+
+    listaMunicipios.replaceChildren(fragmento);
+    campoCidade.placeholder = "Comece a digitar a cidade";
+    mensagemCidade.textContent =
+      `${municipiosCarregados.length} cidades carregadas. Escolha uma opção da lista.`;
+
+    if (cidadePreservada) {
+      campoCidade.value = cidadePreservada;
+      validarCidadeOficial(false);
+    }
+  } catch (erro) {
+    if (erro?.name === "AbortError") return;
+
+    campoCidade.placeholder = "Digite a cidade";
+    mensagemCidade.textContent =
+      "Não foi possível carregar a lista agora. Você pode digitar a cidade manualmente.";
+    campoCidade.setCustomValidity("");
+  }
+}
+
+function normalizarComparacaoLocal(valor) {
+  return String(valor || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function validarCidadeOficial(mostrarMensagem) {
+  const valor = campoCidade.value.trim();
+
+  if (!valor || municipiosCarregados.length === 0) {
+    campoCidade.setCustomValidity("");
+    return true;
+  }
+
+  const chave = normalizarComparacaoLocal(valor);
+  const cidadeOficial = municipiosCarregados.find(
+    (municipio) =>
+      normalizarComparacaoLocal(municipio) === chave
+  );
+
+  if (cidadeOficial) {
+    campoCidade.value = cidadeOficial;
+    campoCidade.setCustomValidity("");
+    campoCidade.classList.remove("campo-invalido");
+    return true;
+  }
+
+  campoCidade.setCustomValidity(
+    "Escolha uma cidade da lista oficial do estado selecionado."
+  );
+
+  if (mostrarMensagem) {
+    campoCidade.classList.add("campo-invalido");
+    mensagemCidade.textContent =
+      "Escolha uma das cidades sugeridas para evitar erro de localização.";
+  }
+
+  return false;
+}
+
+function normalizarSiteDigitado() {
+  const valor = campoSite.value.trim();
+
+  if (!valor) return;
+
+  if (!/^https?:\/\//i.test(valor) && valor.includes(".")) {
+    campoSite.value = `https://${valor}`;
+  }
+}
+
+function formatarWhatsapp() {
+  let digitos = campoWhatsapp.value.replace(/\D/g, "");
+
+  if (digitos.startsWith("55") && digitos.length > 11) {
+    digitos = digitos.slice(2);
+  }
+
+  digitos = digitos.slice(0, 11);
+
+  if (digitos.length <= 2) {
+    campoWhatsapp.value = digitos;
+    return;
+  }
+
+  const ddd = digitos.slice(0, 2);
+  const numero = digitos.slice(2);
+
+  if (numero.length <= 4) {
+    campoWhatsapp.value = `(${ddd}) ${numero}`;
+  } else if (numero.length <= 8) {
+    campoWhatsapp.value =
+      `(${ddd}) ${numero.slice(0, 4)}-${numero.slice(4)}`;
+  } else {
+    campoWhatsapp.value =
+      `(${ddd}) ${numero.slice(0, 5)}-${numero.slice(5)}`;
+  }
+}
+
+function agendarVerificacaoDuplicidade(imediata = false) {
+  duplicidadeCadastro = {
+    verificada: false,
+    bloqueado: false,
+    motivos: [],
+    avisos: []
+  };
+  atualizarEstadoBotaoEnviar();
+
+  if (temporizadorDuplicidade) {
+    window.clearTimeout(temporizadorDuplicidade);
+  }
+
+  temporizadorDuplicidade = window.setTimeout(
+    () => verificarDuplicidadeCadastro(false),
+    imediata ? 0 : TEMPO_ESPERA_DUPLICIDADE_MS
+  );
+}
+
+async function verificarDuplicidadeCadastro(forcar = false) {
+  const dados = {
+    nomeRadio: campoNomeRadio.value.trim(),
+    cidade: campoCidade.value.trim(),
+    estado: campoEstado.value,
+    email: campoEmail.value.trim(),
+    site: campoSite.value.trim(),
+    streamUrl: obterStreamDigitado()
+  };
+
+  const possuiLocalizacao = Boolean(
+    dados.nomeRadio && dados.cidade && dados.estado
+  );
+
+  if (!dados.streamUrl && !possuiLocalizacao) {
+    duplicidadeCadastro = {
+      verificada: false,
+      bloqueado: false,
+      motivos: [],
+      avisos: []
+    };
+    definirMensagemDuplicidade(
+      "🔎 A emissora e o stream serão comparados com o catálogo antes do envio.",
+      "aguardando"
+    );
+    atualizarEstadoBotaoEnviar();
+    return duplicidadeCadastro;
+  }
+
+  if (
+    verificacaoDuplicidadeEmAndamento ||
+    (!forcar && duplicidadeCadastro.verificada)
+  ) {
+    return duplicidadeCadastro;
+  }
+
+  verificacaoDuplicidadeEmAndamento = true;
+  definirMensagemDuplicidade(
+    "🔎 Verificando se a emissora ou a transmissão já estão cadastradas...",
+    "verificando"
+  );
+  atualizarEstadoBotaoEnviar();
+
+  try {
+    const resposta = await fetch(
+      `${URL_API_CADASTRO}/api/solicitacoes/verificar-duplicidade`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dados)
+      }
+    );
+
+    const resultado = await resposta.json();
+
+    if (!resposta.ok || !resultado?.ok) {
+      throw new Error(
+        resultado?.erro || "Não foi possível verificar duplicidade."
+      );
+    }
+
+    duplicidadeCadastro = {
+      verificada: true,
+      bloqueado: Boolean(resultado.bloqueado),
+      motivos: Array.isArray(resultado.motivos)
+        ? resultado.motivos
+        : [],
+      avisos: Array.isArray(resultado.avisos)
+        ? resultado.avisos
+        : []
+    };
+
+    if (duplicidadeCadastro.bloqueado) {
+      definirMensagemDuplicidade(
+        `⛔ ${duplicidadeCadastro.motivos[0]?.mensagem || "Cadastro duplicado."}`,
+        "erro",
+        true
+      );
+    } else if (duplicidadeCadastro.avisos.length) {
+      definirMensagemDuplicidade(
+        `⚠️ ${duplicidadeCadastro.avisos[0].mensagem}`,
+        "aviso"
+      );
+    } else {
+      definirMensagemDuplicidade(
+        "✅ Nenhum cadastro duplicado foi encontrado.",
+        "sucesso"
+      );
+    }
+  } catch (erro) {
+    duplicidadeCadastro = {
+      verificada: false,
+      bloqueado: false,
+      motivos: [],
+      avisos: []
+    };
+
+    definirMensagemDuplicidade(
+      "⚠️ A verificação prévia não respondeu. O servidor tentará novamente no envio.",
+      "aviso"
+    );
+  } finally {
+    verificacaoDuplicidadeEmAndamento = false;
+    atualizarEstadoBotaoEnviar();
+  }
+
+  return duplicidadeCadastro;
+}
+
+function definirMensagemDuplicidade(
+  texto,
+  classe,
+  mostrarAcompanhar = false
+) {
+  mensagemDuplicidade.className =
+    `cadastro-duplicidade ${classe}`.trim();
+  mensagemDuplicidade.replaceChildren();
+
+  const span = document.createElement("span");
+  span.textContent = texto;
+  mensagemDuplicidade.appendChild(span);
+
+  if (mostrarAcompanhar) {
+    const link = document.createElement("a");
+    link.href = "../acompanhar/";
+    link.textContent = "Acompanhar cadastro existente";
+    mensagemDuplicidade.appendChild(link);
+  }
+}
+
+function agendarSalvamentoRascunho() {
+  if (temporizadorRascunho) {
+    window.clearTimeout(temporizadorRascunho);
+  }
+
+  temporizadorRascunho = window.setTimeout(
+    salvarRascunho,
+    500
+  );
+}
+
+function salvarRascunho() {
+  const dados = {};
+
+  [
+    "nomeRadio", "cidade", "estado", "categoriaPrincipal",
+    "site", "descricao", "streamUrl", "email", "whatsapp"
+  ].forEach((nome) => {
+    const campo = formulario.elements.namedItem(nome);
+    if (campo) dados[nome] = campo.value;
+  });
+
+  dados.termosAceitos = Boolean(
+    formulario.elements.namedItem("termosAceitos")?.checked
+  );
+
+  try {
+    localStorage.setItem(
+      CHAVE_RASCUNHO_CADASTRO,
+      JSON.stringify(dados)
+    );
+    mensagemRascunho.textContent =
+      "Rascunho salvo automaticamente neste aparelho.";
+  } catch {
+    mensagemRascunho.textContent =
+      "Não foi possível salvar o rascunho neste navegador.";
+  }
+}
+
+function restaurarRascunho() {
+  let dados;
+
+  try {
+    dados = JSON.parse(
+      localStorage.getItem(CHAVE_RASCUNHO_CADASTRO) || "null"
+    );
+  } catch {
+    dados = null;
+  }
+
+  if (!dados || typeof dados !== "object") return;
+
+  [
+    "nomeRadio", "cidade", "estado", "categoriaPrincipal",
+    "site", "descricao", "streamUrl", "email", "whatsapp"
+  ].forEach((nome) => {
+    const campo = formulario.elements.namedItem(nome);
+    if (campo && typeof dados[nome] === "string") {
+      campo.value = dados[nome];
+    }
+  });
+
+  const termos = formulario.elements.namedItem("termosAceitos");
+  if (termos) termos.checked = Boolean(dados.termosAceitos);
+
+  mensagemRascunho.textContent =
+    "Rascunho anterior recuperado neste aparelho.";
+}
+
+function limparRascunho() {
+  localStorage.removeItem(CHAVE_RASCUNHO_CADASTRO);
+  formulario.reset();
+  limparPreviewLogo();
+  logoValidada = null;
+  streamValidado = null;
+  municipiosCarregados = [];
+  listaMunicipios.replaceChildren();
+  campoCidade.setCustomValidity("");
+  campoCidade.placeholder = "Selecione primeiro o estado";
+  contadorDescricao.textContent = "0/600";
+  definirMensagemStream(
+    "O teste do stream é obrigatório para liberar o envio.",
+    "aguardando"
+  );
+  definirMensagemDuplicidade(
+    "🔎 A emissora e o stream serão comparados com o catálogo antes do envio.",
+    "aguardando"
+  );
+  mensagemRascunho.textContent =
+    "Rascunho limpo. Você pode iniciar um novo cadastro.";
+  atualizarEstadoBotaoEnviar();
 }
 
 async function validarLogoSelecionada() {
@@ -601,10 +1074,26 @@ async function enviarCadastro(evento) {
 
   limparErrosCampos();
   ocultarAlerta();
+  normalizarSiteDigitado();
+  validarCidadeOficial(true);
 
   if (!formulario.checkValidity()) {
     formulario.reportValidity();
     destacarCamposInvalidos();
+    return;
+  }
+
+  await verificarDuplicidadeCadastro(true);
+
+  if (duplicidadeCadastro.bloqueado) {
+    mostrarAlerta(
+      duplicidadeCadastro.motivos[0]?.mensagem ||
+      "Esta emissora ou transmissão já possui cadastro ativo."
+    );
+    mensagemDuplicidade.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
     return;
   }
 
@@ -676,6 +1165,7 @@ async function enviarCadastro(evento) {
 }
 
 function exibirSucesso(resultado) {
+  localStorage.removeItem(CHAVE_RASCUNHO_CADASTRO);
   protocoloGerado.textContent = resultado.protocolo;
 
   observacaoSucesso.textContent = resultado.logoRecebida

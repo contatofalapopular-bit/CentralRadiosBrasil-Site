@@ -19,12 +19,12 @@
 
   <link
     rel="stylesheet"
-    href="../style.css?v=22.6.0"
+    href="../style.css?v=22.7.0"
   >
 
   <link
     rel="stylesheet"
-    href="cadastro.css?v=22.6.0"
+    href="cadastro.css?v=22.7.0"
   >
 </head>
 
@@ -75,8 +75,9 @@
       <h1>Cadastre sua rádio</h1>
 
       <p>
-        Envie os dados essenciais da emissora para análise.
-        O cadastro não é publicado automaticamente.
+        Cadastro rápido, com cidade e categoria padronizadas e
+        verificação automática contra registros duplicados.
+        O envio não é publicado automaticamente.
       </p>
 
       <div class="cadastro-passos" aria-label="Etapas do cadastro">
@@ -120,6 +121,11 @@
         novalidate
       >
 
+        <div class="cadastro-rascunho" aria-live="polite">
+          <span id="mensagem-rascunho">Preencha com tranquilidade: o rascunho será salvo neste aparelho.</span>
+          <button type="button" id="btn-limpar-rascunho">Limpar rascunho</button>
+        </div>
+
         <div class="cadastro-secao-titulo">
           <span>01</span>
 
@@ -158,10 +164,18 @@
               type="text"
               id="cidade"
               name="cidade"
+              list="municipios-sugeridos"
               maxlength="80"
               autocomplete="address-level2"
+              placeholder="Selecione primeiro o estado"
               required
             >
+
+            <datalist id="municipios-sugeridos"></datalist>
+
+            <span class="cadastro-ajuda" id="mensagem-cidade">
+              Ao escolher o estado, carregaremos as cidades oficiais do IBGE.
+            </span>
 
           </div>
 
@@ -215,32 +229,39 @@
               Categoria principal <em>*</em>
             </label>
 
-            <input
-              type="text"
+            <select
               id="categoria-principal"
               name="categoriaPrincipal"
-              list="categorias-sugeridas"
-              maxlength="60"
-              placeholder="Ex.: Sertanejo"
               required
             >
+              <option value="">Selecione a categoria</option>
+              <option value="Sertanejo">Sertanejo</option>
+              <option value="Gospel">Gospel</option>
+              <option value="Católica">Católica</option>
+              <option value="Religiosa">Religiosa</option>
+              <option value="Jornalismo">Jornalismo</option>
+              <option value="Esportes">Esportes</option>
+              <option value="Comunitária">Comunitária</option>
+              <option value="Regional">Regional</option>
+              <option value="Variedades">Variedades</option>
+              <option value="Eclética">Eclética</option>
+              <option value="Pop">Pop</option>
+              <option value="Rock">Rock</option>
+              <option value="MPB">MPB</option>
+              <option value="Forró">Forró</option>
+              <option value="Pagode e Samba">Pagode e Samba</option>
+              <option value="Eletrônica">Eletrônica</option>
+              <option value="Flashback">Flashback</option>
+              <option value="Jovem">Jovem</option>
+              <option value="Educativa">Educativa</option>
+              <option value="Cultural">Cultural</option>
+              <option value="Clássica">Clássica</option>
+              <option value="Internacional">Internacional</option>
+            </select>
 
-            <datalist id="categorias-sugeridas">
-              <option value="Sertanejo">
-              <option value="Gospel">
-              <option value="Católica">
-              <option value="Pop">
-              <option value="Rock">
-              <option value="MPB">
-              <option value="Forró">
-              <option value="Pagode e Samba">
-              <option value="Jornalismo">
-              <option value="Esportes">
-              <option value="Variedades">
-              <option value="Comunitária">
-              <option value="Regional">
-              <option value="Eletrônica">
-            </datalist>
+            <span class="cadastro-ajuda">
+              Escolha a opção que melhor representa a programação principal.
+            </span>
 
           </div>
 
@@ -259,6 +280,10 @@
               placeholder="https://..."
               autocomplete="url"
             >
+
+            <span class="cadastro-ajuda">
+              Pode digitar apenas o domínio; adicionaremos https:// automaticamente.
+            </span>
 
           </div>
 
@@ -354,6 +379,15 @@
               >
                 O teste do stream é obrigatório para liberar o envio.
               </div>
+            </div>
+
+            <div
+              class="cadastro-duplicidade aguardando"
+              id="mensagem-duplicidade"
+              role="status"
+              aria-live="polite"
+            >
+              🔎 A emissora e o stream serão comparados com o catálogo antes do envio.
             </div>
 
           </div>
@@ -631,7 +665,7 @@
 
   </footer>
 
-  <script src="cadastro.js?v=22.6.0"></script>
+  <script src="cadastro.js?v=22.7.0"></script>
 
 </body>
 </html>

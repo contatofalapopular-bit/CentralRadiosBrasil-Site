@@ -1,22 +1,28 @@
-# Central Rádios Brasil — Site v22.6.0
+# Central Rádios Brasil — Site v22.7.0
 
-## Ranking válido após cinco minutos
+## Cadastro fácil e proteção contra duplicidade
 
-- O início do áudio não gera mais pontuação imediata.
-- A reprodução somente entra no ranking depois de **5 minutos de áudio efetivamente reproduzido**.
-- Pausar, fechar o player, trocar de emissora ou ocorrer erro antes do tempo cancela a contagem.
-- Pequenos períodos de carregamento não contam como tempo ouvido; espera superior a 60 segundos encerra a tentativa.
-- O navegador envia progresso ao Worker a cada 30 segundos.
-- O ranking exibe **reproduções válidas**, e não “ouvintes”.
-- A mesma sessão ou dispositivo não pontua novamente na mesma rádio dentro de 30 minutos.
+- Estado selecionado em lista oficial.
+- Cidades carregadas automaticamente pela API de Localidades do IBGE.
+- O campo continua aceitando digitação manual se a API estiver indisponível.
+- Categoria principal padronizada em lista para evitar variações e duplicidades.
+- Site recebe `https://` automaticamente quando necessário.
+- WhatsApp é formatado durante a digitação.
+- O formulário salva um rascunho local no aparelho e permite limpá-lo.
+- Nome, localização, domínio e stream são comparados com o catálogo e com solicitações ativas.
+- Streams e emissoras já cadastrados são bloqueados antes do envio.
+- A verificação é repetida pelo Worker no momento do cadastro.
 
 ## Publicação
 
-1. Publique primeiro o **Worker v1.6.0**.
-2. Depois substitua os arquivos do repositório `CentralRadiosBrasil-Site` pelos arquivos deste pacote.
+1. Publique primeiro o **Worker v1.8.0**.
+2. Depois substitua os arquivos do repositório `CentralRadiosBrasil-Site`.
 3. Preserve o arquivo `CNAME`.
-4. Após o GitHub Pages ficar verde, abra o portal e pressione `Ctrl + F5`.
+4. Após o GitHub Pages ficar verde, abra `/cadastro/` e pressione `Ctrl + F5`.
 
-## Observação
+## Testes recomendados
 
-O ranking correto começa com uma base nova de reproduções validadas. Os registros antigos, que não comprovavam cinco minutos de áudio, não são usados na nova classificação.
+- Escolher um estado e confirmar o carregamento das cidades.
+- Digitar um domínio sem `https://` e sair do campo.
+- Informar um stream já publicado e confirmar o bloqueio.
+- Informar dados novos, testar o stream e confirmar a liberação do envio.

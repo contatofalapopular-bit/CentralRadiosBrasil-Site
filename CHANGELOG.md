@@ -1,4 +1,14 @@
-## 22.6.0 — Ranking válido após cinco minutos
+## 22.7.0 — Cadastro fácil e anti-duplicidade
+
+- Cidades oficiais carregadas por estado usando a API de Localidades do IBGE.
+- Categoria principal transformada em lista padronizada.
+- Formatação automática de site e WhatsApp.
+- Rascunho salvo localmente no aparelho.
+- Verificação prévia de emissora, stream e domínio duplicados.
+- Bloqueio de stream ou emissora já publicados ou com solicitação ativa.
+- Mensagens de orientação mais claras durante o cadastro.
+
+## 22.7.0 — Ranking válido após cinco minutos
 
 - Contagem em duas etapas: início da sessão e confirmação de progresso.
 - Reprodução somente validada após 300 segundos de áudio.
