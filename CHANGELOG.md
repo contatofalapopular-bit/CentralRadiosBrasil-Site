@@ -1,3 +1,11 @@
+## 22.11.3 — Ícone e abertura do aplicativo
+
+- Atualizados o ícone instalado, favicon e ícone de dispositivos Apple.
+- Criado novo ícone maskable com área segura para Android.
+- Corrigida a tela de abertura do PWA para usar fundo azul institucional e logo proporcional.
+- Renomeados os arquivos de ícone para impedir reutilização do cache antigo.
+- Cache PWA atualizado para 22.11.3.
+
 ## 22.11.2 — Ajuste visual da logo do portal
 
 - Corrigido o enquadramento da logo institucional no cabeçalho do portal.

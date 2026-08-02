@@ -2737,7 +2737,7 @@ function atualizarMediaSession() {
     return;
   }
   const radio = estado.radioAtual;
-  const logo = obterUrlLogo(radio) || new URL("icons/icon-512.png", document.baseURI).href;
+  const logo = obterUrlLogo(radio) || new URL("icons/icon-512-v22113.png", document.baseURI).href;
   try {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: estado.musicaAtual.titulo || radio.nomeFantasia || radio.nome || "Central Rádios Brasil",

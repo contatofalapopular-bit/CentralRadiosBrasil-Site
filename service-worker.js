@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "22.11.2";
+const APP_VERSION = "22.11.3";
 const CACHE_SHELL = `crb-shell-${APP_VERSION}`;
 const CACHE_DADOS = `crb-dados-${APP_VERSION}`;
 const URL_RADIOS = "https://raw.githubusercontent.com/contatofalapopular-bit/CentralRadiosBrasil-Dados/main/radios.json";
@@ -13,14 +13,15 @@ const ARQUIVOS_ESSENCIAIS = [
   "./accessibility.js",
   "./pwa.css",
   "./pwa.js",
-  "./manifest.webmanifest",
+  "./manifest.webmanifest?v=22.11.3",
   "./offline.html",
   "./hero-frases.json",
   "./logo-central-radios-brasil.png",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  "./icons/icon-maskable-512.png",
-  "./icons/apple-touch-icon.png",
+  "./icons/icon-192-v22113.png",
+  "./icons/icon-512-v22113.png",
+  "./icons/icon-maskable-512-v22113.png",
+  "./icons/apple-touch-icon-v22113.png",
+  "./icons/favicon-64-v22113.png",
   "./cadastro/",
   "./cadastro/index.html",
   "./cadastro/cadastro.css",
