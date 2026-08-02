@@ -3160,3 +3160,167 @@ body.modo-carro-aberto { overflow: hidden; }
   .modo-carro-logo.tocando,
   .botao-zap.ativa { animation: none !important; }
 }
+
+/* =========================================================
+   SITE 22.10.1 — CORREÇÕES DE ESPAÇAMENTO
+   ========================================================= */
+
+/* Evita que títulos de seções fiquem escondidos sob o cabeçalho fixo. */
+html {
+  scroll-padding-top: 106px;
+}
+
+#ranking-nacional,
+#favoritas,
+#catalogo-emissoras {
+  scroll-margin-top: 106px;
+}
+
+/* Favoritas: conteúdo mais compacto e filtros sem sobreposição. */
+.favoritas {
+  margin-top: 40px;
+  padding: 26px;
+}
+
+.favoritas-cabecalho {
+  margin-bottom: 18px;
+}
+
+.grade-favoritas {
+  grid-template-columns: repeat(auto-fit, minmax(156px, 192px));
+  justify-content: center;
+  align-items: stretch;
+}
+
+#favoritas:not(.hidden) + .filtros {
+  margin-top: 24px;
+}
+
+/* Ranking: centraliza corretamente quando há poucos cards e impede cortes. */
+.ranking-nacional {
+  margin: 48px 0 34px;
+  padding: 32px 34px 34px;
+}
+
+.ranking-nacional-cabecalho {
+  margin-bottom: 22px;
+}
+
+.ranking-nacional-top3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: center;
+  gap: 16px;
+}
+
+.ranking-nacional-top3 .ranking-card {
+  flex: 0 1 196px;
+  width: 196px;
+  max-width: 196px;
+}
+
+.ranking-top10-lista {
+  grid-template-columns: repeat(auto-fit, minmax(170px, 196px));
+  justify-content: center;
+}
+
+.ranking-card,
+.ranking-top10-item {
+  height: auto;
+  min-height: 226px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px;
+  padding: 10px 10px 11px;
+}
+
+.ranking-card-topo {
+  flex: 0 0 24px;
+}
+
+.ranking-logo,
+.ranking-top10-logo {
+  flex: 0 0 94px;
+}
+
+.ranking-card h3,
+.ranking-top10-nome,
+.ranking-segmento,
+.ranking-top10-categoria {
+  flex: 0 0 auto;
+}
+
+.ranking-card > .popularidade-selo,
+.ranking-top10-item > .popularidade-selo {
+  flex: 0 0 auto;
+  margin-top: 2px;
+}
+
+.ranking-ouvintes,
+.ranking-top10-ouvintes {
+  min-height: 16px;
+  margin-top: auto;
+  overflow: visible;
+  line-height: 1.2;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.ranking-nacional-acao {
+  margin-top: 20px;
+}
+
+@media (max-width: 680px) {
+  html {
+    scroll-padding-top: 88px;
+  }
+
+  #ranking-nacional,
+  #favoritas,
+  #catalogo-emissoras {
+    scroll-margin-top: 88px;
+  }
+
+  .favoritas {
+    margin-top: 34px;
+    padding: 20px 15px;
+  }
+
+  .grade-favoritas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: stretch;
+  }
+
+  #favoritas:not(.hidden) + .filtros {
+    margin-top: 18px;
+  }
+
+  .ranking-nacional {
+    margin-top: 40px;
+    padding: 24px 14px 26px;
+  }
+
+  .ranking-nacional-top3 {
+    gap: 11px;
+  }
+
+  .ranking-nacional-top3 .ranking-card {
+    flex: 1 1 calc(50% - 6px);
+    width: auto;
+    max-width: 196px;
+  }
+
+  .ranking-card,
+  .ranking-top10-item {
+    min-height: 210px;
+    padding: 8px;
+  }
+
+  .ranking-logo,
+  .ranking-top10-logo {
+    flex-basis: 84px;
+  }
+}
