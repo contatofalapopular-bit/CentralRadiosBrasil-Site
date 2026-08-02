@@ -23,11 +23,11 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="pwa.css?v=22.9.0">
+  <link rel="stylesheet" href="pwa.css?v=22.10.0">
 
   <title>Central Rádios Brasil</title>
 
-  <link rel="stylesheet" href="style.css?v=22.9.0">
+  <link rel="stylesheet" href="style.css?v=22.10.0">
 </head>
 
 <body>
@@ -444,12 +444,23 @@
       </div>
 
       <div class="modo-carro-identidade">
-        <div class="modo-carro-logo" id="modo-carro-logo">CRB</div>
+        <div class="modo-carro-capa-luz">
+          <div class="modo-carro-logo" id="modo-carro-logo">CRB</div>
+        </div>
+        <span class="popularidade-selo hidden" id="modo-carro-popularidade"></span>
         <span class="modo-carro-status" id="modo-carro-status">Selecione uma rádio</span>
         <strong id="modo-carro-nome">Central Rádios Brasil</strong>
         <small id="modo-carro-localizacao">Catálogo nacional</small>
-        <p id="modo-carro-musica">Programação ao vivo</p>
+        <p id="modo-carro-musica">🎙️ Programação ao vivo</p>
+        <div class="modo-carro-metricas">
+          <span id="modo-carro-conexao">🟢 Conexão estável</span>
+          <span id="modo-carro-tempo">▶ Ouvindo há 00:00</span>
+        </div>
+        <div class="estabilidade-barra estabilidade-barra-carro" aria-label="Estabilidade da transmissão">
+          <span id="modo-carro-estabilidade-barra"></span>
+        </div>
         <span class="modo-carro-buffer" id="modo-carro-buffer">Aguardando transmissão</span>
+        <span class="zap-status hidden" id="modo-carro-zap-status"></span>
       </div>
 
       <div class="modo-carro-controles">
@@ -458,7 +469,18 @@
         <button type="button" id="btn-carro-proxima" aria-label="Próxima rádio">⏭<span>Próxima</span></button>
       </div>
 
-      <button class="modo-carro-favorita" type="button" id="btn-carro-favorita" aria-label="Adicionar rádio às favoritas" aria-pressed="false">♡ Favoritar</button>
+      <div class="modo-carro-volume">
+        <button type="button" id="btn-carro-volume-menos" aria-label="Diminuir volume">−</button>
+        <label for="carro-volume">🔊 Volume</label>
+        <input id="carro-volume" type="range" min="0" max="100" step="1" value="80" aria-label="Volume do player">
+        <button type="button" id="btn-carro-volume-mais" aria-label="Aumentar volume">+</button>
+      </div>
+
+      <div class="modo-carro-acoes-extras">
+        <button class="modo-carro-favorita" type="button" id="btn-carro-favorita" aria-label="Adicionar rádio às favoritas" aria-pressed="false">♡ Favoritar</button>
+        <button type="button" id="btn-carro-tela-ligada" aria-pressed="false">☀️ Manter tela ligada</button>
+        <button type="button" id="btn-carro-zap" aria-pressed="false">📡 Iniciar ZAP</button>
+      </div>
       <p class="modo-carro-aviso">Use os controles grandes e mantenha a atenção no trânsito.</p>
     </div>
   </section>
@@ -479,9 +501,12 @@
 
         <div class="player-informacoes">
 
-          <span class="player-status" id="player-status">
-            Pronto para ouvir
-          </span>
+          <div class="player-linha-superior">
+            <span class="player-status" id="player-status">
+              Pronto para ouvir
+            </span>
+            <span class="popularidade-selo hidden" id="player-popularidade"></span>
+          </div>
 
           <strong id="player-nome">
             Selecione uma rádio
@@ -492,12 +517,22 @@
           </small>
 
           <small class="player-musica" id="player-musica">
-            Programação ao vivo
+            🎙️ Programação ao vivo
           </small>
+
+          <div class="player-metricas">
+            <span id="player-conexao">🟢 Conexão estável</span>
+            <span id="player-tempo">▶ Ouvindo há 00:00</span>
+          </div>
+
+          <div class="estabilidade-barra" aria-label="Estabilidade da transmissão">
+            <span id="player-estabilidade-barra"></span>
+          </div>
 
           <span class="player-buffer" id="player-buffer">
             Aguardando transmissão
           </span>
+          <span class="zap-status hidden" id="player-zap-status"></span>
 
         </div>
 
@@ -518,6 +553,14 @@
         </button>
 
         <button class="botao-player-secundario" type="button" id="btn-proxima-radio" aria-label="Próxima rádio">⏭</button>
+        <div class="player-volume-area">
+          <button class="botao-player-secundario" type="button" id="btn-volume" aria-label="Controlar volume" aria-expanded="false">🔊</button>
+          <div class="player-volume-popover hidden" id="player-volume-popover">
+            <label for="player-volume">Volume</label>
+            <input id="player-volume" type="range" min="0" max="100" step="1" value="80" aria-label="Volume do player">
+          </div>
+        </div>
+        <button class="botao-player-secundario botao-zap" type="button" id="btn-zap" aria-label="Iniciar modo ZAP" aria-pressed="false">📡</button>
         <button class="botao-player-secundario botao-modo-carro" type="button" id="btn-modo-carro" aria-label="Abrir modo carro">🚗</button>
 
         <button
@@ -533,6 +576,7 @@
 
     </div>
 
+    <div class="player-toast hidden" id="player-toast" aria-live="polite"></div>
     <audio id="audio-player" preload="none"></audio>
 
   </aside>
@@ -549,8 +593,8 @@
 
   </footer>
 
-  <script src="app.js?v=22.9.0"></script>
-  <script src="pwa.js?v=22.9.0"></script>
+  <script src="app.js?v=22.10.0"></script>
+  <script src="pwa.js?v=22.10.0"></script>
 
 </body>
 </html>

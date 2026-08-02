@@ -38,6 +38,9 @@ const HERO_MENSAGENS_PADRAO = [
 const CHAVE_SESSAO = "centralRadiosBrasilSessaoId";
 const CHAVE_FAVORITAS = "centralRadiosBrasilFavoritas";
 const CHAVE_ULTIMA_RADIO = "centralRadiosBrasilUltimaRadio";
+const CHAVE_VOLUME = "centralRadiosBrasilVolume";
+const DURACAO_ZAP_SEGUNDOS = 20;
+const INTERVALO_TEMPO_OUVIDO_MS = 1000;
 const INTERVALO_MONITOR_BUFFER_MS = 2000;
 const LIMITE_TRAVAMENTO_AUDIO_MS = 12000;
 const ATRASOS_RECONEXAO_MS = [2000, 4000, 8000, 15000, 30000, 60000];
@@ -70,10 +73,20 @@ const elementos = {
   playerMusica: document.getElementById("player-musica"),
   playerBuffer: document.getElementById("player-buffer"),
   playerStatus: document.getElementById("player-status"),
+  playerPopularidade: document.getElementById("player-popularidade"),
+  playerConexao: document.getElementById("player-conexao"),
+  playerTempo: document.getElementById("player-tempo"),
+  playerEstabilidadeBarra: document.getElementById("player-estabilidade-barra"),
+  playerZapStatus: document.getElementById("player-zap-status"),
+  playerToast: document.getElementById("player-toast"),
   btnPlayPause: document.getElementById("btn-play-pause"),
   btnPlayerFavorita: document.getElementById("btn-player-favorita"),
   btnRadioAnterior: document.getElementById("btn-radio-anterior"),
   btnProximaRadio: document.getElementById("btn-proxima-radio"),
+  btnVolume: document.getElementById("btn-volume"),
+  playerVolumePopover: document.getElementById("player-volume-popover"),
+  playerVolume: document.getElementById("player-volume"),
+  btnZap: document.getElementById("btn-zap"),
   btnModoCarro: document.getElementById("btn-modo-carro"),
   btnFecharPlayer: document.getElementById("btn-fechar-player"),
 
@@ -88,10 +101,20 @@ const elementos = {
   modoCarroLocalizacao: document.getElementById("modo-carro-localizacao"),
   modoCarroMusica: document.getElementById("modo-carro-musica"),
   modoCarroBuffer: document.getElementById("modo-carro-buffer"),
+  modoCarroPopularidade: document.getElementById("modo-carro-popularidade"),
+  modoCarroConexao: document.getElementById("modo-carro-conexao"),
+  modoCarroTempo: document.getElementById("modo-carro-tempo"),
+  modoCarroEstabilidadeBarra: document.getElementById("modo-carro-estabilidade-barra"),
+  modoCarroZapStatus: document.getElementById("modo-carro-zap-status"),
   btnCarroAnterior: document.getElementById("btn-carro-anterior"),
   btnCarroPlay: document.getElementById("btn-carro-play"),
   btnCarroProxima: document.getElementById("btn-carro-proxima"),
   btnCarroFavorita: document.getElementById("btn-carro-favorita"),
+  btnCarroTelaLigada: document.getElementById("btn-carro-tela-ligada"),
+  btnCarroZap: document.getElementById("btn-carro-zap"),
+  carroVolume: document.getElementById("carro-volume"),
+  btnCarroVolumeMenos: document.getElementById("btn-carro-volume-menos"),
+  btnCarroVolumeMais: document.getElementById("btn-carro-volume-mais"),
   btnSairModoCarro: document.getElementById("btn-sair-modo-carro")
 };
 
@@ -117,6 +140,33 @@ const estado = {
     ultimoTempo: 0,
     ultimoAvancoEm: 0
   },
+  popularidade: {
+    mapa: new Map(),
+    atualizadoEm: null
+  },
+  tempoOuvido: {
+    acumuladoSegundos: 0,
+    inicioPerformance: null,
+    intervaloId: null
+  },
+  conexao: {
+    nivelForcado: null,
+    oscilacoesRecentes: 0
+  },
+  volume: {
+    valor: 0.8
+  },
+  wakeLock: {
+    solicitado: false,
+    sentinela: null
+  },
+  zap: {
+    ativo: false,
+    timeoutId: null,
+    intervaloId: null,
+    proximaTrocaEm: 0
+  },
+  toastTimerId: null,
   musicaAtual: {
     titulo: "Programação ao vivo",
     artista: "",
@@ -156,6 +206,9 @@ async function iniciarPortal() {
   carregarPreferenciasLocais();
   registrarEventos();
   configurarMediaSession();
+  atualizarControlesVolume();
+  atualizarControlesZap();
+  atualizarTempoOuvidoTela();
   void iniciarHeroRotativo();
   await carregarBanco();
   restaurarUltimaRadio();
@@ -173,6 +226,9 @@ function registrarEventos() {
   elementos.btnPlayerFavorita.addEventListener("click", () => alternarFavorita(estado.radioAtual));
   elementos.btnRadioAnterior.addEventListener("click", () => tocarRadioRelativa(-1));
   elementos.btnProximaRadio.addEventListener("click", () => tocarRadioRelativa(1));
+  elementos.btnVolume.addEventListener("click", alternarPainelVolume);
+  elementos.playerVolume.addEventListener("input", evento => aplicarVolume(Number(evento.target.value) / 100));
+  elementos.btnZap.addEventListener("click", alternarZap);
   elementos.btnModoCarro.addEventListener("click", abrirModoCarro);
   elementos.btnFecharPlayer.addEventListener("click", fecharPlayer);
 
@@ -180,13 +236,29 @@ function registrarEventos() {
   elementos.btnCarroPlay.addEventListener("click", alternarReproducao);
   elementos.btnCarroProxima.addEventListener("click", () => tocarRadioRelativa(1));
   elementos.btnCarroFavorita.addEventListener("click", () => alternarFavorita(estado.radioAtual));
+  elementos.btnCarroTelaLigada.addEventListener("click", alternarTelaLigada);
+  elementos.btnCarroZap.addEventListener("click", alternarZap);
+  elementos.carroVolume.addEventListener("input", evento => aplicarVolume(Number(evento.target.value) / 100));
+  elementos.btnCarroVolumeMenos.addEventListener("click", () => aplicarVolume(estado.volume.valor - 0.1));
+  elementos.btnCarroVolumeMais.addEventListener("click", () => aplicarVolume(estado.volume.valor + 0.1));
   elementos.btnSairModoCarro.addEventListener("click", fecharModoCarro);
+
+  document.addEventListener("click", evento => {
+    if (!evento.target.closest(".player-volume-area")) fecharPainelVolume();
+  });
+
+  const conexao = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  conexao?.addEventListener?.("change", atualizarQualidadeConexao);
+  document.addEventListener("visibilitychange", tratarVisibilidadeWakeLock);
 
   elementos.audio.addEventListener("play", () => {
     estado.carregandoAudio = false;
     estado.usuarioPausou = false;
     atualizarEstadoPlayer("AO VIVO", "⏸");
     iniciarMonitorBuffer();
+    iniciarTempoOuvido();
+    atualizarQualidadeConexao();
+    atualizarAnimacaoCapa(true);
     atualizarMediaSession();
   });
 
@@ -195,6 +267,9 @@ function registrarEventos() {
       atualizarEstadoPlayer("Transmissão pausada", "▶");
     }
     pararMonitorBuffer();
+    pausarTempoOuvido();
+    atualizarAnimacaoCapa(false);
+    if (estado.usuarioPausou) pararZap(false);
     if (estado.usuarioPausou || estado.fechandoPlayer) {
       cancelarReconexaoAutomatica();
     }
@@ -206,6 +281,9 @@ function registrarEventos() {
     estado.carregandoAudio = true;
     atualizarEstadoPlayer("Conexão instável", "…");
     atualizarEstadoBuffer("Aguardando áudio");
+    pausarTempoOuvido();
+    registrarOscilacaoConexao();
+    atualizarAnimacaoCapa(false);
     pausarCronometroRanking();
     agendarCancelamentoPorEspera();
     agendarReconexaoAutomatica("espera_de_audio", 8000);
@@ -213,6 +291,9 @@ function registrarEventos() {
 
   elementos.audio.addEventListener("stalled", () => {
     atualizarEstadoBuffer("Transmissão travada");
+    pausarTempoOuvido();
+    registrarOscilacaoConexao();
+    atualizarAnimacaoCapa(false);
     pausarCronometroRanking();
     agendarCancelamentoPorEspera();
     agendarReconexaoAutomatica("stream_travado", 6000);
@@ -226,6 +307,9 @@ function registrarEventos() {
     atualizarEstadoBuffer("Buffer estável");
     limparTimeoutEsperaRanking();
     iniciarMonitorBuffer();
+    iniciarTempoOuvido();
+    atualizarQualidadeConexao();
+    atualizarAnimacaoCapa(true);
     void iniciarOuRetomarContagemRanking();
     atualizarMediaSession();
   });
@@ -234,6 +318,9 @@ function registrarEventos() {
     estado.carregandoAudio = false;
     atualizarEstadoPlayer("Reconectando...", "…");
     atualizarEstadoBuffer("Falha na transmissão");
+    pausarTempoOuvido();
+    registrarOscilacaoConexao();
+    atualizarAnimacaoCapa(false);
     void encerrarSessaoRankingAtual("erro_de_audio");
     agendarReconexaoAutomatica("erro_de_audio", 1500);
   });
@@ -246,10 +333,15 @@ function registrarEventos() {
   window.addEventListener("offline", () => {
     atualizarEstadoPlayer("Sem internet", "…");
     atualizarEstadoBuffer("Aguardando a conexão voltar");
+    estado.conexao.nivelForcado = "offline";
+    atualizarQualidadeConexao();
+    pausarTempoOuvido();
     cancelarReconexaoAutomatica();
   });
 
   window.addEventListener("online", () => {
+    estado.conexao.nivelForcado = null;
+    atualizarQualidadeConexao();
     if (estado.radioAtual && !estado.usuarioPausou) {
       atualizarEstadoPlayer("Internet restabelecida", "…");
       agendarReconexaoAutomatica("internet_restabelecida", 250);
@@ -264,6 +356,9 @@ function registrarEventos() {
 
   window.addEventListener("pagehide", () => {
     void encerrarSessaoRankingAtual("saida_da_pagina");
+    pararTempoOuvido();
+    pararZap(false);
+    void liberarWakeLock();
   });
 }
 
@@ -593,9 +688,10 @@ async function carregarBanco() {
   mostrarMensagem("Carregando emissoras...");
 
   try {
-    const [resposta, statusMonitoramento] = await Promise.all([
+    const [resposta, statusMonitoramento, popularidade] = await Promise.all([
       fetch(URL_RADIOS, { cache: "no-store" }),
-      carregarStatusMonitoramentoStreams()
+      carregarStatusMonitoramentoStreams(),
+      carregarPopularidade()
     ]);
 
     if (!resposta.ok) {
@@ -608,6 +704,7 @@ async function carregarBanco() {
 
     estado.banco = banco;
     estado.monitoramentoStreams = statusMonitoramento;
+    estado.popularidade = popularidade;
 
     estado.radios = banco.radios
       .filter(radioPublicaAtiva)
@@ -634,6 +731,158 @@ async function carregarBanco() {
 
     atualizarContador(0);
   }
+}
+
+
+async function carregarPopularidade() {
+  const fallback = {
+    mapa: new Map(),
+    atualizadoEm: null
+  };
+
+  try {
+    const resposta = await fetch(
+      `${URL_API}/api/popularidade?limit=300`,
+      { cache: "no-store" }
+    );
+
+    if (!resposta.ok) return fallback;
+
+    const dados = await resposta.json();
+    const lista = Array.isArray(dados?.radios)
+      ? dados.radios
+      : [];
+
+    return {
+      atualizadoEm: dados?.atualizadoEm || null,
+      mapa: new Map(
+        lista
+          .filter(item => item?.radioId)
+          .map(item => [String(item.radioId), item])
+      )
+    };
+  } catch (erro) {
+    console.warn("Índice de popularidade temporariamente indisponível:", erro);
+    return fallback;
+  }
+}
+
+function obterDataPublicacaoRadio(radio) {
+  const candidatos = [
+    radio?.publicadoEm,
+    radio?.dataPublicacao,
+    radio?.createdAt,
+    radio?.criadoEm,
+    radio?.datas?.publicadoEm,
+    radio?.datas?.criadoEm,
+    radio?.cadastro?.publicadoEm,
+    radio?.cadastro?.criadoEm,
+    radio?.auditoria?.publicadoEm
+  ];
+
+  for (const valor of candidatos) {
+    if (!valor) continue;
+    const data = new Date(valor);
+    if (!Number.isNaN(data.getTime())) return data;
+  }
+
+  return null;
+}
+
+function radioEhDestaqueEditorial(radio) {
+  return [
+    radio?.destaque,
+    radio?.destaqueOficial,
+    radio?.status?.destaque,
+    radio?.status?.destaquePortal,
+    radio?.portal?.destaque,
+    radio?.classificacao?.destaque
+  ].some(valor => valor === true || String(valor).toLowerCase() === "true");
+}
+
+function obterClassificacaoPopularidade(radio) {
+  if (!radio) return null;
+
+  if (radioEhDestaqueEditorial(radio)) {
+    return {
+      codigo: "destaque",
+      rotulo: "Destaque",
+      icone: "⭐",
+      classe: "popularidade-destaque"
+    };
+  }
+
+  const metrica = estado.popularidade.mapa.get(obterRadioId(radio));
+  const automatica = metrica?.classificacaoAutomatica;
+
+  if (automatica === "muito_popular") {
+    return {
+      codigo: "muito_popular",
+      rotulo: "Muito Popular",
+      icone: "🔥",
+      classe: "popularidade-muito-popular"
+    };
+  }
+
+  if (automatica === "em_alta") {
+    return {
+      codigo: "em_alta",
+      rotulo: "Em Alta",
+      icone: "🔥",
+      classe: "popularidade-em-alta"
+    };
+  }
+
+  const publicadaEm = obterDataPublicacaoRadio(radio);
+  if (publicadaEm) {
+    const idadeDias = Math.floor(
+      (Date.now() - publicadaEm.getTime()) /
+        (24 * 60 * 60 * 1000)
+    );
+
+    if (idadeDias >= 0 && idadeDias <= 30) {
+      return {
+        codigo: "nova",
+        rotulo: "Nova",
+        icone: "🆕",
+        classe: "popularidade-nova"
+      };
+    }
+  }
+
+  return null;
+}
+
+function criarSeloPopularidade(radio) {
+  const classificacao = obterClassificacaoPopularidade(radio);
+  if (!classificacao) return null;
+
+  const selo = document.createElement("span");
+  selo.className = `radio-selo popularidade-selo ${classificacao.classe}`;
+  selo.textContent = `${classificacao.icone} ${classificacao.rotulo}`;
+  selo.title = "Índice calculado com dados reais da Central Rádios Brasil";
+  return selo;
+}
+
+function atualizarSeloPopularidadePlayer(radio) {
+  const classificacao = obterClassificacaoPopularidade(radio);
+  const alvos = [
+    elementos.playerPopularidade,
+    elementos.modoCarroPopularidade
+  ];
+
+  alvos.forEach(alvo => {
+    if (!alvo) return;
+    alvo.className = "popularidade-selo";
+    if (!classificacao) {
+      alvo.textContent = "";
+      alvo.classList.add("hidden");
+      return;
+    }
+    alvo.textContent = `${classificacao.icone} ${classificacao.rotulo}`;
+    alvo.classList.add(classificacao.classe);
+    alvo.classList.remove("hidden");
+  });
 }
 
 async function carregarStatusMonitoramentoStreams() {
@@ -1007,6 +1256,9 @@ function criarCardRadio(radio, opcoes = {}) {
     selos.appendChild(seloVerificada);
   }
 
+  const seloPopularidade = criarSeloPopularidade(radio);
+  if (seloPopularidade) selos.appendChild(seloPopularidade);
+
   const categoria = document.createElement("span");
   categoria.className = "radio-categoria";
   categoria.textContent = radio.classificacao?.categoriaPrincipal || "Rádio online";
@@ -1146,6 +1398,7 @@ async function selecionarRadio(radio, opcoes = {}) {
   elementos.audio.pause();
 
   estado.radioAtual = radio;
+  resetarTempoOuvido();
   estado.carregandoAudio = true;
   estado.indiceStreamAtual = Math.max(0, Math.min(Number(opcoes.indiceStream || 0), streams.length - 1));
 
@@ -1613,12 +1866,14 @@ function atualizarIdentidadePlayer(radio) {
 
   atualizarInformacoesMusica(radio);
   atualizarBotoesFavorita();
+  atualizarSeloPopularidadePlayer(radio);
 
   const novoLogo = criarLogoRadio(radio, "player-logo");
 
   elementos.playerLogo.replaceWith(novoLogo);
   novoLogo.id = "player-logo";
   elementos.playerLogo = novoLogo;
+  atualizarAnimacaoCapa(!elementos.audio.paused);
   sincronizarModoCarro();
   atualizarMediaSession();
   iniciarAtualizacaoMusica(radio);
@@ -1655,6 +1910,9 @@ function fecharPlayer() {
   cancelarReconexaoAutomatica();
   pararMonitorBuffer();
   pararAtualizacaoMusica();
+  pararTempoOuvido();
+  pararZap(false);
+  fecharPainelVolume();
   fecharModoCarro();
   void encerrarSessaoRankingAtual("player_fechado");
 
@@ -1680,6 +1938,7 @@ function atualizarEstadoPlayer(texto, simboloBotao) {
   elementos.btnPlayPause.setAttribute("aria-label", pausando ? "Pausar rádio" : "Reproduzir rádio");
   elementos.btnCarroPlay.setAttribute("aria-label", pausando ? "Pausar rádio" : "Reproduzir rádio");
 
+  atualizarAnimacaoCapa(pausando);
   if ("mediaSession" in navigator) {
     navigator.mediaSession.playbackState = pausando ? "playing" : "paused";
   }
@@ -1693,6 +1952,19 @@ function carregarPreferenciasLocais() {
     console.warn("Não foi possível carregar as favoritas:", erro);
     estado.favoritas = new Set();
   }
+
+  try {
+    const valorSalvo = localStorage.getItem(CHAVE_VOLUME);
+    const salvo = valorSalvo === null ? Number.NaN : Number(valorSalvo);
+    estado.volume.valor = Number.isFinite(salvo)
+      ? Math.min(1, Math.max(0, salvo))
+      : 0.8;
+  } catch {
+    estado.volume.valor = 0.8;
+  }
+
+  aplicarVolume(estado.volume.valor, false);
+  atualizarQualidadeConexao();
 }
 
 function obterIdentificadorRadio(radio) {
@@ -1710,8 +1982,9 @@ function ehFavorita(radio) {
 function alternarFavorita(radio) {
   if (!radio) return;
   const id = obterIdentificadorRadio(radio);
-  if (estado.favoritas.has(id)) estado.favoritas.delete(id);
-  else estado.favoritas.add(id);
+  const adicionada = !estado.favoritas.has(id);
+  if (adicionada) estado.favoritas.add(id);
+  else estado.favoritas.delete(id);
 
   try {
     localStorage.setItem(CHAVE_FAVORITAS, JSON.stringify([...estado.favoritas]));
@@ -1720,6 +1993,10 @@ function alternarFavorita(radio) {
   }
 
   atualizarBotoesFavorita();
+  animarFavorita();
+  mostrarAvisoPlayer(
+    adicionada ? "❤️ Adicionada às favoritas" : "Favorita removida"
+  );
   renderizarFavoritas();
   renderizarRadios();
 }
@@ -1877,9 +2154,11 @@ function verificarSaudeBuffer() {
   } catch {}
 
   if (elementos.audio.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
-    atualizarEstadoBuffer(segundosAdiante >= 3 ? `Buffer estável • ${Math.round(segundosAdiante)}s` : "Buffer ativo");
+    atualizarEstadoBuffer(segundosAdiante >= 3 ? `Estabilidade boa • ${Math.round(segundosAdiante)}s disponíveis` : "Transmissão estável");
+    if (estado.conexao.oscilacoesRecentes === 0) atualizarQualidadeConexao();
   } else {
-    atualizarEstadoBuffer("Buffer baixo");
+    atualizarEstadoBuffer("Estabilidade reduzida");
+    registrarOscilacaoConexao();
   }
 
   if (Date.now() - estado.buffer.ultimoAvancoEm > LIMITE_TRAVAMENTO_AUDIO_MS) {
@@ -1891,6 +2170,347 @@ function verificarSaudeBuffer() {
 function atualizarEstadoBuffer(texto) {
   elementos.playerBuffer.textContent = texto;
   elementos.modoCarroBuffer.textContent = texto;
+}
+
+
+function atualizarAnimacaoCapa(tocando) {
+  elementos.playerLogo?.classList.toggle("tocando", Boolean(tocando));
+  elementos.modoCarroLogo?.classList.toggle("tocando", Boolean(tocando));
+  elementos.player?.classList.toggle("player-tocando", Boolean(tocando));
+}
+
+function animarFavorita() {
+  [elementos.btnPlayerFavorita, elementos.btnCarroFavorita]
+    .filter(Boolean)
+    .forEach(botao => {
+      botao.classList.remove("favorita-pulso");
+      void botao.offsetWidth;
+      botao.classList.add("favorita-pulso");
+      window.setTimeout(() => botao.classList.remove("favorita-pulso"), 700);
+    });
+}
+
+function mostrarAvisoPlayer(texto) {
+  if (!elementos.playerToast) return;
+  if (estado.toastTimerId) window.clearTimeout(estado.toastTimerId);
+  elementos.playerToast.textContent = texto;
+  elementos.playerToast.classList.remove("hidden");
+  estado.toastTimerId = window.setTimeout(() => {
+    elementos.playerToast.classList.add("hidden");
+  }, 2600);
+}
+
+function formatarTempoOuvido(segundos) {
+  const total = Math.max(0, Math.floor(segundos));
+  const horas = Math.floor(total / 3600);
+  const minutos = Math.floor((total % 3600) / 60);
+  const segundosRestantes = total % 60;
+  return horas > 0
+    ? `${String(horas).padStart(2, "0")}:${String(minutos).padStart(2, "0")}:${String(segundosRestantes).padStart(2, "0")}`
+    : `${String(minutos).padStart(2, "0")}:${String(segundosRestantes).padStart(2, "0")}`;
+}
+
+function obterTempoOuvidoSegundos() {
+  const controle = estado.tempoOuvido;
+  const adicional = controle.inicioPerformance !== null
+    ? Math.max(0, (performance.now() - controle.inicioPerformance) / 1000)
+    : 0;
+  return controle.acumuladoSegundos + adicional;
+}
+
+function atualizarTempoOuvidoTela() {
+  const texto = `▶ Ouvindo há ${formatarTempoOuvido(obterTempoOuvidoSegundos())}`;
+  if (elementos.playerTempo) elementos.playerTempo.textContent = texto;
+  if (elementos.modoCarroTempo) elementos.modoCarroTempo.textContent = texto;
+}
+
+function iniciarTempoOuvido() {
+  const controle = estado.tempoOuvido;
+  if (controle.inicioPerformance === null) {
+    controle.inicioPerformance = performance.now();
+  }
+  if (!controle.intervaloId) {
+    controle.intervaloId = window.setInterval(
+      atualizarTempoOuvidoTela,
+      INTERVALO_TEMPO_OUVIDO_MS
+    );
+  }
+  atualizarTempoOuvidoTela();
+}
+
+function pausarTempoOuvido() {
+  const controle = estado.tempoOuvido;
+  if (controle.inicioPerformance !== null) {
+    controle.acumuladoSegundos += Math.max(
+      0,
+      (performance.now() - controle.inicioPerformance) / 1000
+    );
+    controle.inicioPerformance = null;
+  }
+  atualizarTempoOuvidoTela();
+}
+
+function pararTempoOuvido() {
+  pausarTempoOuvido();
+  if (estado.tempoOuvido.intervaloId) {
+    window.clearInterval(estado.tempoOuvido.intervaloId);
+    estado.tempoOuvido.intervaloId = null;
+  }
+}
+
+function resetarTempoOuvido() {
+  pararTempoOuvido();
+  estado.tempoOuvido.acumuladoSegundos = 0;
+  estado.tempoOuvido.inicioPerformance = null;
+  atualizarTempoOuvidoTela();
+}
+
+function detectarQualidadeConexao() {
+  if (!navigator.onLine || estado.conexao.nivelForcado === "offline") {
+    return { codigo: "offline", texto: "⚫ Sem conexão", nivel: 0 };
+  }
+
+  if (estado.conexao.oscilacoesRecentes >= 3) {
+    return { codigo: "fraca", texto: "🔴 Conexão fraca", nivel: 1 };
+  }
+
+  if (estado.conexao.oscilacoesRecentes >= 1) {
+    return { codigo: "media", texto: "🟡 Conexão oscilando", nivel: 2 };
+  }
+
+  const conexao = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  const tipo = String(conexao?.effectiveType || "").toLowerCase();
+  const downlink = Number(conexao?.downlink || 0);
+
+  if (tipo === "slow-2g" || tipo === "2g") {
+    return { codigo: "fraca", texto: "🔴 Conexão fraca", nivel: 1 };
+  }
+
+  if (tipo === "3g") {
+    return { codigo: "media", texto: "🟡 Conexão média", nivel: 2 };
+  }
+
+  if (tipo === "4g" && downlink >= 5) {
+    return { codigo: "excelente", texto: "🟢 Conexão excelente", nivel: 4 };
+  }
+
+  return { codigo: "estavel", texto: "🟢 Conexão estável", nivel: 3 };
+}
+
+function atualizarQualidadeConexao() {
+  const qualidade = detectarQualidadeConexao();
+  [elementos.playerConexao, elementos.modoCarroConexao]
+    .filter(Boolean)
+    .forEach(alvo => {
+      alvo.textContent = qualidade.texto;
+      alvo.dataset.nivel = qualidade.codigo;
+    });
+
+  [elementos.playerEstabilidadeBarra, elementos.modoCarroEstabilidadeBarra]
+    .filter(Boolean)
+    .forEach(barra => {
+      barra.dataset.nivel = qualidade.codigo;
+      barra.style.width = `${qualidade.nivel * 25}%`;
+    });
+}
+
+function registrarOscilacaoConexao() {
+  estado.conexao.oscilacoesRecentes = Math.min(
+    5,
+    estado.conexao.oscilacoesRecentes + 1
+  );
+  atualizarQualidadeConexao();
+  window.setTimeout(() => {
+    estado.conexao.oscilacoesRecentes = Math.max(
+      0,
+      estado.conexao.oscilacoesRecentes - 1
+    );
+    atualizarQualidadeConexao();
+  }, 30000);
+}
+
+function aplicarVolume(valor, persistir = true) {
+  const normalizado = Math.min(1, Math.max(0, Number(valor) || 0));
+  estado.volume.valor = normalizado;
+  try {
+    elementos.audio.volume = normalizado;
+    elementos.audio.muted = false;
+  } catch (erro) {
+    console.info("O navegador controla o volume pelo próprio aparelho.", erro);
+  }
+
+  if (persistir) {
+    try { localStorage.setItem(CHAVE_VOLUME, String(normalizado)); } catch {}
+  }
+  atualizarControlesVolume();
+}
+
+function atualizarControlesVolume() {
+  const percentual = Math.round(estado.volume.valor * 100);
+  if (elementos.playerVolume) elementos.playerVolume.value = String(percentual);
+  if (elementos.carroVolume) elementos.carroVolume.value = String(percentual);
+  if (elementos.btnVolume) {
+    elementos.btnVolume.textContent = percentual === 0 ? "🔇" : percentual < 45 ? "🔉" : "🔊";
+    elementos.btnVolume.setAttribute("aria-label", `Controlar volume, ${percentual}%`);
+  }
+}
+
+function alternarPainelVolume() {
+  const abrindo = elementos.playerVolumePopover.classList.contains("hidden");
+  elementos.playerVolumePopover.classList.toggle("hidden", !abrindo);
+  elementos.btnVolume.setAttribute("aria-expanded", String(abrindo));
+  if (abrindo) elementos.playerVolume.focus();
+}
+
+function fecharPainelVolume() {
+  elementos.playerVolumePopover?.classList.add("hidden");
+  elementos.btnVolume?.setAttribute("aria-expanded", "false");
+}
+
+async function solicitarWakeLock() {
+  if (!("wakeLock" in navigator)) {
+    estado.wakeLock.solicitado = false;
+    mostrarAvisoPlayer("Tela sempre ligada não está disponível neste navegador");
+    atualizarControlesWakeLock();
+    return;
+  }
+
+  try {
+    estado.wakeLock.sentinela = await navigator.wakeLock.request("screen");
+    estado.wakeLock.sentinela.addEventListener("release", () => {
+      estado.wakeLock.sentinela = null;
+      atualizarControlesWakeLock();
+    });
+    mostrarAvisoPlayer("☀️ Tela permanecerá ligada no Modo Carro");
+  } catch (erro) {
+    estado.wakeLock.solicitado = false;
+    console.warn("Não foi possível manter a tela ligada:", erro);
+    mostrarAvisoPlayer("Não foi possível manter a tela ligada");
+  }
+  atualizarControlesWakeLock();
+}
+
+async function liberarWakeLock() {
+  const sentinela = estado.wakeLock.sentinela;
+  estado.wakeLock.sentinela = null;
+  if (sentinela) {
+    try { await sentinela.release(); } catch {}
+  }
+}
+
+async function alternarTelaLigada() {
+  estado.wakeLock.solicitado = !estado.wakeLock.solicitado;
+  if (estado.wakeLock.solicitado) await solicitarWakeLock();
+  else {
+    await liberarWakeLock();
+    mostrarAvisoPlayer("Tela sempre ligada desativada");
+  }
+  atualizarControlesWakeLock();
+}
+
+function atualizarControlesWakeLock() {
+  if (!elementos.btnCarroTelaLigada) return;
+  const ativa = Boolean(estado.wakeLock.solicitado && estado.wakeLock.sentinela);
+  elementos.btnCarroTelaLigada.classList.toggle("ativa", ativa);
+  elementos.btnCarroTelaLigada.setAttribute("aria-pressed", String(ativa));
+  elementos.btnCarroTelaLigada.textContent = ativa
+    ? "☀️ Tela ligada"
+    : "☀️ Manter tela ligada";
+}
+
+function tratarVisibilidadeWakeLock() {
+  if (
+    document.visibilityState === "visible" &&
+    estado.wakeLock.solicitado &&
+    !estado.wakeLock.sentinela &&
+    !elementos.modoCarro.classList.contains("hidden")
+  ) {
+    void solicitarWakeLock();
+  }
+}
+
+function escolherProximaRadioZap() {
+  const lista = estado.radios.filter(radio =>
+    obterIdentificadorRadio(radio) !== obterIdentificadorRadio(estado.radioAtual)
+  );
+  if (!lista.length) return null;
+  return lista[Math.floor(Math.random() * lista.length)];
+}
+
+function atualizarControlesZap() {
+  const ativa = estado.zap.ativo;
+  elementos.btnZap?.classList.toggle("ativa", ativa);
+  elementos.btnZap?.setAttribute("aria-pressed", String(ativa));
+  elementos.btnZap?.setAttribute("aria-label", ativa ? "Parar modo ZAP" : "Iniciar modo ZAP");
+  if (elementos.btnCarroZap) {
+    elementos.btnCarroZap.classList.toggle("ativa", ativa);
+    elementos.btnCarroZap.setAttribute("aria-pressed", String(ativa));
+    elementos.btnCarroZap.textContent = ativa ? "■ Parar ZAP" : "📡 Iniciar ZAP";
+  }
+
+  [elementos.playerZapStatus, elementos.modoCarroZapStatus]
+    .filter(Boolean)
+    .forEach(alvo => alvo.classList.toggle("hidden", !ativa));
+}
+
+function atualizarContagemZap() {
+  if (!estado.zap.ativo) return;
+  const restantes = Math.max(
+    0,
+    Math.ceil((estado.zap.proximaTrocaEm - Date.now()) / 1000)
+  );
+  const texto = `📡 ZAP ativo • próxima rádio em ${restantes}s`;
+  if (elementos.playerZapStatus) elementos.playerZapStatus.textContent = texto;
+  if (elementos.modoCarroZapStatus) elementos.modoCarroZapStatus.textContent = texto;
+}
+
+function programarProximaTrocaZap() {
+  if (!estado.zap.ativo) return;
+  if (estado.zap.timeoutId) window.clearTimeout(estado.zap.timeoutId);
+  if (estado.zap.intervaloId) window.clearInterval(estado.zap.intervaloId);
+
+  estado.zap.proximaTrocaEm = Date.now() + DURACAO_ZAP_SEGUNDOS * 1000;
+  atualizarContagemZap();
+  estado.zap.intervaloId = window.setInterval(atualizarContagemZap, 1000);
+  estado.zap.timeoutId = window.setTimeout(() => {
+    const proxima = escolherProximaRadioZap();
+    if (proxima) void selecionarRadio(proxima, { origemZap: true });
+    programarProximaTrocaZap();
+  }, DURACAO_ZAP_SEGUNDOS * 1000);
+}
+
+function iniciarZap() {
+  if (estado.radios.length < 2) {
+    mostrarAvisoPlayer("São necessárias pelo menos duas rádios para usar o ZAP");
+    return;
+  }
+
+  estado.zap.ativo = true;
+  atualizarControlesZap();
+  mostrarAvisoPlayer("📡 ZAP iniciado • descubra uma rádio a cada 20 segundos");
+
+  if (!estado.radioAtual) {
+    const primeira = estado.radios[Math.floor(Math.random() * estado.radios.length)];
+    void selecionarRadio(primeira, { origemZap: true });
+  }
+  programarProximaTrocaZap();
+}
+
+function pararZap(mostrarAviso = true) {
+  if (estado.zap.timeoutId) window.clearTimeout(estado.zap.timeoutId);
+  if (estado.zap.intervaloId) window.clearInterval(estado.zap.intervaloId);
+  const estavaAtivo = estado.zap.ativo;
+  estado.zap.ativo = false;
+  estado.zap.timeoutId = null;
+  estado.zap.intervaloId = null;
+  estado.zap.proximaTrocaEm = 0;
+  atualizarControlesZap();
+  if (mostrarAviso && estavaAtivo) mostrarAvisoPlayer("ZAP encerrado nesta rádio");
+}
+
+function alternarZap() {
+  if (estado.zap.ativo) pararZap(true);
+  else iniciarZap();
 }
 
 function obterListaNavegacao() {
@@ -1907,17 +2527,22 @@ function tocarRadioRelativa(direcao) {
   if (indice < 0) indice = direcao > 0 ? -1 : 0;
   const proximo = (indice + direcao + lista.length) % lista.length;
   void selecionarRadio(lista[proximo]);
+  if (estado.zap.ativo) programarProximaTrocaZap();
 }
 
 function abrirModoCarro() {
   elementos.modoCarro.classList.remove("hidden");
   document.body.classList.add("modo-carro-aberto");
   sincronizarModoCarro();
+  atualizarControlesWakeLock();
 }
 
 function fecharModoCarro() {
   elementos.modoCarro.classList.add("hidden");
   document.body.classList.remove("modo-carro-aberto");
+  estado.wakeLock.solicitado = false;
+  void liberarWakeLock();
+  atualizarControlesWakeLock();
 }
 
 function sincronizarModoCarro() {
@@ -1926,12 +2551,18 @@ function sincronizarModoCarro() {
   elementos.modoCarroNome.textContent = radio.nomeFantasia || radio.nome || "Emissora";
   elementos.modoCarroLocalizacao.textContent = `${montarLocalizacao(radio)} • ${radio.classificacao?.categoriaPrincipal || "Rádio online"}`;
   elementos.modoCarroMusica.textContent = montarTextoMusica();
+  atualizarSeloPopularidadePlayer(radio);
 
   const novoLogo = criarLogoRadio(radio, "modo-carro-logo");
   elementos.modoCarroLogo.replaceWith(novoLogo);
   novoLogo.id = "modo-carro-logo";
   elementos.modoCarroLogo = novoLogo;
+  atualizarAnimacaoCapa(!elementos.audio.paused);
   atualizarBotoesFavorita();
+  atualizarTempoOuvidoTela();
+  atualizarQualidadeConexao();
+  atualizarControlesZap();
+  atualizarControlesVolume();
 }
 
 function extrairInformacoesMusica(valor) {
@@ -1955,13 +2586,13 @@ function obterInformacoesMusicaDoRadio(radio) {
     const dados = extrairInformacoesMusica(candidato);
     if (dados) return dados;
   }
-  return { titulo: "Programação ao vivo", artista: "Metadados não enviados pela emissora" };
+  return { titulo: "🎙️ Programação ao vivo", artista: "" };
 }
 
 function atualizarInformacoesMusica(radio, dados = null) {
   const info = dados || obterInformacoesMusicaDoRadio(radio);
   estado.musicaAtual = {
-    titulo: info.titulo || "Programação ao vivo",
+    titulo: info.titulo || "🎙️ Programação ao vivo",
     artista: info.artista || "",
     intervaloId: estado.musicaAtual.intervaloId || null
   };
@@ -2028,7 +2659,7 @@ function atualizarMediaSession() {
     return;
   }
   const radio = estado.radioAtual;
-  const logo = obterUrlLogo(radio) || new URL("icons/icon-512.png", window.location.href).href;
+  const logo = obterUrlLogo(radio) || new URL("icons/icon-512.png", document.baseURI).href;
   try {
     navigator.mediaSession.metadata = new MediaMetadata({
       title: estado.musicaAtual.titulo || radio.nomeFantasia || radio.nome || "Central Rádios Brasil",
@@ -2441,6 +3072,8 @@ function criarCardRanking(radio, indice) {
   segmento.className = "ranking-segmento";
   segmento.textContent = radio.categoria;
 
+  const seloPopularidade = criarSeloPopularidade(radio);
+
   const reproducoes = document.createElement("span");
   reproducoes.className = "ranking-ouvintes";
   reproducoes.textContent =
@@ -2449,7 +3082,9 @@ function criarCardRanking(radio, indice) {
       ? "reprodução válida"
       : "reproduções válidas"}`;
 
-  card.append(topo, logo, nome, segmento, reproducoes);
+  card.append(topo, logo, nome, segmento);
+  if (seloPopularidade) card.appendChild(seloPopularidade);
+  card.appendChild(reproducoes);
 
   const abrir = () => acionarRadioRanking(radio);
   card.addEventListener("click", abrir);
@@ -2498,6 +3133,8 @@ function criarLinhaRanking(radio, indice) {
   categoria.className = "ranking-top10-categoria";
   categoria.textContent = radio.categoria;
 
+  const seloPopularidade = criarSeloPopularidade(radio);
+
   const reproducoes = document.createElement("span");
   reproducoes.className = "ranking-top10-ouvintes";
   reproducoes.textContent =
@@ -2506,7 +3143,9 @@ function criarLinhaRanking(radio, indice) {
       ? "reprodução válida"
       : "reproduções válidas"}`;
 
-  item.append(topo, logo, nome, categoria, reproducoes);
+  item.append(topo, logo, nome, categoria);
+  if (seloPopularidade) item.appendChild(seloPopularidade);
+  item.appendChild(reproducoes);
 
   const abrir = () => acionarRadioRanking(radio);
   item.addEventListener("click", abrir);
