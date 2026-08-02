@@ -1,5 +1,13 @@
 # Changelog
 
+## 22.11.1 — Correção do player no aplicativo móvel
+
+- Corrigido o botão “Fechar player” que desaparecia em telas com até 390 px.
+- O botão agora permanece visível no aplicativo instalado e no navegador móvel.
+- Posicionamento ajustado para não retirar espaço dos controles de reprodução.
+- Preservada a abertura da última emissora ouvida.
+- Cache PWA atualizado para 22.11.1.
+
 ## 22.11.0 — Acessibilidade do Portal
 
 - Adicionado link “Pular para o conteúdo principal” em todas as páginas.

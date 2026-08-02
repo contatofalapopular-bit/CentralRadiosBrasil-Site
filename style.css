@@ -1069,13 +1069,29 @@ a {
         font-size: 0.65rem;
     }
 
+    .player-identidade {
+        padding-right: 44px;
+    }
+
     .player-informacoes strong,
     .player-informacoes small {
         max-width: 120px;
     }
 
+    /*
+     * O aplicativo instalado usa normalmente uma largura útil de 360–390 px.
+     * O botão não pode desaparecer nessa faixa, pois ele libera a navegação do portal.
+     * Posicionado fora do fluxo, não comprime os demais controles do player.
+     */
     .botao-fechar {
-        display: none;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 4;
+        width: 42px;
+        height: 42px;
+        display: grid;
+        flex: 0 0 42px;
     }
 }
 

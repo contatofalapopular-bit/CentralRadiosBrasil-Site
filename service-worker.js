@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "22.11.0";
+const APP_VERSION = "22.11.1";
 const CACHE_SHELL = `crb-shell-${APP_VERSION}`;
 const CACHE_DADOS = `crb-dados-${APP_VERSION}`;
 const URL_RADIOS = "https://raw.githubusercontent.com/contatofalapopular-bit/CentralRadiosBrasil-Dados/main/radios.json";
