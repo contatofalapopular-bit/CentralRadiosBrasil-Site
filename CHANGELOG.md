@@ -1,3 +1,11 @@
+## 22.11.2 — Ajuste visual da logo do portal
+
+- Corrigido o enquadramento da logo institucional no cabeçalho do portal.
+- Substituída a imagem principal da marca por uma versão em PNG com melhor recorte visual.
+- Removido o aspecto desproporcional do fundo preto ao redor da logo.
+- Mantidos identidade visual, acessibilidade, player e PWA.
+- Cache PWA atualizado para 22.11.2.
+
 # Changelog
 
 ## 22.11.1 — Correção do player no aplicativo móvel

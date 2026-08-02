@@ -2925,7 +2925,7 @@ const rankingDemonstracao = [
     nome: "Rádio Fala Popular",
     categoria: "Sertanejo",
     reproducoesRanking: 18452,
-    logoRanking: "logo-central-radios-brasil.jpeg.jpeg",
+    logoRanking: "logo-central-radios-brasil.png",
     demonstrativa: true
   },
   {
