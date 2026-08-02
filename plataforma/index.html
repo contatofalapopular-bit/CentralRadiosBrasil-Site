@@ -14,12 +14,21 @@
   >
 
   <meta name="theme-color" content="#00173d">
+  <meta name="application-name" content="Central Rádios Brasil">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Central Rádios">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="64x64" href="../icons/favicon-64.png">
+  <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="../pwa.css?v=22.8.0">
 
   <title>Conheça a plataforma — Central Rádios Brasil</title>
 
-  <link rel="stylesheet" href="../style.css?v=22.3.11">
-  <link rel="stylesheet" href="../cadastro/cadastro.css?v=22.3.11">
-  <link rel="stylesheet" href="plataforma.css?v=22.3.11">
+  <link rel="stylesheet" href="../style.css?v=22.8.0">
+  <link rel="stylesheet" href="../cadastro/cadastro.css?v=22.8.0">
+  <link rel="stylesheet" href="plataforma.css?v=22.8.0">
 </head>
 
 <body>
@@ -46,13 +55,18 @@
         </div>
 
       </a>
-
+      <div class="cabecalho-acoes-pwa">
+        <button class="pwa-install-button" type="button" hidden aria-label="Instalar Central Rádios Brasil">
+          <span aria-hidden="true">⬇</span>
+          <span>Instalar app</span>
+        </button>
       <a
         class="cadastro-voltar-topo"
         href="../"
       >
         ← Voltar ao portal
       </a>
+      </div>
 
     </div>
 
@@ -281,5 +295,6 @@
 
   </footer>
 
+  <script src="../pwa.js?v=22.8.0"></script>
 </body>
 </html>

@@ -1,0 +1,64 @@
+{
+  "id": "./",
+  "name": "Central Rádios Brasil",
+  "short_name": "Central Rádios",
+  "description": "Ouça rádios online de todo o Brasil e acompanhe emissoras em um catálogo nacional.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#020817",
+  "theme_color": "#00173d",
+  "orientation": "any",
+  "categories": [
+    "music",
+    "entertainment",
+    "news"
+  ],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ouvir rádios",
+      "short_name": "Ouvir",
+      "description": "Abrir o catálogo de emissoras",
+      "url": "./#catalogo-emissoras"
+    },
+    {
+      "name": "Cadastrar rádio",
+      "short_name": "Cadastrar",
+      "description": "Enviar uma nova emissora",
+      "url": "./cadastro/"
+    },
+    {
+      "name": "Acompanhar cadastro",
+      "short_name": "Acompanhar",
+      "description": "Consultar uma solicitação",
+      "url": "./acompanhar/"
+    }
+  ]
+}

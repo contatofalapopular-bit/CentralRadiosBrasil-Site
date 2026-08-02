@@ -1,3 +1,18 @@
+# Central Rádios Brasil — Site v22.8.0
+
+## PWA instalável
+
+- Adicionado `manifest.webmanifest`.
+- Adicionado `service-worker.js` na raiz para controlar todo o portal.
+- Adicionados ícones oficiais para tela inicial e modo maskable.
+- Adicionado botão **Instalar aplicativo** nas páginas públicas.
+- Adicionada tela offline.
+- Cache seguro das páginas essenciais e do último `radios.json` disponível.
+- Atualização automática de novas versões, preservando áudio em reprodução.
+- Avisos de perda e retorno da conexão.
+
+---
+
 ## 22.7.0 — Cadastro fácil e anti-duplicidade
 
 - Cidades oficiais carregadas por estado usando a API de Localidades do IBGE.

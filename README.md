@@ -1,4 +1,4 @@
-# Central Rádios Brasil — Site v22.7.0
+# Central Rádios Brasil — Site v22.8.0
 
 ## Cadastro fácil e proteção contra duplicidade
 
@@ -26,3 +26,13 @@
 - Digitar um domínio sem `https://` e sair do campo.
 - Informar um stream já publicado e confirmar o bloqueio.
 - Informar dados novos, testar o stream e confirmar a liberação do envio.
+
+
+## PWA instalável — v22.8.0
+
+- Manifesto de aplicativo web e ícones 192/512/maskable.
+- Instalação no celular e computador sem loja de aplicativos.
+- Abertura em modo standalone.
+- Service worker com páginas essenciais e último catálogo em cache.
+- Tela offline e aviso de conexão.
+- Atualização automática sem interromper uma rádio que estiver tocando.

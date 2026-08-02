@@ -15,9 +15,19 @@
 
   <meta name="theme-color" content="#00173d">
 
+  <meta name="application-name" content="Central Rádios Brasil">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Central Rádios">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="pwa.css?v=22.8.0">
+
   <title>Central Rádios Brasil</title>
 
-  <link rel="stylesheet" href="style.css?v=22.7.0">
+  <link rel="stylesheet" href="style.css?v=22.8.0">
 </head>
 
 <body>
@@ -40,9 +50,15 @@
         </div>
 
       </a>
+      <div class="cabecalho-acoes-pwa">
+        <button class="pwa-install-button" type="button" hidden aria-label="Instalar Central Rádios Brasil">
+          <span aria-hidden="true">⬇</span>
+          <span>Instalar aplicativo</span>
+        </button>
 
-      <div class="versao-banco" id="versao-banco">
-        Banco carregando...
+        <div class="versao-banco" id="versao-banco">
+          Banco carregando...
+        </div>
       </div>
 
     </div>
@@ -475,7 +491,8 @@
 
   </footer>
 
-  <script src="app.js?v=22.7.0"></script>
+  <script src="app.js?v=22.8.0"></script>
+  <script src="pwa.js?v=22.8.0"></script>
 
 </body>
 </html>
