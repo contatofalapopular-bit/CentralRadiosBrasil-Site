@@ -1,38 +1,27 @@
-# Central Rádios Brasil — Site v22.8.0
+# Central Rádios Brasil — Site v22.9.0
 
-## Cadastro fácil e proteção contra duplicidade
+## Etapa 5.1 — Favoritas, player inteligente e modo carro
 
-- Estado selecionado em lista oficial.
-- Cidades carregadas automaticamente pela API de Localidades do IBGE.
-- O campo continua aceitando digitação manual se a API estiver indisponível.
-- Categoria principal padronizada em lista para evitar variações e duplicidades.
-- Site recebe `https://` automaticamente quando necessário.
-- WhatsApp é formatado durante a digitação.
-- O formulário salva um rascunho local no aparelho e permite limpá-lo.
-- Nome, localização, domínio e stream são comparados com o catálogo e com solicitações ativas.
-- Streams e emissoras já cadastrados são bloqueados antes do envio.
-- A verificação é repetida pelo Worker no momento do cadastro.
+- Favoritas ficam salvas no aparelho, sem exigir conta.
+- A última rádio é recuperada ao abrir novamente o portal.
+- O player tenta reconectar após oscilações de internet e alterna para stream secundário quando disponível.
+- O buffer é monitorado para detectar espera, baixo carregamento ou áudio travado.
+- O modo carro oferece controles grandes para reduzir interações durante o uso.
+- A Media Session API leva nome, logomarca e controles para a tela bloqueada, fones e teclas de mídia compatíveis.
+- Música e artista aparecem quando a emissora fornecer metadados por campo do catálogo ou URL compatível. Caso contrário, o aplicativo informa que os metadados não foram enviados.
+
+## Limite atual
+
+A PWA melhora o uso no veículo e os controles do sistema, mas não aparece como aplicativo oficial no Android Auto ou Apple CarPlay. Essa integração exige aplicativos nativos em uma etapa futura.
 
 ## Publicação
 
-1. Publique primeiro o **Worker v1.8.0**.
-2. Depois substitua os arquivos do repositório `CentralRadiosBrasil-Site`.
-3. Preserve o arquivo `CNAME`.
-4. Após o GitHub Pages ficar verde, abra `/cadastro/` e pressione `Ctrl + F5`.
+Substitua todos os arquivos no repositório `CentralRadiosBrasil-Site`, preservando o `CNAME`. Após o GitHub Pages concluir, pressione `Ctrl + F5`.
 
-## Testes recomendados
+## Testes
 
-- Escolher um estado e confirmar o carregamento das cidades.
-- Digitar um domínio sem `https://` e sair do campo.
-- Informar um stream já publicado e confirmar o bloqueio.
-- Informar dados novos, testar o stream e confirmar a liberação do envio.
-
-
-## PWA instalável — v22.8.0
-
-- Manifesto de aplicativo web e ícones 192/512/maskable.
-- Instalação no celular e computador sem loja de aplicativos.
-- Abertura em modo standalone.
-- Service worker com páginas essenciais e último catálogo em cache.
-- Tela offline e aviso de conexão.
-- Atualização automática sem interromper uma rádio que estiver tocando.
+1. Marcar e remover uma rádio favorita.
+2. Fechar e abrir o aplicativo para verificar a última rádio.
+3. Abrir o modo carro e testar anterior, próxima, play e favorita.
+4. Desligar a internet por alguns segundos e confirmar a reconexão após o retorno.
+5. Verificar os controles na tela bloqueada do celular.

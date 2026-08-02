@@ -49,6 +49,18 @@
       "url": "./#catalogo-emissoras"
     },
     {
+      "name": "Minhas favoritas",
+      "short_name": "Favoritas",
+      "description": "Abrir as rádios favoritas deste aparelho",
+      "url": "./?abrir=favoritas#favoritas"
+    },
+    {
+      "name": "Modo carro",
+      "short_name": "Carro",
+      "description": "Abrir o player com controles grandes",
+      "url": "./?modo=carro"
+    },
+    {
       "name": "Cadastrar rádio",
       "short_name": "Cadastrar",
       "description": "Enviar uma nova emissora",

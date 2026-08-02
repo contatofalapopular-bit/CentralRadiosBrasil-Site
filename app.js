@@ -36,6 +36,11 @@ const HERO_MENSAGENS_PADRAO = [
 ];
 
 const CHAVE_SESSAO = "centralRadiosBrasilSessaoId";
+const CHAVE_FAVORITAS = "centralRadiosBrasilFavoritas";
+const CHAVE_ULTIMA_RADIO = "centralRadiosBrasilUltimaRadio";
+const INTERVALO_MONITOR_BUFFER_MS = 2000;
+const LIMITE_TRAVAMENTO_AUDIO_MS = 12000;
+const ATRASOS_RECONEXAO_MS = [2000, 4000, 8000, 15000, 30000, 60000];
 const TEMPO_MINIMO_RANKING_SEGUNDOS = 5 * 60;
 const INTERVALO_PROGRESSO_RANKING_MS = 30 * 1000;
 const LIMITE_ESPERA_STREAM_RANKING_MS = 60 * 1000;
@@ -62,9 +67,32 @@ const elementos = {
   playerLogo: document.getElementById("player-logo"),
   playerNome: document.getElementById("player-nome"),
   playerLocalizacao: document.getElementById("player-localizacao"),
+  playerMusica: document.getElementById("player-musica"),
+  playerBuffer: document.getElementById("player-buffer"),
   playerStatus: document.getElementById("player-status"),
   btnPlayPause: document.getElementById("btn-play-pause"),
-  btnFecharPlayer: document.getElementById("btn-fechar-player")
+  btnPlayerFavorita: document.getElementById("btn-player-favorita"),
+  btnRadioAnterior: document.getElementById("btn-radio-anterior"),
+  btnProximaRadio: document.getElementById("btn-proxima-radio"),
+  btnModoCarro: document.getElementById("btn-modo-carro"),
+  btnFecharPlayer: document.getElementById("btn-fechar-player"),
+
+  favoritas: document.getElementById("favoritas"),
+  gradeFavoritas: document.getElementById("grade-favoritas"),
+  contadorFavoritas: document.getElementById("contador-favoritas"),
+
+  modoCarro: document.getElementById("modo-carro"),
+  modoCarroLogo: document.getElementById("modo-carro-logo"),
+  modoCarroStatus: document.getElementById("modo-carro-status"),
+  modoCarroNome: document.getElementById("modo-carro-nome"),
+  modoCarroLocalizacao: document.getElementById("modo-carro-localizacao"),
+  modoCarroMusica: document.getElementById("modo-carro-musica"),
+  modoCarroBuffer: document.getElementById("modo-carro-buffer"),
+  btnCarroAnterior: document.getElementById("btn-carro-anterior"),
+  btnCarroPlay: document.getElementById("btn-carro-play"),
+  btnCarroProxima: document.getElementById("btn-carro-proxima"),
+  btnCarroFavorita: document.getElementById("btn-carro-favorita"),
+  btnSairModoCarro: document.getElementById("btn-sair-modo-carro")
 };
 
 const estado = {
@@ -75,6 +103,25 @@ const estado = {
   carregandoAudio: false,
   paginaAtual: 1,
   radiosPorPagina: 12,
+  favoritas: new Set(),
+  usuarioPausou: false,
+  fechandoPlayer: false,
+  indiceStreamAtual: 0,
+  reconexao: {
+    tentativa: 0,
+    timerId: null,
+    motivo: ""
+  },
+  buffer: {
+    intervaloId: null,
+    ultimoTempo: 0,
+    ultimoAvancoEm: 0
+  },
+  musicaAtual: {
+    titulo: "Programação ao vivo",
+    artista: "",
+    intervaloId: null
+  },
   reproducaoRanking: {
     eventoId: null,
     radioId: null,
@@ -106,9 +153,13 @@ const estado = {
 document.addEventListener("DOMContentLoaded", iniciarPortal);
 
 async function iniciarPortal() {
+  carregarPreferenciasLocais();
   registrarEventos();
+  configurarMediaSession();
   void iniciarHeroRotativo();
   await carregarBanco();
+  restaurarUltimaRadio();
+  tratarAtalhosDeAbertura();
 }
 
 function registrarEventos() {
@@ -119,55 +170,102 @@ function registrarEventos() {
   elementos.btnLimpar.addEventListener("click", limparFiltros);
 
   elementos.btnPlayPause.addEventListener("click", alternarReproducao);
+  elementos.btnPlayerFavorita.addEventListener("click", () => alternarFavorita(estado.radioAtual));
+  elementos.btnRadioAnterior.addEventListener("click", () => tocarRadioRelativa(-1));
+  elementos.btnProximaRadio.addEventListener("click", () => tocarRadioRelativa(1));
+  elementos.btnModoCarro.addEventListener("click", abrirModoCarro);
   elementos.btnFecharPlayer.addEventListener("click", fecharPlayer);
+
+  elementos.btnCarroAnterior.addEventListener("click", () => tocarRadioRelativa(-1));
+  elementos.btnCarroPlay.addEventListener("click", alternarReproducao);
+  elementos.btnCarroProxima.addEventListener("click", () => tocarRadioRelativa(1));
+  elementos.btnCarroFavorita.addEventListener("click", () => alternarFavorita(estado.radioAtual));
+  elementos.btnSairModoCarro.addEventListener("click", fecharModoCarro);
 
   elementos.audio.addEventListener("play", () => {
     estado.carregandoAudio = false;
+    estado.usuarioPausou = false;
     atualizarEstadoPlayer("AO VIVO", "⏸");
+    iniciarMonitorBuffer();
+    atualizarMediaSession();
   });
 
   elementos.audio.addEventListener("pause", () => {
     if (!estado.carregandoAudio) {
       atualizarEstadoPlayer("Transmissão pausada", "▶");
     }
-
+    pararMonitorBuffer();
+    if (estado.usuarioPausou || estado.fechandoPlayer) {
+      cancelarReconexaoAutomatica();
+    }
     void encerrarSessaoRankingAtual("pausa");
+    atualizarMediaSession();
   });
 
   elementos.audio.addEventListener("waiting", () => {
     estado.carregandoAudio = true;
-    atualizarEstadoPlayer("Conectando...", "…");
+    atualizarEstadoPlayer("Conexão instável", "…");
+    atualizarEstadoBuffer("Aguardando áudio");
     pausarCronometroRanking();
     agendarCancelamentoPorEspera();
+    agendarReconexaoAutomatica("espera_de_audio", 8000);
   });
 
   elementos.audio.addEventListener("stalled", () => {
+    atualizarEstadoBuffer("Transmissão travada");
     pausarCronometroRanking();
     agendarCancelamentoPorEspera();
+    agendarReconexaoAutomatica("stream_travado", 6000);
   });
 
   elementos.audio.addEventListener("playing", () => {
     estado.carregandoAudio = false;
+    estado.reconexao.tentativa = 0;
+    cancelarReconexaoAutomatica();
     atualizarEstadoPlayer("AO VIVO", "⏸");
+    atualizarEstadoBuffer("Buffer estável");
     limparTimeoutEsperaRanking();
+    iniciarMonitorBuffer();
     void iniciarOuRetomarContagemRanking();
+    atualizarMediaSession();
   });
 
   elementos.audio.addEventListener("error", () => {
     estado.carregandoAudio = false;
-    atualizarEstadoPlayer("Não foi possível reproduzir", "▶");
+    atualizarEstadoPlayer("Reconectando...", "…");
+    atualizarEstadoBuffer("Falha na transmissão");
     void encerrarSessaoRankingAtual("erro_de_audio");
+    agendarReconexaoAutomatica("erro_de_audio", 1500);
   });
 
   elementos.audio.addEventListener("ended", () => {
     void encerrarSessaoRankingAtual("transmissao_encerrada");
+    agendarReconexaoAutomatica("transmissao_encerrada", 1500);
+  });
+
+  window.addEventListener("offline", () => {
+    atualizarEstadoPlayer("Sem internet", "…");
+    atualizarEstadoBuffer("Aguardando a conexão voltar");
+    cancelarReconexaoAutomatica();
+  });
+
+  window.addEventListener("online", () => {
+    if (estado.radioAtual && !estado.usuarioPausou) {
+      atualizarEstadoPlayer("Internet restabelecida", "…");
+      agendarReconexaoAutomatica("internet_restabelecida", 250);
+    }
+  });
+
+  document.addEventListener("keydown", evento => {
+    if (evento.key === "Escape" && !elementos.modoCarro.classList.contains("hidden")) {
+      fecharModoCarro();
+    }
   });
 
   window.addEventListener("pagehide", () => {
     void encerrarSessaoRankingAtual("saida_da_pagina");
   });
 }
-
 
 async function iniciarHeroRotativo() {
   if (!elementos.heroFrase || !elementos.heroDescricao) return;
@@ -522,6 +620,7 @@ async function carregarBanco() {
     atualizarInformacoesBanco();
     preencherFiltros();
     renderizarRadios();
+    renderizarFavoritas();
     atualizarRadioDestaque();
     atualizarRankingNacional();
   } catch (erro) {
@@ -863,17 +962,35 @@ function renderizarPaginacao(totalPaginas) {
   elementos.paginacaoRadios.appendChild(proxima);
 }
 
-function criarCardRadio(radio) {
+function criarCardRadio(radio, opcoes = {}) {
   const artigo = document.createElement("article");
   artigo.className = "radio-card radio-card-compacto";
+  if (opcoes.favorita) artigo.classList.add("radio-card-favorita");
   artigo.tabIndex = 0;
   artigo.setAttribute("role", "button");
 
   const nome = radio.nomeFantasia || radio.nome || "Emissora";
   artigo.setAttribute("aria-label", `Ouvir ${nome}`);
   artigo.title = `Ouvir ${nome}`;
+  artigo.dataset.radioId = obterIdentificadorRadio(radio);
+
+  const botaoFavorita = document.createElement("button");
+  botaoFavorita.type = "button";
+  botaoFavorita.className = "radio-favorita";
+  botaoFavorita.dataset.radioId = obterIdentificadorRadio(radio);
+  botaoFavorita.setAttribute("aria-label", ehFavorita(radio) ? `Remover ${nome} das favoritas` : `Adicionar ${nome} às favoritas`);
+  botaoFavorita.setAttribute("aria-pressed", String(ehFavorita(radio)));
+  botaoFavorita.textContent = ehFavorita(radio) ? "♥" : "♡";
+  botaoFavorita.addEventListener("click", evento => {
+    evento.stopPropagation();
+    alternarFavorita(radio);
+  });
 
   const logo = criarLogoRadio(radio, "radio-logo");
+
+  const nomeElemento = document.createElement("strong");
+  nomeElemento.className = "radio-nome";
+  nomeElemento.textContent = nome;
 
   const selos = document.createElement("div");
   selos.className = "radio-selos";
@@ -892,15 +1009,14 @@ function criarCardRadio(radio) {
 
   const categoria = document.createElement("span");
   categoria.className = "radio-categoria";
-  categoria.textContent =
-    radio.classificacao?.categoriaPrincipal || "Rádio online";
+  categoria.textContent = radio.classificacao?.categoriaPrincipal || "Rádio online";
 
-  artigo.append(logo, selos, categoria);
+  artigo.append(botaoFavorita, logo, nomeElemento, selos, categoria);
 
   const ouvir = () => selecionarRadio(radio);
   artigo.addEventListener("click", ouvir);
   artigo.addEventListener("keydown", evento => {
-    if (evento.key === "Enter" || evento.key === " ") {
+    if ((evento.key === "Enter" || evento.key === " ") && evento.target === artigo) {
       evento.preventDefault();
       ouvir();
     }
@@ -1012,43 +1128,49 @@ function montarLocalizacao(radio) {
   return cidade || uf || "Brasil";
 }
 
-async function selecionarRadio(radio) {
-  const stream = obterUrlStream(radio);
+async function selecionarRadio(radio, opcoes = {}) {
+  const streams = obterStreamsValidos(radio);
 
-  if (!stream) {
+  if (streams.length === 0) {
     alert("Esta emissora está temporariamente sem transmissão.");
     return;
   }
 
-  // Trocar de emissora encerra qualquer contagem ainda não validada.
   void encerrarSessaoRankingAtual("troca_de_radio");
+  cancelarReconexaoAutomatica();
+  pararMonitorBuffer();
+  pararAtualizacaoMusica();
+
+  estado.fechandoPlayer = false;
+  estado.usuarioPausou = false;
   elementos.audio.pause();
 
   estado.radioAtual = radio;
   estado.carregandoAudio = true;
+  estado.indiceStreamAtual = Math.max(0, Math.min(Number(opcoes.indiceStream || 0), streams.length - 1));
 
+  salvarUltimaRadio(radio);
   elementos.player.classList.remove("hidden");
 
   atualizarIdentidadePlayer(radio);
   atualizarEstadoPlayer("Conectando...", "…");
+  atualizarEstadoBuffer("Preparando transmissão");
 
-  elementos.audio.src = stream;
+  elementos.audio.src = streams[estado.indiceStreamAtual];
   elementos.audio.load();
 
   try {
     await elementos.audio.play();
   } catch (erro) {
     estado.carregandoAudio = false;
-
     console.error("Falha ao iniciar a transmissão:", erro);
-
-    atualizarEstadoPlayer(
-      "Toque no botão para iniciar",
-      "▶"
-    );
+    atualizarEstadoPlayer("Toque no botão para iniciar", "▶");
+    atualizarEstadoBuffer("Pronta para nova tentativa");
+    if (opcoes.reconexaoAutomatica) {
+      agendarReconexaoAutomatica("falha_ao_reconectar", 2000);
+    }
   }
 }
-
 
 function obterSessaoId() {
   try {
@@ -1489,42 +1611,51 @@ function atualizarIdentidadePlayer(radio) {
     `${montarLocalizacao(radio)} • ` +
     `${radio.classificacao?.categoriaPrincipal || "Rádio online"}`;
 
+  atualizarInformacoesMusica(radio);
+  atualizarBotoesFavorita();
+
   const novoLogo = criarLogoRadio(radio, "player-logo");
 
   elementos.playerLogo.replaceWith(novoLogo);
   novoLogo.id = "player-logo";
   elementos.playerLogo = novoLogo;
+  sincronizarModoCarro();
+  atualizarMediaSession();
+  iniciarAtualizacaoMusica(radio);
 }
 
 async function alternarReproducao() {
-  if (!estado.radioAtual) {
-    return;
-  }
+  if (!estado.radioAtual) return;
 
   if (elementos.audio.paused) {
     try {
+      estado.usuarioPausou = false;
+      estado.fechandoPlayer = false;
       estado.carregandoAudio = true;
       atualizarEstadoPlayer("Conectando...", "…");
-
+      atualizarEstadoBuffer("Preparando áudio");
       await elementos.audio.play();
     } catch (erro) {
       estado.carregandoAudio = false;
-
       console.error("Falha ao reproduzir:", erro);
-
-      atualizarEstadoPlayer(
-        "Não foi possível reproduzir",
-        "▶"
-      );
+      atualizarEstadoPlayer("Não foi possível reproduzir", "▶");
+      atualizarEstadoBuffer("Toque novamente para tentar");
     }
-
     return;
   }
 
+  estado.usuarioPausou = true;
+  cancelarReconexaoAutomatica();
   elementos.audio.pause();
 }
 
 function fecharPlayer() {
+  estado.fechandoPlayer = true;
+  estado.usuarioPausou = true;
+  cancelarReconexaoAutomatica();
+  pararMonitorBuffer();
+  pararAtualizacaoMusica();
+  fecharModoCarro();
   void encerrarSessaoRankingAtual("player_fechado");
 
   elementos.audio.pause();
@@ -1533,20 +1664,384 @@ function fecharPlayer() {
 
   estado.radioAtual = null;
   estado.carregandoAudio = false;
+  estado.fechandoPlayer = false;
 
   elementos.player.classList.add("hidden");
+  atualizarMediaSession();
 }
 
 function atualizarEstadoPlayer(texto, simboloBotao) {
   elementos.playerStatus.textContent = texto;
   elementos.btnPlayPause.textContent = simboloBotao;
+  elementos.btnCarroPlay.textContent = simboloBotao;
+  elementos.modoCarroStatus.textContent = texto;
 
-  elementos.btnPlayPause.setAttribute(
-    "aria-label",
-    simboloBotao === "⏸"
-      ? "Pausar rádio"
-      : "Reproduzir rádio"
+  const pausando = simboloBotao === "⏸";
+  elementos.btnPlayPause.setAttribute("aria-label", pausando ? "Pausar rádio" : "Reproduzir rádio");
+  elementos.btnCarroPlay.setAttribute("aria-label", pausando ? "Pausar rádio" : "Reproduzir rádio");
+
+  if ("mediaSession" in navigator) {
+    navigator.mediaSession.playbackState = pausando ? "playing" : "paused";
+  }
+}
+
+function carregarPreferenciasLocais() {
+  try {
+    const salvas = JSON.parse(localStorage.getItem(CHAVE_FAVORITAS) || "[]");
+    estado.favoritas = new Set(Array.isArray(salvas) ? salvas.filter(Boolean) : []);
+  } catch (erro) {
+    console.warn("Não foi possível carregar as favoritas:", erro);
+    estado.favoritas = new Set();
+  }
+}
+
+function obterIdentificadorRadio(radio) {
+  return String(
+    radio?.id ||
+    radio?.slug ||
+    `${radio?.nome || "radio"}-${radio?.localizacao?.cidade || "brasil"}-${radio?.localizacao?.uf || "br"}`
   );
+}
+
+function ehFavorita(radio) {
+  return Boolean(radio && estado.favoritas.has(obterIdentificadorRadio(radio)));
+}
+
+function alternarFavorita(radio) {
+  if (!radio) return;
+  const id = obterIdentificadorRadio(radio);
+  if (estado.favoritas.has(id)) estado.favoritas.delete(id);
+  else estado.favoritas.add(id);
+
+  try {
+    localStorage.setItem(CHAVE_FAVORITAS, JSON.stringify([...estado.favoritas]));
+  } catch (erro) {
+    console.warn("Não foi possível salvar as favoritas:", erro);
+  }
+
+  atualizarBotoesFavorita();
+  renderizarFavoritas();
+  renderizarRadios();
+}
+
+function atualizarBotoesFavorita() {
+  const favorita = ehFavorita(estado.radioAtual);
+  const simbolo = favorita ? "♥" : "♡";
+  elementos.btnPlayerFavorita.textContent = simbolo;
+  elementos.btnPlayerFavorita.classList.toggle("ativa", favorita);
+  elementos.btnPlayerFavorita.setAttribute("aria-pressed", String(favorita));
+  elementos.btnPlayerFavorita.setAttribute("aria-label", favorita ? "Remover rádio das favoritas" : "Adicionar rádio às favoritas");
+
+  elementos.btnCarroFavorita.textContent = `${simbolo} ${favorita ? "Favorita" : "Favoritar"}`;
+  elementos.btnCarroFavorita.classList.toggle("ativa", favorita);
+  elementos.btnCarroFavorita.setAttribute("aria-pressed", String(favorita));
+}
+
+function renderizarFavoritas() {
+  if (!elementos.favoritas || !elementos.gradeFavoritas) return;
+  const radios = estado.radios.filter(ehFavorita);
+  elementos.gradeFavoritas.innerHTML = "";
+  elementos.contadorFavoritas.textContent = `${radios.length} ${radios.length === 1 ? "favorita" : "favoritas"}`;
+  elementos.favoritas.classList.toggle("hidden", radios.length === 0);
+
+  const fragmento = document.createDocumentFragment();
+  radios.forEach(radio => fragmento.appendChild(criarCardRadio(radio, { favorita: true })));
+  elementos.gradeFavoritas.appendChild(fragmento);
+}
+
+function salvarUltimaRadio(radio) {
+  try {
+    localStorage.setItem(CHAVE_ULTIMA_RADIO, obterIdentificadorRadio(radio));
+  } catch (erro) {
+    console.warn("Não foi possível salvar a última rádio:", erro);
+  }
+}
+
+function restaurarUltimaRadio() {
+  let id = "";
+  try { id = localStorage.getItem(CHAVE_ULTIMA_RADIO) || ""; } catch {}
+  if (!id) return;
+  const radio = estado.radios.find(item => obterIdentificadorRadio(item) === id);
+  if (!radio) return;
+
+  estado.radioAtual = radio;
+  estado.indiceStreamAtual = 0;
+  elementos.player.classList.remove("hidden");
+  atualizarIdentidadePlayer(radio);
+  const stream = obterStreamsValidos(radio)[0];
+  if (stream) {
+    elementos.audio.src = stream;
+    elementos.audio.load();
+  }
+  atualizarEstadoPlayer("Última rádio pronta", "▶");
+  atualizarEstadoBuffer("Toque para continuar ouvindo");
+}
+
+function tratarAtalhosDeAbertura() {
+  const parametros = new URLSearchParams(window.location.search);
+  if (parametros.get("abrir") === "favoritas") {
+    elementos.favoritas?.classList.remove("hidden");
+    window.setTimeout(() => elementos.favoritas?.scrollIntoView({ behavior: "smooth", block: "start" }), 250);
+  }
+  if (parametros.get("modo") === "carro") {
+    window.setTimeout(abrirModoCarro, 250);
+  }
+}
+
+function obterStreamsValidos(radio) {
+  const lista = [];
+  const adicionar = valor => {
+    const url = String(valor || "").trim();
+    if (url && !lista.includes(url)) lista.push(url);
+  };
+  adicionar(radio?.streamPrincipal?.url);
+  const streams = Array.isArray(radio?.streams) ? [...radio.streams] : [];
+  streams.sort((a, b) => Number(Boolean(b?.principal)) - Number(Boolean(a?.principal)));
+  streams.forEach(stream => adicionar(stream?.url));
+  return lista;
+}
+
+function agendarReconexaoAutomatica(motivo, atrasoPersonalizado = null) {
+  if (!estado.radioAtual || estado.usuarioPausou || estado.fechandoPlayer) return;
+  if (!navigator.onLine) {
+    atualizarEstadoPlayer("Sem internet", "…");
+    atualizarEstadoBuffer("Aguardando a conexão voltar");
+    return;
+  }
+  if (estado.reconexao.timerId) return;
+
+  const indice = Math.min(estado.reconexao.tentativa, ATRASOS_RECONEXAO_MS.length - 1);
+  const atraso = atrasoPersonalizado ?? ATRASOS_RECONEXAO_MS[indice];
+  estado.reconexao.motivo = motivo;
+  atualizarEstadoPlayer(`Reconectando em ${Math.max(1, Math.ceil(atraso / 1000))}s`, "…");
+
+  estado.reconexao.timerId = window.setTimeout(() => {
+    estado.reconexao.timerId = null;
+    void executarReconexaoAutomatica();
+  }, atraso);
+}
+
+function cancelarReconexaoAutomatica() {
+  if (estado.reconexao.timerId) window.clearTimeout(estado.reconexao.timerId);
+  estado.reconexao.timerId = null;
+}
+
+async function executarReconexaoAutomatica() {
+  if (!estado.radioAtual || estado.usuarioPausou || estado.fechandoPlayer || !navigator.onLine) return;
+
+  const streams = obterStreamsValidos(estado.radioAtual);
+  if (streams.length === 0) return;
+
+  estado.reconexao.tentativa += 1;
+  if (streams.length > 1 && estado.reconexao.tentativa > 1 && estado.reconexao.tentativa % 2 === 0) {
+    estado.indiceStreamAtual = (estado.indiceStreamAtual + 1) % streams.length;
+  }
+
+  atualizarEstadoPlayer(`Reconectando • tentativa ${estado.reconexao.tentativa}`, "…");
+  atualizarEstadoBuffer(streams.length > 1 && estado.indiceStreamAtual > 0 ? "Usando transmissão reserva" : "Restabelecendo transmissão");
+
+  try {
+    elementos.audio.src = streams[estado.indiceStreamAtual];
+    elementos.audio.load();
+    await elementos.audio.play();
+  } catch (erro) {
+    console.warn("Reconexão automática não concluída:", erro);
+    agendarReconexaoAutomatica("nova_tentativa");
+  }
+}
+
+function iniciarMonitorBuffer() {
+  pararMonitorBuffer();
+  estado.buffer.ultimoTempo = Number(elementos.audio.currentTime || 0);
+  estado.buffer.ultimoAvancoEm = Date.now();
+  estado.buffer.intervaloId = window.setInterval(verificarSaudeBuffer, INTERVALO_MONITOR_BUFFER_MS);
+}
+
+function pararMonitorBuffer() {
+  if (estado.buffer.intervaloId) window.clearInterval(estado.buffer.intervaloId);
+  estado.buffer.intervaloId = null;
+}
+
+function verificarSaudeBuffer() {
+  if (!estado.radioAtual || elementos.audio.paused) return;
+  const atual = Number(elementos.audio.currentTime || 0);
+  if (Number.isFinite(atual) && atual > estado.buffer.ultimoTempo + 0.15) {
+    estado.buffer.ultimoTempo = atual;
+    estado.buffer.ultimoAvancoEm = Date.now();
+  }
+
+  let segundosAdiante = 0;
+  try {
+    const faixas = elementos.audio.buffered;
+    if (faixas.length) segundosAdiante = Math.max(0, faixas.end(faixas.length - 1) - atual);
+  } catch {}
+
+  if (elementos.audio.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
+    atualizarEstadoBuffer(segundosAdiante >= 3 ? `Buffer estável • ${Math.round(segundosAdiante)}s` : "Buffer ativo");
+  } else {
+    atualizarEstadoBuffer("Buffer baixo");
+  }
+
+  if (Date.now() - estado.buffer.ultimoAvancoEm > LIMITE_TRAVAMENTO_AUDIO_MS) {
+    atualizarEstadoBuffer("Áudio sem avanço • reconectando");
+    agendarReconexaoAutomatica("audio_sem_avanco", 250);
+  }
+}
+
+function atualizarEstadoBuffer(texto) {
+  elementos.playerBuffer.textContent = texto;
+  elementos.modoCarroBuffer.textContent = texto;
+}
+
+function obterListaNavegacao() {
+  const favoritas = estado.radios.filter(ehFavorita);
+  if (estado.radioAtual && ehFavorita(estado.radioAtual) && favoritas.length > 1) return favoritas;
+  return estado.radios;
+}
+
+function tocarRadioRelativa(direcao) {
+  const lista = obterListaNavegacao();
+  if (!lista.length) return;
+  const atualId = obterIdentificadorRadio(estado.radioAtual);
+  let indice = lista.findIndex(radio => obterIdentificadorRadio(radio) === atualId);
+  if (indice < 0) indice = direcao > 0 ? -1 : 0;
+  const proximo = (indice + direcao + lista.length) % lista.length;
+  void selecionarRadio(lista[proximo]);
+}
+
+function abrirModoCarro() {
+  elementos.modoCarro.classList.remove("hidden");
+  document.body.classList.add("modo-carro-aberto");
+  sincronizarModoCarro();
+}
+
+function fecharModoCarro() {
+  elementos.modoCarro.classList.add("hidden");
+  document.body.classList.remove("modo-carro-aberto");
+}
+
+function sincronizarModoCarro() {
+  const radio = estado.radioAtual;
+  if (!radio) return;
+  elementos.modoCarroNome.textContent = radio.nomeFantasia || radio.nome || "Emissora";
+  elementos.modoCarroLocalizacao.textContent = `${montarLocalizacao(radio)} • ${radio.classificacao?.categoriaPrincipal || "Rádio online"}`;
+  elementos.modoCarroMusica.textContent = montarTextoMusica();
+
+  const novoLogo = criarLogoRadio(radio, "modo-carro-logo");
+  elementos.modoCarroLogo.replaceWith(novoLogo);
+  novoLogo.id = "modo-carro-logo";
+  elementos.modoCarroLogo = novoLogo;
+  atualizarBotoesFavorita();
+}
+
+function extrairInformacoesMusica(valor) {
+  if (!valor) return null;
+  if (typeof valor === "string") {
+    const texto = valor.trim();
+    if (!texto) return null;
+    const partes = texto.split(/\s+-\s+/);
+    if (partes.length >= 2) return { artista: partes.shift(), titulo: partes.join(" - ") };
+    return { titulo: texto, artista: "" };
+  }
+  if (typeof valor !== "object") return null;
+  const titulo = valor.titulo || valor.title || valor.musica || valor.song || valor.track || valor.currentSong;
+  const artista = valor.artista || valor.artist || valor.cantor || valor.author || "";
+  return titulo ? { titulo: String(titulo), artista: String(artista || "") } : null;
+}
+
+function obterInformacoesMusicaDoRadio(radio) {
+  const candidatos = [radio?.agoraTocando, radio?.musicaAtual, radio?.metadata, radio?.metadados, radio?.programacao?.agora];
+  for (const candidato of candidatos) {
+    const dados = extrairInformacoesMusica(candidato);
+    if (dados) return dados;
+  }
+  return { titulo: "Programação ao vivo", artista: "Metadados não enviados pela emissora" };
+}
+
+function atualizarInformacoesMusica(radio, dados = null) {
+  const info = dados || obterInformacoesMusicaDoRadio(radio);
+  estado.musicaAtual = {
+    titulo: info.titulo || "Programação ao vivo",
+    artista: info.artista || "",
+    intervaloId: estado.musicaAtual.intervaloId || null
+  };
+  const texto = montarTextoMusica();
+  elementos.playerMusica.textContent = texto;
+  elementos.modoCarroMusica.textContent = texto;
+  atualizarMediaSession();
+}
+
+function montarTextoMusica() {
+  return estado.musicaAtual.artista ? `${estado.musicaAtual.artista} — ${estado.musicaAtual.titulo}` : estado.musicaAtual.titulo;
+}
+
+function obterUrlMetadados(radio) {
+  return String(radio?.metadataUrl || radio?.metadadosUrl || radio?.metadados?.url || radio?.metadata?.url || "").trim();
+}
+
+function iniciarAtualizacaoMusica(radio) {
+  pararAtualizacaoMusica();
+  const url = obterUrlMetadados(radio);
+  if (!url) return;
+  const consultar = async () => {
+    try {
+      const resposta = await fetch(url, { cache: "no-store" });
+      if (!resposta.ok) return;
+      const tipo = resposta.headers.get("content-type") || "";
+      const dadosBrutos = tipo.includes("json") ? await resposta.json() : await resposta.text();
+      const dados = extrairInformacoesMusica(dadosBrutos?.nowPlaying || dadosBrutos?.current || dadosBrutos?.song || dadosBrutos);
+      if (dados) atualizarInformacoesMusica(radio, dados);
+    } catch (erro) {
+      console.info("Metadados musicais indisponíveis para esta emissora.", erro);
+    }
+  };
+  void consultar();
+  estado.musicaAtual.intervaloId = window.setInterval(consultar, 30000);
+}
+
+function pararAtualizacaoMusica() {
+  if (estado.musicaAtual.intervaloId) window.clearInterval(estado.musicaAtual.intervaloId);
+  estado.musicaAtual.intervaloId = null;
+}
+
+function configurarMediaSession() {
+  if (!("mediaSession" in navigator)) return;
+  const definir = (acao, funcao) => {
+    try { navigator.mediaSession.setActionHandler(acao, funcao); } catch {}
+  };
+  definir("play", () => {
+    if (elementos.audio.paused) void alternarReproducao();
+  });
+  definir("pause", () => {
+    if (!elementos.audio.paused) void alternarReproducao();
+  });
+  definir("stop", fecharPlayer);
+  definir("previoustrack", () => tocarRadioRelativa(-1));
+  definir("nexttrack", () => tocarRadioRelativa(1));
+}
+
+function atualizarMediaSession() {
+  if (!("mediaSession" in navigator)) return;
+  if (!estado.radioAtual) {
+    navigator.mediaSession.metadata = null;
+    navigator.mediaSession.playbackState = "none";
+    return;
+  }
+  const radio = estado.radioAtual;
+  const logo = obterUrlLogo(radio) || new URL("icons/icon-512.png", window.location.href).href;
+  try {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: estado.musicaAtual.titulo || radio.nomeFantasia || radio.nome || "Central Rádios Brasil",
+      artist: estado.musicaAtual.artista || radio.nomeFantasia || radio.nome || "Central Rádios Brasil",
+      album: `${montarLocalizacao(radio)} • ${radio.classificacao?.categoriaPrincipal || "Rádio online"}`,
+      artwork: [
+        { src: logo, sizes: "512x512", type: logo.toLowerCase().includes(".png") ? "image/png" : "image/jpeg" }
+      ]
+    });
+    navigator.mediaSession.playbackState = elementos.audio.paused ? "paused" : "playing";
+  } catch (erro) {
+    console.info("Controles de mídia parcialmente indisponíveis.", erro);
+  }
 }
 
 async function compartilharRadio(radio) {

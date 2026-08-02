@@ -1,3 +1,19 @@
+# Central Rádios Brasil — Site v22.9.0
+
+## Favoritas, player inteligente e modo carro
+
+- Favoritas salvas localmente no aparelho.
+- Seção própria para rádios favoritas.
+- Recuperação da última emissora selecionada.
+- Reconexão automática progressiva e tentativa de stream secundário.
+- Monitoramento do buffer e detecção de áudio travado.
+- Modo carro com botões grandes, anterior, próxima, tocar/pausar e favorita.
+- Controles na tela bloqueada, fones e teclas de mídia pela Media Session API.
+- Informações da música quando a emissora disponibilizar metadados compatíveis.
+- Preparação visual e técnica para futuros aplicativos Android Auto e Apple CarPlay.
+
+---
+
 # Central Rádios Brasil — Site v22.8.0
 
 ## PWA instalável

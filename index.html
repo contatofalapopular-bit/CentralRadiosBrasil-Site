@@ -23,11 +23,11 @@
   <link rel="manifest" href="manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="pwa.css?v=22.8.0">
+  <link rel="stylesheet" href="pwa.css?v=22.9.0">
 
   <title>Central Rádios Brasil</title>
 
-  <link rel="stylesheet" href="style.css?v=22.8.0">
+  <link rel="stylesheet" href="style.css?v=22.9.0">
 </head>
 
 <body>
@@ -322,6 +322,19 @@
   </div>
 
 </section>
+
+<section class="favoritas hidden" id="favoritas" aria-labelledby="favoritas-titulo">
+  <div class="favoritas-cabecalho">
+    <div>
+      <span class="titulo-menor">MINHAS RÁDIOS</span>
+      <h2 id="favoritas-titulo">❤️ Favoritas</h2>
+      <p>As emissoras favoritas ficam salvas neste aparelho.</p>
+    </div>
+    <div class="contador" id="contador-favoritas">0 favoritas</div>
+  </div>
+  <div class="grade-radios grade-favoritas" id="grade-favoritas" aria-live="polite"></div>
+</section>
+
     <section class="filtros" aria-label="Filtros de emissoras">
 
       <div class="campo campo-pesquisa">
@@ -419,6 +432,37 @@
     </div>
   </div>
 
+
+  <section class="modo-carro hidden" id="modo-carro" role="dialog" aria-modal="true" aria-labelledby="modo-carro-titulo">
+    <div class="modo-carro-painel">
+      <div class="modo-carro-topo">
+        <div>
+          <span class="titulo-menor">DIREÇÃO SEGURA</span>
+          <h2 id="modo-carro-titulo">🚗 Modo carro</h2>
+        </div>
+        <button class="modo-carro-sair" id="btn-sair-modo-carro" type="button" aria-label="Sair do modo carro">Sair</button>
+      </div>
+
+      <div class="modo-carro-identidade">
+        <div class="modo-carro-logo" id="modo-carro-logo">CRB</div>
+        <span class="modo-carro-status" id="modo-carro-status">Selecione uma rádio</span>
+        <strong id="modo-carro-nome">Central Rádios Brasil</strong>
+        <small id="modo-carro-localizacao">Catálogo nacional</small>
+        <p id="modo-carro-musica">Programação ao vivo</p>
+        <span class="modo-carro-buffer" id="modo-carro-buffer">Aguardando transmissão</span>
+      </div>
+
+      <div class="modo-carro-controles">
+        <button type="button" id="btn-carro-anterior" aria-label="Rádio anterior">⏮<span>Anterior</span></button>
+        <button class="modo-carro-play" type="button" id="btn-carro-play" aria-label="Reproduzir rádio">▶</button>
+        <button type="button" id="btn-carro-proxima" aria-label="Próxima rádio">⏭<span>Próxima</span></button>
+      </div>
+
+      <button class="modo-carro-favorita" type="button" id="btn-carro-favorita" aria-label="Adicionar rádio às favoritas" aria-pressed="false">♡ Favoritar</button>
+      <p class="modo-carro-aviso">Use os controles grandes e mantenha a atenção no trânsito.</p>
+    </div>
+  </section>
+
   <aside
     class="player hidden"
     id="player"
@@ -447,11 +491,22 @@
             Central Rádios Brasil
           </small>
 
+          <small class="player-musica" id="player-musica">
+            Programação ao vivo
+          </small>
+
+          <span class="player-buffer" id="player-buffer">
+            Aguardando transmissão
+          </span>
+
         </div>
 
       </div>
 
       <div class="player-acoes">
+
+        <button class="botao-player-secundario" type="button" id="btn-player-favorita" aria-label="Adicionar rádio às favoritas" aria-pressed="false">♡</button>
+        <button class="botao-player-secundario" type="button" id="btn-radio-anterior" aria-label="Rádio anterior">⏮</button>
 
         <button
           class="botao-player"
@@ -461,6 +516,9 @@
         >
           ▶
         </button>
+
+        <button class="botao-player-secundario" type="button" id="btn-proxima-radio" aria-label="Próxima rádio">⏭</button>
+        <button class="botao-player-secundario botao-modo-carro" type="button" id="btn-modo-carro" aria-label="Abrir modo carro">🚗</button>
 
         <button
           class="botao-fechar"
@@ -491,8 +549,8 @@
 
   </footer>
 
-  <script src="app.js?v=22.8.0"></script>
-  <script src="pwa.js?v=22.8.0"></script>
+  <script src="app.js?v=22.9.0"></script>
+  <script src="pwa.js?v=22.9.0"></script>
 
 </body>
 </html>
