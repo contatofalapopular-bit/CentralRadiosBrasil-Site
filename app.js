@@ -36,6 +36,9 @@ const HERO_MENSAGENS_PADRAO = [
 ];
 
 const CHAVE_SESSAO = "centralRadiosBrasilSessaoId";
+const TEMPO_MINIMO_RANKING_SEGUNDOS = 5 * 60;
+const INTERVALO_PROGRESSO_RANKING_MS = 30 * 1000;
+const LIMITE_ESPERA_STREAM_RANKING_MS = 60 * 1000;
 
 const elementos = {
   pesquisa: document.getElementById("pesquisa"),
@@ -72,7 +75,19 @@ const estado = {
   carregandoAudio: false,
   paginaAtual: 1,
   radiosPorPagina: 12,
-  registroPendente: false,
+  reproducaoRanking: {
+    eventoId: null,
+    radioId: null,
+    sessaoId: null,
+    segundosAcumulados: 0,
+    ultimoInicioPerformance: null,
+    ultimoEnvioSegundos: 0,
+    intervaloId: null,
+    timeoutEsperaId: null,
+    iniciando: false,
+    enviando: false,
+    finalizada: false
+  },
   monitoramentoStreams: {
     atualizadoEm: null,
     indisponiveis: new Set(),
@@ -115,22 +130,41 @@ function registrarEventos() {
     if (!estado.carregandoAudio) {
       atualizarEstadoPlayer("Transmissão pausada", "▶");
     }
+
+    void encerrarSessaoRankingAtual("pausa");
   });
 
   elementos.audio.addEventListener("waiting", () => {
     estado.carregandoAudio = true;
     atualizarEstadoPlayer("Conectando...", "…");
+    pausarCronometroRanking();
+    agendarCancelamentoPorEspera();
+  });
+
+  elementos.audio.addEventListener("stalled", () => {
+    pausarCronometroRanking();
+    agendarCancelamentoPorEspera();
   });
 
   elementos.audio.addEventListener("playing", () => {
     estado.carregandoAudio = false;
     atualizarEstadoPlayer("AO VIVO", "⏸");
-    registrarReproducaoAtual();
+    limparTimeoutEsperaRanking();
+    void iniciarOuRetomarContagemRanking();
   });
 
   elementos.audio.addEventListener("error", () => {
     estado.carregandoAudio = false;
     atualizarEstadoPlayer("Não foi possível reproduzir", "▶");
+    void encerrarSessaoRankingAtual("erro_de_audio");
+  });
+
+  elementos.audio.addEventListener("ended", () => {
+    void encerrarSessaoRankingAtual("transmissao_encerrada");
+  });
+
+  window.addEventListener("pagehide", () => {
+    void encerrarSessaoRankingAtual("saida_da_pagina");
   });
 }
 
@@ -986,6 +1020,10 @@ async function selecionarRadio(radio) {
     return;
   }
 
+  // Trocar de emissora encerra qualquer contagem ainda não validada.
+  void encerrarSessaoRankingAtual("troca_de_radio");
+  elementos.audio.pause();
+
   estado.radioAtual = radio;
   estado.carregandoAudio = true;
 
@@ -994,7 +1032,6 @@ async function selecionarRadio(radio) {
   atualizarIdentidadePlayer(radio);
   atualizarEstadoPlayer("Conectando...", "…");
 
-  elementos.audio.pause();
   elementos.audio.src = stream;
   elementos.audio.load();
 
@@ -1064,58 +1101,382 @@ function obterRadioId(radio) {
     .slice(0, 100);
 }
 
-async function registrarReproducaoAtual() {
-  if (!estado.radioAtual || estado.registroPendente) {
+function limparIntervaloRanking() {
+  const controle = estado.reproducaoRanking;
+
+  if (controle.intervaloId) {
+    clearInterval(controle.intervaloId);
+    controle.intervaloId = null;
+  }
+}
+
+function limparTimeoutEsperaRanking() {
+  const controle = estado.reproducaoRanking;
+
+  if (controle.timeoutEsperaId) {
+    clearTimeout(controle.timeoutEsperaId);
+    controle.timeoutEsperaId = null;
+  }
+}
+
+function atualizarTempoLocalRanking() {
+  const controle = estado.reproducaoRanking;
+
+  if (controle.ultimoInicioPerformance === null) {
+    return;
+  }
+
+  const agora = performance.now();
+  const delta = Math.max(
+    0,
+    (agora - controle.ultimoInicioPerformance) / 1000
+  );
+
+  controle.segundosAcumulados += delta;
+  controle.ultimoInicioPerformance = agora;
+}
+
+function pausarCronometroRanking() {
+  const controle = estado.reproducaoRanking;
+
+  atualizarTempoLocalRanking();
+  controle.ultimoInicioPerformance = null;
+  limparIntervaloRanking();
+}
+
+function iniciarCronometroRanking() {
+  const controle = estado.reproducaoRanking;
+
+  if (
+    !controle.eventoId ||
+    controle.finalizada ||
+    elementos.audio.paused ||
+    estado.carregandoAudio
+  ) {
+    return;
+  }
+
+  if (controle.ultimoInicioPerformance === null) {
+    controle.ultimoInicioPerformance = performance.now();
+  }
+
+  if (!controle.intervaloId) {
+    controle.intervaloId = setInterval(() => {
+      void enviarProgressoRankingAtual();
+    }, INTERVALO_PROGRESSO_RANKING_MS);
+  }
+}
+
+function reiniciarControleRanking() {
+  limparIntervaloRanking();
+  limparTimeoutEsperaRanking();
+
+  estado.reproducaoRanking = {
+    eventoId: null,
+    radioId: null,
+    sessaoId: null,
+    segundosAcumulados: 0,
+    ultimoInicioPerformance: null,
+    ultimoEnvioSegundos: 0,
+    intervaloId: null,
+    timeoutEsperaId: null,
+    iniciando: false,
+    enviando: false,
+    finalizada: false
+  };
+}
+
+function criarSnapshotRanking() {
+  atualizarTempoLocalRanking();
+
+  const controle = estado.reproducaoRanking;
+
+  return {
+    eventoId: controle.eventoId,
+    radioId: controle.radioId,
+    sessaoId: controle.sessaoId,
+    segundosAcumulados: Math.floor(
+      controle.segundosAcumulados
+    )
+  };
+}
+
+async function enviarProgressoRanking(snapshot) {
+  const resposta = await fetch(
+    `${URL_API}/api/play/progresso`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(snapshot),
+      keepalive: true
+    }
+  );
+
+  const resultado = await resposta.json().catch(() => ({}));
+
+  if (!resposta.ok) {
+    throw new Error(
+      resultado?.erro || `Erro HTTP ${resposta.status}`
+    );
+  }
+
+  return resultado;
+}
+
+async function cancelarEventoRankingServidor(
+  snapshot,
+  motivo
+) {
+  if (!snapshot?.eventoId) return;
+
+  try {
+    await fetch(`${URL_API}/api/play/cancelar`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        eventoId: snapshot.eventoId,
+        radioId: snapshot.radioId,
+        sessaoId: snapshot.sessaoId,
+        motivo
+      }),
+      keepalive: true
+    });
+  } catch (erro) {
+    console.warn(
+      "Não foi possível cancelar a sessão de ranking:",
+      erro
+    );
+  }
+}
+
+async function iniciarOuRetomarContagemRanking() {
+  if (
+    !estado.radioAtual ||
+    elementos.audio.paused ||
+    estado.carregandoAudio
+  ) {
     return;
   }
 
   const radioId = obterRadioId(estado.radioAtual);
+  const controle = estado.reproducaoRanking;
 
-  if (!radioId) {
-    console.warn("A rádio atual não possui identificador válido.");
+  if (!radioId) return;
+
+  if (
+    controle.eventoId &&
+    controle.radioId === radioId &&
+    !controle.finalizada
+  ) {
+    iniciarCronometroRanking();
     return;
   }
 
-  estado.registroPendente = true;
+  if (controle.finalizada && controle.radioId === radioId) {
+    return;
+  }
+
+  if (controle.iniciando) return;
+
+  const sessaoId = obterSessaoId();
+  const radioCapturada = estado.radioAtual;
+
+  controle.radioId = radioId;
+  controle.sessaoId = sessaoId;
+  controle.iniciando = true;
 
   try {
-    const resposta = await fetch(`${URL_API}/api/play`, {
+    const resposta = await fetch(`${URL_API}/api/play/iniciar`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
         radioId,
-        sessaoId: obterSessaoId(),
+        sessaoId,
         origem: "PWA",
-        cidade: estado.radioAtual?.localizacao?.cidade || "",
-        estado: estado.radioAtual?.localizacao?.uf || ""
-      }),
-      keepalive: true
+        cidade: radioCapturada?.localizacao?.cidade || "",
+        estado: radioCapturada?.localizacao?.uf || ""
+      })
     });
 
+    const resultado = await resposta.json().catch(() => ({}));
+
     if (!resposta.ok) {
-      throw new Error(`Erro HTTP ${resposta.status}`);
+      throw new Error(
+        resultado?.erro || `Erro HTTP ${resposta.status}`
+      );
     }
 
-    const resultado = await resposta.json();
+    const aindaEhMesmaRadio =
+      estado.radioAtual &&
+      obterRadioId(estado.radioAtual) === radioId &&
+      !elementos.audio.paused &&
+      !estado.carregandoAudio;
 
-    console.info(
-      resultado.contabilizado
-        ? "Reprodução contabilizada."
-        : "Reprodução já contabilizada recentemente.",
-      resultado
+    if (!aindaEhMesmaRadio) {
+      await cancelarEventoRankingServidor(
+        {
+          eventoId: resultado.eventoId,
+          radioId,
+          sessaoId
+        },
+        "radio_alterada_antes_do_inicio"
+      );
+      return;
+    }
+
+    const controleAtual = estado.reproducaoRanking;
+    controleAtual.eventoId = resultado.eventoId;
+    controleAtual.radioId = radioId;
+    controleAtual.sessaoId = sessaoId;
+    controleAtual.segundosAcumulados = 0;
+    controleAtual.ultimoEnvioSegundos = 0;
+    controleAtual.finalizada = false;
+
+    iniciarCronometroRanking();
+  } catch (erro) {
+    console.warn(
+      "Não foi possível iniciar a validação do ranking:",
+      erro
     );
+  } finally {
+    if (estado.reproducaoRanking.radioId === radioId) {
+      estado.reproducaoRanking.iniciando = false;
+    }
+  }
+}
 
-    if (resultado.contabilizado) {
-      atualizarRankingNacional();
+async function enviarProgressoRankingAtual() {
+  const controle = estado.reproducaoRanking;
+
+  if (
+    !controle.eventoId ||
+    controle.finalizada ||
+    controle.enviando
+  ) {
+    return;
+  }
+
+  const snapshot = criarSnapshotRanking();
+
+  if (
+    snapshot.segundosAcumulados <=
+    controle.ultimoEnvioSegundos
+  ) {
+    return;
+  }
+
+  controle.enviando = true;
+
+  try {
+    const resultado = await enviarProgressoRanking(snapshot);
+
+    const controleAtual = estado.reproducaoRanking;
+
+    if (controleAtual.eventoId !== snapshot.eventoId) {
+      return;
+    }
+
+    controleAtual.ultimoEnvioSegundos =
+      snapshot.segundosAcumulados;
+
+    if (
+      resultado.contabilizado ||
+      resultado.status === "duplicada"
+    ) {
+      controleAtual.finalizada = true;
+      pausarCronometroRanking();
+
+      console.info(
+        resultado.contabilizado
+          ? "Reprodução válida contabilizada após cinco minutos."
+          : "Reprodução não repetida dentro do intervalo de proteção.",
+        resultado
+      );
+
+      if (resultado.contabilizado) {
+        void atualizarRankingNacional();
+      }
     }
   } catch (erro) {
-    // A indisponibilidade das estatísticas nunca interrompe o áudio.
-    console.warn("Não foi possível registrar a reprodução:", erro);
+    console.warn(
+      "Não foi possível atualizar o progresso do ranking:",
+      erro
+    );
   } finally {
-    estado.registroPendente = false;
+    if (
+      estado.reproducaoRanking.eventoId ===
+      snapshot.eventoId
+    ) {
+      estado.reproducaoRanking.enviando = false;
+    }
   }
+}
+
+function agendarCancelamentoPorEspera() {
+  limparTimeoutEsperaRanking();
+
+  estado.reproducaoRanking.timeoutEsperaId = setTimeout(
+    () => {
+      void encerrarSessaoRankingAtual(
+        "stream_sem_audio_por_mais_de_60_segundos"
+      );
+    },
+    LIMITE_ESPERA_STREAM_RANKING_MS
+  );
+}
+
+async function encerrarSessaoRankingAtual(motivo) {
+  const controle = estado.reproducaoRanking;
+
+  if (!controle.eventoId && !controle.iniciando) {
+    reiniciarControleRanking();
+    return;
+  }
+
+  pausarCronometroRanking();
+  const snapshot = criarSnapshotRanking();
+  const jaFinalizada = controle.finalizada;
+
+  reiniciarControleRanking();
+
+  if (!snapshot.eventoId || jaFinalizada) {
+    return;
+  }
+
+  if (
+    snapshot.segundosAcumulados >=
+    TEMPO_MINIMO_RANKING_SEGUNDOS
+  ) {
+    try {
+      const resultado = await enviarProgressoRanking(snapshot);
+
+      if (resultado.contabilizado) {
+        console.info(
+          "Reprodução válida contabilizada ao encerrar o player.",
+          resultado
+        );
+        void atualizarRankingNacional();
+        return;
+      }
+
+      if (resultado.status === "duplicada") {
+        return;
+      }
+    } catch (erro) {
+      console.warn(
+        "Não foi possível concluir a validação antes de encerrar:",
+        erro
+      );
+    }
+  }
+
+  await cancelarEventoRankingServidor(snapshot, motivo);
 }
 
 function atualizarIdentidadePlayer(radio) {
@@ -1164,6 +1525,8 @@ async function alternarReproducao() {
 }
 
 function fecharPlayer() {
+  void encerrarSessaoRankingAtual("player_fechado");
+
   elementos.audio.pause();
   elementos.audio.removeAttribute("src");
   elementos.audio.load();
@@ -1349,7 +1712,7 @@ function animarNumero(id, valorFinal) {
 
 
 /* =========================================================
-   RANKING NACIONAL — VERSÃO 22.3.5
+   RANKING NACIONAL — VERSÃO 22.6.0
 ========================================================= */
 
 const rankingDemonstracao = [
@@ -1357,7 +1720,7 @@ const rankingDemonstracao = [
     id: "demo-fala-popular",
     nome: "Rádio Fala Popular",
     categoria: "Sertanejo",
-    ouvintesRanking: 18452,
+    reproducoesRanking: 18452,
     logoRanking: "logo-central-radios-brasil.jpeg.jpeg",
     demonstrativa: true
   },
@@ -1365,7 +1728,7 @@ const rankingDemonstracao = [
     id: "demo-radio-cidade",
     nome: "Rádio Cidade",
     categoria: "Pop",
-    ouvintesRanking: 16980,
+    reproducoesRanking: 16980,
     logoRanking: "",
     demonstrativa: true
   },
@@ -1373,7 +1736,7 @@ const rankingDemonstracao = [
     id: "demo-radio-brasil",
     nome: "Rádio Brasil",
     categoria: "Jornalismo",
-    ouvintesRanking: 15770,
+    reproducoesRanking: 15770,
     logoRanking: "",
     demonstrativa: true
   },
@@ -1381,7 +1744,7 @@ const rankingDemonstracao = [
     id: "demo-nacional-mix",
     nome: "Rádio Nacional Mix",
     categoria: "Variedades",
-    ouvintesRanking: 14920,
+    reproducoesRanking: 14920,
     logoRanking: "",
     demonstrativa: true
   },
@@ -1389,7 +1752,7 @@ const rankingDemonstracao = [
     id: "demo-goias-central",
     nome: "Rádio Goiás Central",
     categoria: "Sertanejo",
-    ouvintesRanking: 13860,
+    reproducoesRanking: 13860,
     logoRanking: "",
     demonstrativa: true
   },
@@ -1397,7 +1760,7 @@ const rankingDemonstracao = [
     id: "demo-popular-hits",
     nome: "Rádio Popular Hits",
     categoria: "Pop",
-    ouvintesRanking: 12440,
+    reproducoesRanking: 12440,
     logoRanking: "",
     demonstrativa: true
   },
@@ -1405,7 +1768,7 @@ const rankingDemonstracao = [
     id: "demo-brasil-sertanejo",
     nome: "Rádio Brasil Sertanejo",
     categoria: "Sertanejo",
-    ouvintesRanking: 11980,
+    reproducoesRanking: 11980,
     logoRanking: "",
     demonstrativa: true
   },
@@ -1413,7 +1776,7 @@ const rankingDemonstracao = [
     id: "demo-noticias-24h",
     nome: "Rádio Notícias 24h",
     categoria: "Jornalismo",
-    ouvintesRanking: 10750,
+    reproducoesRanking: 10750,
     logoRanking: "",
     demonstrativa: true
   },
@@ -1421,7 +1784,7 @@ const rankingDemonstracao = [
     id: "demo-gospel-brasil",
     nome: "Rádio Gospel Brasil",
     categoria: "Gospel",
-    ouvintesRanking: 9820,
+    reproducoesRanking: 9820,
     logoRanking: "",
     demonstrativa: true
   },
@@ -1429,7 +1792,7 @@ const rankingDemonstracao = [
     id: "demo-esportes-central",
     nome: "Rádio Esportes Central",
     categoria: "Esportes",
-    ouvintesRanking: 8940,
+    reproducoesRanking: 8940,
     logoRanking: "",
     demonstrativa: true
   }
@@ -1440,13 +1803,16 @@ const rankingClasses = ["ranking-card-ouro", "ranking-card-prata", "ranking-card
 let rankingAtual = [];
 let rankingEventosRegistrados = false;
 
-function obterNumeroOuvintes(radio) {
+function obterNumeroReproducoes(radio) {
   const candidatos = [
+    radio?.estatisticas?.reproducoesValidas,
     radio?.estatisticas?.ouvintes,
     radio?.estatisticas?.ouvintesAtuais,
     radio?.estatisticas?.totalOuvintes,
     radio?.metricas?.ouvintes,
+    radio?.ranking?.reproducoesValidas,
     radio?.ranking?.ouvintes,
+    radio?.reproducoesValidas,
     radio?.ouvintes
   ];
 
@@ -1465,7 +1831,7 @@ function normalizarRadioRanking(radio) {
     ...radio,
     nome: radio.nomeFantasia || radio.nome || "Emissora",
     categoria: radio.classificacao?.categoriaPrincipal || radio.categoria || "Rádio online",
-    ouvintesRanking: obterNumeroOuvintes(radio),
+    reproducoesRanking: obterNumeroReproducoes(radio),
     logoRanking: obterUrlLogo(radio),
     demonstrativa: false
   };
@@ -1510,7 +1876,9 @@ async function carregarRankingReal() {
 
       return {
         ...normalizarRadioRanking(radio),
-        ouvintesRanking: Number(item.ouvintes || 0),
+        reproducoesRanking: Number(
+          item.reproducoesValidas ?? item.ouvintes ?? 0
+        ),
         posicaoRanking: Number(item.posicao || 0)
       };
     })
@@ -1538,7 +1906,7 @@ function criarLogoRanking(radio, classe) {
   return logo;
 }
 
-function formatarOuvintesRanking(valor) {
+function formatarReproducoesRanking(valor) {
   return new Intl.NumberFormat("pt-BR").format(Number(valor) || 0);
 }
 
@@ -1578,13 +1946,15 @@ function criarCardRanking(radio, indice) {
   segmento.className = "ranking-segmento";
   segmento.textContent = radio.categoria;
 
-  const ouvintes = document.createElement("span");
-  ouvintes.className = "ranking-ouvintes";
-  ouvintes.textContent =
-    `🎧 ${formatarOuvintesRanking(radio.ouvintesRanking)} ` +
-    `${Number(radio.ouvintesRanking) === 1 ? "ouvinte" : "ouvintes"}`;
+  const reproducoes = document.createElement("span");
+  reproducoes.className = "ranking-ouvintes";
+  reproducoes.textContent =
+    `▶ ${formatarReproducoesRanking(radio.reproducoesRanking)} ` +
+    `${Number(radio.reproducoesRanking) === 1
+      ? "reprodução válida"
+      : "reproduções válidas"}`;
 
-  card.append(topo, logo, nome, segmento, ouvintes);
+  card.append(topo, logo, nome, segmento, reproducoes);
 
   const abrir = () => acionarRadioRanking(radio);
   card.addEventListener("click", abrir);
@@ -1633,13 +2003,15 @@ function criarLinhaRanking(radio, indice) {
   categoria.className = "ranking-top10-categoria";
   categoria.textContent = radio.categoria;
 
-  const ouvintes = document.createElement("span");
-  ouvintes.className = "ranking-top10-ouvintes";
-  ouvintes.textContent =
-    `🎧 ${formatarOuvintesRanking(radio.ouvintesRanking)} ` +
-    `${Number(radio.ouvintesRanking) === 1 ? "ouvinte" : "ouvintes"}`;
+  const reproducoes = document.createElement("span");
+  reproducoes.className = "ranking-top10-ouvintes";
+  reproducoes.textContent =
+    `▶ ${formatarReproducoesRanking(radio.reproducoesRanking)} ` +
+    `${Number(radio.reproducoesRanking) === 1
+      ? "reprodução válida"
+      : "reproduções válidas"}`;
 
-  item.append(topo, logo, nome, categoria, ouvintes);
+  item.append(topo, logo, nome, categoria, reproducoes);
 
   const abrir = () => acionarRadioRanking(radio);
   item.addEventListener("click", abrir);
@@ -1704,7 +2076,7 @@ async function atualizarRankingNacional() {
 
     if (rankingAtual.length === 0) {
       top3.innerHTML =
-        '<div class="ranking-carregando">O ranking começará a aparecer conforme as emissoras receberem reproduções.</div>';
+        '<div class="ranking-carregando">O ranking começará a aparecer após as primeiras reproduções válidas de cinco minutos.</div>';
 
       if (botaoTop10) {
         botaoTop10.disabled = true;

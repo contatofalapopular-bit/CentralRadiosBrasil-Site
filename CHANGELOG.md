@@ -1,3 +1,13 @@
+## 22.6.0 — Ranking válido após cinco minutos
+
+- Contagem em duas etapas: início da sessão e confirmação de progresso.
+- Reprodução somente validada após 300 segundos de áudio.
+- Pausa, troca, fechamento ou erro antes do prazo cancelam a tentativa.
+- Heartbeat de progresso a cada 30 segundos.
+- Proteção por sessão e dispositivo, com intervalo mínimo de 30 minutos por rádio.
+- Ranking renomeado de “ouvintes” para “reproduções válidas”.
+- Base do ranking passa a ignorar reproduções antigas sem validação de tempo.
+
 ## 22.5.2 — Alterações da emissora e proteção contra streams fora do ar
 
 - Página Acompanhar cadastro permite solicitar alterações após a aprovação.
