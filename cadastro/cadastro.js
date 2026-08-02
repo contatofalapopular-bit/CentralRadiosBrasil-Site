@@ -1078,8 +1078,9 @@ async function enviarCadastro(evento) {
   validarCidadeOficial(true);
 
   if (!formulario.checkValidity()) {
-    formulario.reportValidity();
     destacarCamposInvalidos();
+    window.CRBAcessibilidade?.focarPrimeiroInvalido(formulario);
+    formulario.reportValidity();
     return;
   }
 
@@ -1174,6 +1175,10 @@ function exibirSucesso(resultado) {
 
   formulario.classList.add("hidden");
   secaoSucesso.classList.remove("hidden");
+  secaoSucesso.focus({ preventScroll: true });
+  window.CRBAcessibilidade?.anunciar(
+    `Cadastro enviado com sucesso. Protocolo ${resultado.protocolo}.`
+  );
 
   window.scrollTo({
     top: 0,
@@ -1202,6 +1207,7 @@ function destacarCamposInvalidos() {
     .forEach(campo => {
       if (!campo.checkValidity()) {
         campo.classList.add("campo-invalido");
+        campo.setAttribute("aria-invalid", "true");
       }
     });
 }
@@ -1211,12 +1217,14 @@ function limparErrosCampos() {
     .querySelectorAll(".campo-invalido")
     .forEach(campo => {
       campo.classList.remove("campo-invalido");
+      campo.removeAttribute("aria-invalid");
     });
 }
 
 function mostrarAlerta(mensagem) {
   alerta.textContent = mensagem;
   alerta.classList.remove("hidden");
+  alerta.setAttribute("tabindex", "-1");
 }
 
 function ocultarAlerta() {

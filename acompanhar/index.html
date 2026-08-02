@@ -16,16 +16,17 @@
   <link rel="manifest" href="../manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="64x64" href="../icons/favicon-64.png">
   <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="../pwa.css?v=22.10.1">
+  <link rel="stylesheet" href="../pwa.css?v=22.11.0">
 
   <title>Acompanhar cadastro — Central Rádios Brasil</title>
 
-  <link rel="stylesheet" href="../style.css?v=22.10.1">
-  <link rel="stylesheet" href="../cadastro/cadastro.css?v=22.10.1">
-  <link rel="stylesheet" href="acompanhar.css?v=22.10.1">
+  <link rel="stylesheet" href="../style.css?v=22.11.0">
+  <link rel="stylesheet" href="../cadastro/cadastro.css?v=22.11.0">
+  <link rel="stylesheet" href="acompanhar.css?v=22.11.0">
 </head>
 
 <body>
+  <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
   <header class="cabecalho">
     <div class="cabecalho-conteudo">
       <a
@@ -56,7 +57,7 @@
     </div>
   </header>
 
-  <main class="cadastro-pagina acompanhar-pagina">
+  <main class="cadastro-pagina acompanhar-pagina" id="conteudo-principal" tabindex="-1">
     <section class="cadastro-apresentacao">
       <span class="titulo-menor">PORTAL DA EMISSORA</span>
       <h1>Acompanhar cadastro</h1>
@@ -89,7 +90,7 @@
         <div class="cadastro-grade cadastro-grade-dupla">
           <div class="cadastro-campo">
             <label for="protocolo">
-              Protocolo <em>*</em>
+              Protocolo <em aria-hidden="true">*</em>
             </label>
             <input
               type="text"
@@ -97,14 +98,14 @@
               name="protocolo"
               maxlength="40"
               placeholder="CRB-20260731-00000000"
-              autocomplete="off"
+              autocomplete="one-time-code"
               required
             >
           </div>
 
           <div class="cadastro-campo">
             <label for="email-acompanhamento">
-              E-mail da emissora <em>*</em>
+              E-mail da emissora <em aria-hidden="true">*</em>
             </label>
             <input
               type="email"
@@ -143,8 +144,8 @@
 
       <section
         class="acompanhar-resultado hidden"
+        tabindex="-1"
         id="resultado-cadastro"
-        aria-live="polite"
       >
         <div class="acompanhar-resultado-topo">
           <div>
@@ -319,23 +320,23 @@
           >
             <div class="cadastro-grade cadastro-grade-dupla">
               <div class="cadastro-campo">
-                <label for="alteracao-nome-radio">Nome da rádio <em>*</em></label>
-                <input id="alteracao-nome-radio" name="nomeRadio" maxlength="120" required>
+                <label for="alteracao-nome-radio">Nome da rádio <em aria-hidden="true">*</em></label>
+                <input id="alteracao-nome-radio" name="nomeRadio" maxlength="120" autocomplete="organization" required>
               </div>
 
               <div class="cadastro-campo">
-                <label for="alteracao-categoria">Categoria principal <em>*</em></label>
+                <label for="alteracao-categoria">Categoria principal <em aria-hidden="true">*</em></label>
                 <input id="alteracao-categoria" name="categoriaPrincipal" maxlength="60" required>
               </div>
 
               <div class="cadastro-campo">
-                <label for="alteracao-cidade">Cidade <em>*</em></label>
-                <input id="alteracao-cidade" name="cidade" maxlength="80" required>
+                <label for="alteracao-cidade">Cidade <em aria-hidden="true">*</em></label>
+                <input id="alteracao-cidade" name="cidade" maxlength="80" autocomplete="address-level2" required>
               </div>
 
               <div class="cadastro-campo">
-                <label for="alteracao-estado">Estado <em>*</em></label>
-                <select id="alteracao-estado" name="estado" required>
+                <label for="alteracao-estado">Estado <em aria-hidden="true">*</em></label>
+                <select id="alteracao-estado" name="estado" autocomplete="address-level1" required>
                   <option value="">Selecione</option>
                   <option value="AC">AC</option><option value="AL">AL</option>
                   <option value="AP">AP</option><option value="AM">AM</option>
@@ -355,24 +356,24 @@
               </div>
 
               <div class="cadastro-campo">
-                <label for="alteracao-email">E-mail de contato <em>*</em></label>
-                <input id="alteracao-email" name="email" type="email" maxlength="160" required>
+                <label for="alteracao-email">E-mail de contato <em aria-hidden="true">*</em></label>
+                <input id="alteracao-email" name="email" type="email" maxlength="160" autocomplete="email" required>
               </div>
 
               <div class="cadastro-campo">
-                <label for="alteracao-whatsapp">WhatsApp <em>*</em></label>
-                <input id="alteracao-whatsapp" name="whatsapp" maxlength="24" required>
+                <label for="alteracao-whatsapp">WhatsApp <em aria-hidden="true">*</em></label>
+                <input id="alteracao-whatsapp" name="whatsapp" maxlength="24" autocomplete="tel" required>
               </div>
 
               <div class="cadastro-campo cadastro-campo-largo">
                 <label for="alteracao-site">Site</label>
-                <input id="alteracao-site" name="site" type="url" maxlength="240" placeholder="https://">
+                <input id="alteracao-site" name="site" type="url" maxlength="240" autocomplete="url" placeholder="https://">
               </div>
 
               <div class="cadastro-campo cadastro-campo-largo">
-                <label for="alteracao-stream">URL direta do stream <em>*</em></label>
+                <label for="alteracao-stream">URL direta do stream <em aria-hidden="true">*</em></label>
                 <div class="acompanhar-stream-linha">
-                  <input id="alteracao-stream" name="streamUrl" type="url" maxlength="500" required>
+                  <input id="alteracao-stream" name="streamUrl" type="url" maxlength="500" autocomplete="url" aria-describedby="mensagem-stream-alteracao" required>
                   <button
                     class="cadastro-botao cadastro-botao-secundario"
                     type="button"
@@ -443,7 +444,8 @@
     <p>Seus dados são usados somente para localizar e analisar o cadastro.</p>
   </footer>
 
-  <script src="acompanhar.js?v=22.10.1"></script>
-  <script src="../pwa.js?v=22.10.1"></script>
+  <script src="../accessibility.js?v=22.11.0"></script>
+  <script src="acompanhar.js?v=22.11.0"></script>
+  <script src="../pwa.js?v=22.11.0"></script>
 </body>
 </html>

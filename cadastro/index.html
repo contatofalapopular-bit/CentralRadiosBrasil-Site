@@ -22,22 +22,23 @@
   <link rel="manifest" href="../manifest.webmanifest">
   <link rel="icon" type="image/png" sizes="64x64" href="../icons/favicon-64.png">
   <link rel="apple-touch-icon" href="../icons/apple-touch-icon.png">
-  <link rel="stylesheet" href="../pwa.css?v=22.10.1">
+  <link rel="stylesheet" href="../pwa.css?v=22.11.0">
 
   <title>Cadastre sua rádio — Central Rádios Brasil</title>
 
   <link
     rel="stylesheet"
-    href="../style.css?v=22.10.1"
+    href="../style.css?v=22.11.0"
   >
 
   <link
     rel="stylesheet"
-    href="cadastro.css?v=22.10.1"
+    href="cadastro.css?v=22.11.0"
   >
 </head>
 
 <body>
+  <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
 
   <header class="cabecalho">
 
@@ -78,7 +79,7 @@
 
   </header>
 
-  <main class="cadastro-pagina">
+  <main class="cadastro-pagina" id="conteudo-principal" tabindex="-1">
 
     <section class="cadastro-apresentacao">
 
@@ -128,8 +129,11 @@
 
     <section class="cadastro-container">
 
+      <p class="sr-only" id="cadastro-campos-obrigatorios">Campos marcados com asterisco são obrigatórios.</p>
+
       <form
         class="cadastro-formulario"
+        aria-describedby="cadastro-campos-obrigatorios"
         id="form-cadastro-emissora"
         enctype="multipart/form-data"
         novalidate
@@ -154,7 +158,7 @@
           <div class="cadastro-campo cadastro-campo-largo">
 
             <label for="nome-radio">
-              Nome da rádio <em>*</em>
+              Nome da rádio <em aria-hidden="true">*</em>
             </label>
 
             <input
@@ -171,7 +175,7 @@
           <div class="cadastro-campo">
 
             <label for="cidade">
-              Cidade <em>*</em>
+              Cidade <em aria-hidden="true">*</em>
             </label>
 
             <input
@@ -196,7 +200,7 @@
           <div class="cadastro-campo">
 
             <label for="estado">
-              Estado <em>*</em>
+              Estado <em aria-hidden="true">*</em>
             </label>
 
             <select
@@ -240,7 +244,7 @@
           <div class="cadastro-campo">
 
             <label for="categoria-principal">
-              Categoria principal <em>*</em>
+              Categoria principal <em aria-hidden="true">*</em>
             </label>
 
             <select
@@ -340,7 +344,7 @@
           <div class="cadastro-campo cadastro-campo-largo">
 
             <label for="stream-url">
-              URL do stream <em>*</em>
+              URL do stream <em aria-hidden="true">*</em>
             </label>
 
             <input
@@ -409,7 +413,7 @@
           <div class="cadastro-campo">
 
             <label for="email">
-              E-mail da emissora <em>*</em>
+              E-mail da emissora <em aria-hidden="true">*</em>
             </label>
 
             <input
@@ -426,7 +430,7 @@
           <div class="cadastro-campo">
 
             <label for="whatsapp">
-              WhatsApp da emissora <em>*</em>
+              WhatsApp da emissora <em aria-hidden="true">*</em>
             </label>
 
             <input
@@ -604,8 +608,8 @@
 
       <section
         class="cadastro-sucesso hidden"
+        tabindex="-1"
         id="cadastro-sucesso"
-        aria-live="polite"
       >
 
         <div class="cadastro-sucesso-icone">✓</div>
@@ -679,8 +683,9 @@
 
   </footer>
 
-  <script src="cadastro.js?v=22.10.1"></script>
+  <script src="../accessibility.js?v=22.11.0"></script>
+  <script src="cadastro.js?v=22.11.0"></script>
 
-  <script src="../pwa.js?v=22.10.1"></script>
+  <script src="../pwa.js?v=22.11.0"></script>
 </body>
 </html>

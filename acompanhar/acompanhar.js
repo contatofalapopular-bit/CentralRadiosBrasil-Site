@@ -81,6 +81,7 @@ async function consultarCadastro(evento) {
   ocultarAlerta(alertaConsulta);
 
   if (!formularioConsulta.checkValidity()) {
+    window.CRBAcessibilidade?.focarPrimeiroInvalido(formularioConsulta);
     formularioConsulta.reportValidity();
     return;
   }
@@ -118,6 +119,10 @@ async function consultarCadastro(evento) {
 
     formularioConsulta.classList.add("hidden");
     resultadoCadastro.classList.remove("hidden");
+    resultadoCadastro.focus({ preventScroll: true });
+    window.CRBAcessibilidade?.anunciar(
+      `Cadastro localizado. Status: ${formatarStatus(solicitacaoAtual.status)}.`
+    );
 
     window.scrollTo({ top: 0, behavior: "smooth" });
   } catch (erro) {
@@ -777,6 +782,7 @@ async function enviarAlteracao(evento) {
   }
 
   if (!formularioAlteracao.checkValidity()) {
+    window.CRBAcessibilidade?.focarPrimeiroInvalido(formularioAlteracao);
     formularioAlteracao.reportValidity();
     return;
   }
@@ -947,6 +953,8 @@ async function lerRespostaJson(resposta) {
 
 function mostrarAlerta(elemento, mensagem, tipo = "erro") {
   elemento.textContent = mensagem;
+  elemento.setAttribute("role", tipo === "erro" ? "alert" : "status");
+  elemento.setAttribute("aria-live", tipo === "erro" ? "assertive" : "polite");
   elemento.classList.remove("hidden");
   elemento.classList.toggle("acompanhar-alerta-sucesso", tipo === "sucesso");
 }

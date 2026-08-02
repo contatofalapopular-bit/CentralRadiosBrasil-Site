@@ -1,4 +1,4 @@
-/* Central Rádios Brasil — PWA v22.10.1 */
+/* Central Rádios Brasil — PWA v22.11.0 */
 .cabecalho-acoes-pwa {
   display: flex;
   align-items: center;
@@ -195,5 +195,85 @@
 
   .pwa-install-button span:last-child {
     display: none;
+  }
+}
+
+
+/* =========================================================
+   ACESSIBILIDADE — WCAG 2.2 / SITE 22.11.0
+   ========================================================= */
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 20000;
+  top: 10px;
+  left: 10px;
+  padding: 12px 18px;
+  border: 3px solid #ffffff;
+  border-radius: 12px;
+  color: #001127;
+  background: #37e6ff;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
+  font-weight: 900;
+  text-decoration: none;
+  transform: translateY(-180%);
+  transition: transform 120ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid #37e6ff !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 6px rgba(0, 8, 25, 0.92) !important;
+}
+
+:where(input, select, textarea)[aria-invalid="true"],
+:where(input, select, textarea):invalid:focus {
+  border-color: #ff8b9f !important;
+  box-shadow: 0 0 0 3px rgba(255, 91, 123, 0.25) !important;
+}
+
+body.dialogo-aberto {
+  overflow: hidden;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 3px solid Highlight !important;
+    box-shadow: none !important;
+  }
+
+  .skip-link,
+  .pwa-install-button,
+  .pwa-dialogo-acoes button {
+    border: 2px solid ButtonText;
   }
 }

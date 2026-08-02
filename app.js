@@ -115,7 +115,8 @@ const elementos = {
   carroVolume: document.getElementById("carro-volume"),
   btnCarroVolumeMenos: document.getElementById("btn-carro-volume-menos"),
   btnCarroVolumeMais: document.getElementById("btn-carro-volume-mais"),
-  btnSairModoCarro: document.getElementById("btn-sair-modo-carro")
+  btnSairModoCarro: document.getElementById("btn-sair-modo-carro"),
+  anuncioAcessibilidade: document.getElementById("anuncio-acessibilidade")
 };
 
 const estado = {
@@ -189,6 +190,10 @@ const estado = {
     atualizadoEm: null,
     indisponiveis: new Set(),
     totalIndisponiveis: 0
+  },
+  acessibilidade: {
+    ultimoEstadoPlayer: "",
+    timerFiltros: null
   },
   hero: {
     mensagens: [...HERO_MENSAGENS_PADRAO],
@@ -348,11 +353,6 @@ function registrarEventos() {
     }
   });
 
-  document.addEventListener("keydown", evento => {
-    if (evento.key === "Escape" && !elementos.modoCarro.classList.contains("hidden")) {
-      fecharModoCarro();
-    }
-  });
 
   window.addEventListener("pagehide", () => {
     void encerrarSessaoRankingAtual("saida_da_pagina");
@@ -859,7 +859,7 @@ function criarSeloPopularidade(radio) {
 
   const selo = document.createElement("span");
   selo.className = `radio-selo popularidade-selo ${classificacao.classe}`;
-  selo.textContent = `${classificacao.icone} ${classificacao.rotulo}`;
+  definirTextoComIcone(selo, classificacao.icone, classificacao.rotulo);
   selo.title = "Índice calculado com dados reais da Central Rádios Brasil";
   return selo;
 }
@@ -879,7 +879,7 @@ function atualizarSeloPopularidadePlayer(radio) {
       alvo.classList.add("hidden");
       return;
     }
-    alvo.textContent = `${classificacao.icone} ${classificacao.rotulo}`;
+    definirTextoComIcone(alvo, classificacao.icone, classificacao.rotulo);
     alvo.classList.add(classificacao.classe);
     alvo.classList.remove("hidden");
   });
@@ -1120,6 +1120,14 @@ function renderizarRadios() {
 
   const radios = estado.radiosFiltradas;
   atualizarContador(radios.length);
+  if (estado.acessibilidade.timerFiltros) {
+    window.clearTimeout(estado.acessibilidade.timerFiltros);
+  }
+  estado.acessibilidade.timerFiltros = window.setTimeout(() => {
+    window.CRBAcessibilidade?.anunciar(
+      `${radios.length} ${radios.length === 1 ? "emissora encontrada" : "emissoras encontradas"}.`
+    );
+  }, 550);
 
   if (radios.length === 0) {
     mostrarMensagem(
@@ -1215,13 +1223,16 @@ function criarCardRadio(radio, opcoes = {}) {
   const artigo = document.createElement("article");
   artigo.className = "radio-card radio-card-compacto";
   if (opcoes.favorita) artigo.classList.add("radio-card-favorita");
-  artigo.tabIndex = 0;
-  artigo.setAttribute("role", "button");
 
   const nome = radio.nomeFantasia || radio.nome || "Emissora";
-  artigo.setAttribute("aria-label", `Ouvir ${nome}`);
-  artigo.title = `Ouvir ${nome}`;
   artigo.dataset.radioId = obterIdentificadorRadio(radio);
+
+  const botaoOuvir = document.createElement("button");
+  botaoOuvir.type = "button";
+  botaoOuvir.className = "radio-card-acao";
+  botaoOuvir.setAttribute("aria-label", `Ouvir ${nome}`);
+  botaoOuvir.title = `Ouvir ${nome}`;
+  botaoOuvir.addEventListener("click", () => selecionarRadio(radio));
 
   const botaoFavorita = document.createElement("button");
   botaoFavorita.type = "button";
@@ -1230,12 +1241,10 @@ function criarCardRadio(radio, opcoes = {}) {
   botaoFavorita.setAttribute("aria-label", ehFavorita(radio) ? `Remover ${nome} das favoritas` : `Adicionar ${nome} às favoritas`);
   botaoFavorita.setAttribute("aria-pressed", String(ehFavorita(radio)));
   botaoFavorita.textContent = ehFavorita(radio) ? "♥" : "♡";
-  botaoFavorita.addEventListener("click", evento => {
-    evento.stopPropagation();
-    alternarFavorita(radio);
-  });
+  botaoFavorita.addEventListener("click", () => alternarFavorita(radio));
 
   const logo = criarLogoRadio(radio, "radio-logo");
+  logo.setAttribute("aria-hidden", "true");
 
   const nomeElemento = document.createElement("strong");
   nomeElemento.className = "radio-nome";
@@ -1263,17 +1272,7 @@ function criarCardRadio(radio, opcoes = {}) {
   categoria.className = "radio-categoria";
   categoria.textContent = radio.classificacao?.categoriaPrincipal || "Rádio online";
 
-  artigo.append(botaoFavorita, logo, nomeElemento, selos, categoria);
-
-  const ouvir = () => selecionarRadio(radio);
-  artigo.addEventListener("click", ouvir);
-  artigo.addEventListener("keydown", evento => {
-    if ((evento.key === "Enter" || evento.key === " ") && evento.target === artigo) {
-      evento.preventDefault();
-      ouvir();
-    }
-  });
-
+  artigo.append(botaoOuvir, botaoFavorita, logo, nomeElemento, selos, categoria);
   return artigo;
 }
 
@@ -1384,7 +1383,11 @@ async function selecionarRadio(radio, opcoes = {}) {
   const streams = obterStreamsValidos(radio);
 
   if (streams.length === 0) {
-    alert("Esta emissora está temporariamente sem transmissão.");
+    window.CRBAcessibilidade?.anunciar(
+      "Esta emissora está temporariamente sem transmissão.",
+      { assertivo: true }
+    );
+    window.alert("Esta emissora está temporariamente sem transmissão.");
     return;
   }
 
@@ -1406,6 +1409,9 @@ async function selecionarRadio(radio, opcoes = {}) {
   elementos.player.classList.remove("hidden");
 
   atualizarIdentidadePlayer(radio);
+  window.CRBAcessibilidade?.anunciar(
+    `${radio.nomeFantasia || radio.nome || "Emissora"} selecionada. Conectando à transmissão.`
+  );
   atualizarEstadoPlayer("Conectando...", "…");
   atualizarEstadoBuffer("Preparando transmissão");
 
@@ -1930,13 +1936,28 @@ function fecharPlayer() {
 
 function atualizarEstadoPlayer(texto, simboloBotao) {
   elementos.playerStatus.textContent = texto;
-  elementos.btnPlayPause.textContent = simboloBotao;
-  elementos.btnCarroPlay.textContent = simboloBotao;
+  elementos.btnPlayPause.replaceChildren();
+  elementos.btnCarroPlay.replaceChildren();
+
+  const iconePlayer = document.createElement("span");
+  iconePlayer.setAttribute("aria-hidden", "true");
+  iconePlayer.textContent = simboloBotao;
+  elementos.btnPlayPause.appendChild(iconePlayer);
+
+  const iconeCarro = iconePlayer.cloneNode(true);
+  elementos.btnCarroPlay.appendChild(iconeCarro);
   elementos.modoCarroStatus.textContent = texto;
 
   const pausando = simboloBotao === "⏸";
   elementos.btnPlayPause.setAttribute("aria-label", pausando ? "Pausar rádio" : "Reproduzir rádio");
   elementos.btnCarroPlay.setAttribute("aria-label", pausando ? "Pausar rádio" : "Reproduzir rádio");
+
+  const nome = estado.radioAtual?.nomeFantasia || estado.radioAtual?.nome || "Rádio";
+  const chaveAnuncio = `${nome}|${texto}`;
+  if (estado.acessibilidade.ultimoEstadoPlayer !== chaveAnuncio) {
+    estado.acessibilidade.ultimoEstadoPlayer = chaveAnuncio;
+    window.CRBAcessibilidade?.anunciar(`${nome}: ${texto}`);
+  }
 
   atualizarAnimacaoCapa(pausando);
   if ("mediaSession" in navigator) {
@@ -2195,6 +2216,7 @@ function mostrarAvisoPlayer(texto) {
   if (estado.toastTimerId) window.clearTimeout(estado.toastTimerId);
   elementos.playerToast.textContent = texto;
   elementos.playerToast.classList.remove("hidden");
+  window.CRBAcessibilidade?.anunciar(texto);
   estado.toastTimerId = window.setTimeout(() => {
     elementos.playerToast.classList.add("hidden");
   }, 2600);
@@ -2218,10 +2240,24 @@ function obterTempoOuvidoSegundos() {
   return controle.acumuladoSegundos + adicional;
 }
 
+function definirTextoComIcone(elemento, icone, texto) {
+  if (!elemento) return;
+  const decorativo = document.createElement("span");
+  decorativo.setAttribute("aria-hidden", "true");
+  decorativo.textContent = icone;
+  elemento.replaceChildren(decorativo, document.createTextNode(` ${texto}`));
+}
+
+function definirBotaoComIcone(botao, icone, texto, ariaLabel = texto) {
+  if (!botao) return;
+  definirTextoComIcone(botao, icone, texto);
+  botao.setAttribute("aria-label", ariaLabel);
+}
+
 function atualizarTempoOuvidoTela() {
-  const texto = `▶ Ouvindo há ${formatarTempoOuvido(obterTempoOuvidoSegundos())}`;
-  if (elementos.playerTempo) elementos.playerTempo.textContent = texto;
-  if (elementos.modoCarroTempo) elementos.modoCarroTempo.textContent = texto;
+  const texto = `Ouvindo há ${formatarTempoOuvido(obterTempoOuvidoSegundos())}`;
+  definirTextoComIcone(elementos.playerTempo, "▶", texto);
+  definirTextoComIcone(elementos.modoCarroTempo, "▶", texto);
 }
 
 function iniciarTempoOuvido() {
@@ -2302,7 +2338,12 @@ function atualizarQualidadeConexao() {
   [elementos.playerConexao, elementos.modoCarroConexao]
     .filter(Boolean)
     .forEach(alvo => {
-      alvo.textContent = qualidade.texto;
+      const correspondencia = qualidade.texto.match(/^(\S+)\s+(.*)$/u);
+      definirTextoComIcone(
+        alvo,
+        correspondencia?.[1] || "",
+        correspondencia?.[2] || qualidade.texto
+      );
       alvo.dataset.nivel = qualidade.codigo;
     });
 
@@ -2350,8 +2391,13 @@ function atualizarControlesVolume() {
   if (elementos.playerVolume) elementos.playerVolume.value = String(percentual);
   if (elementos.carroVolume) elementos.carroVolume.value = String(percentual);
   if (elementos.btnVolume) {
-    elementos.btnVolume.textContent = percentual === 0 ? "🔇" : percentual < 45 ? "🔉" : "🔊";
-    elementos.btnVolume.setAttribute("aria-label", `Controlar volume, ${percentual}%`);
+    const icone = percentual === 0 ? "🔇" : percentual < 45 ? "🔉" : "🔊";
+    definirBotaoComIcone(
+      elementos.btnVolume,
+      icone,
+      "",
+      `Controlar volume, ${percentual}%`
+    );
   }
 }
 
@@ -2413,9 +2459,12 @@ function atualizarControlesWakeLock() {
   const ativa = Boolean(estado.wakeLock.solicitado && estado.wakeLock.sentinela);
   elementos.btnCarroTelaLigada.classList.toggle("ativa", ativa);
   elementos.btnCarroTelaLigada.setAttribute("aria-pressed", String(ativa));
-  elementos.btnCarroTelaLigada.textContent = ativa
-    ? "☀️ Tela ligada"
-    : "☀️ Manter tela ligada";
+  definirBotaoComIcone(
+    elementos.btnCarroTelaLigada,
+    "☀️",
+    ativa ? "Tela ligada" : "Manter tela ligada",
+    ativa ? "Desativar tela sempre ligada" : "Manter tela ligada"
+  );
 }
 
 function tratarVisibilidadeWakeLock() {
@@ -2445,7 +2494,12 @@ function atualizarControlesZap() {
   if (elementos.btnCarroZap) {
     elementos.btnCarroZap.classList.toggle("ativa", ativa);
     elementos.btnCarroZap.setAttribute("aria-pressed", String(ativa));
-    elementos.btnCarroZap.textContent = ativa ? "■ Parar ZAP" : "📡 Iniciar ZAP";
+    definirBotaoComIcone(
+      elementos.btnCarroZap,
+      ativa ? "■" : "📡",
+      ativa ? "Parar ZAP" : "Iniciar ZAP",
+      ativa ? "Parar modo ZAP" : "Iniciar modo ZAP"
+    );
   }
 
   [elementos.playerZapStatus, elementos.modoCarroZapStatus]
@@ -2459,9 +2513,9 @@ function atualizarContagemZap() {
     0,
     Math.ceil((estado.zap.proximaTrocaEm - Date.now()) / 1000)
   );
-  const texto = `📡 ZAP ativo • próxima rádio em ${restantes}s`;
-  if (elementos.playerZapStatus) elementos.playerZapStatus.textContent = texto;
-  if (elementos.modoCarroZapStatus) elementos.modoCarroZapStatus.textContent = texto;
+  const texto = `ZAP ativo • próxima rádio em ${restantes}s`;
+  definirTextoComIcone(elementos.playerZapStatus, "📡", texto);
+  definirTextoComIcone(elementos.modoCarroZapStatus, "📡", texto);
 }
 
 function programarProximaTrocaZap() {
@@ -2531,18 +2585,33 @@ function tocarRadioRelativa(direcao) {
 }
 
 function abrirModoCarro() {
-  elementos.modoCarro.classList.remove("hidden");
-  document.body.classList.add("modo-carro-aberto");
   sincronizarModoCarro();
+  document.body.classList.add("modo-carro-aberto");
+  window.CRBAcessibilidade?.abrirDialogo(elementos.modoCarro, {
+    focoInicial: elementos.btnSairModoCarro,
+    anuncio: "Modo carro aberto.",
+    aoFechar: concluirFechamentoModoCarro
+  });
   atualizarControlesWakeLock();
 }
 
-function fecharModoCarro() {
-  elementos.modoCarro.classList.add("hidden");
+function concluirFechamentoModoCarro() {
   document.body.classList.remove("modo-carro-aberto");
   estado.wakeLock.solicitado = false;
   void liberarWakeLock();
   atualizarControlesWakeLock();
+}
+
+function fecharModoCarro() {
+  if (window.CRBAcessibilidade?.dialogoEstaAberto(elementos.modoCarro)) {
+    window.CRBAcessibilidade.fecharDialogo({ anuncio: "Modo carro fechado." });
+    return;
+  }
+
+  elementos.modoCarro.classList.add("hidden");
+  elementos.modoCarro.hidden = true;
+  elementos.modoCarro.setAttribute("aria-hidden", "true");
+  concluirFechamentoModoCarro();
 }
 
 function sincronizarModoCarro() {
@@ -2550,7 +2619,7 @@ function sincronizarModoCarro() {
   if (!radio) return;
   elementos.modoCarroNome.textContent = radio.nomeFantasia || radio.nome || "Emissora";
   elementos.modoCarroLocalizacao.textContent = `${montarLocalizacao(radio)} • ${radio.classificacao?.categoriaPrincipal || "Rádio online"}`;
-  elementos.modoCarroMusica.textContent = montarTextoMusica();
+  atualizarTextoMusicaElemento(elementos.modoCarroMusica, montarTextoMusica());
   atualizarSeloPopularidadePlayer(radio);
 
   const novoLogo = criarLogoRadio(radio, "modo-carro-logo");
@@ -2586,19 +2655,28 @@ function obterInformacoesMusicaDoRadio(radio) {
     const dados = extrairInformacoesMusica(candidato);
     if (dados) return dados;
   }
-  return { titulo: "🎙️ Programação ao vivo", artista: "" };
+  return { titulo: "Programação ao vivo", artista: "" };
+}
+
+function atualizarTextoMusicaElemento(elemento, texto) {
+  if (!elemento) return;
+  if (texto === "Programação ao vivo") {
+    definirTextoComIcone(elemento, "🎙️", texto);
+    return;
+  }
+  elemento.textContent = texto;
 }
 
 function atualizarInformacoesMusica(radio, dados = null) {
   const info = dados || obterInformacoesMusicaDoRadio(radio);
   estado.musicaAtual = {
-    titulo: info.titulo || "🎙️ Programação ao vivo",
+    titulo: info.titulo || "Programação ao vivo",
     artista: info.artista || "",
     intervaloId: estado.musicaAtual.intervaloId || null
   };
   const texto = montarTextoMusica();
-  elementos.playerMusica.textContent = texto;
-  elementos.modoCarroMusica.textContent = texto;
+  atualizarTextoMusicaElemento(elementos.playerMusica, texto);
+  atualizarTextoMusicaElemento(elementos.modoCarroMusica, texto);
   atualizarMediaSession();
 }
 
@@ -3037,16 +3115,19 @@ function formatarReproducoesRanking(valor) {
 }
 
 function acionarRadioRanking(radio) {
-  selecionarRadio(radio);
+  const modal = document.getElementById("ranking-modal");
+  if (modal && window.CRBAcessibilidade?.dialogoEstaAberto(modal)) {
+    window.CRBAcessibilidade.fecharDialogo({ anuncio: "Ranking fechado." });
+  }
+  void selecionarRadio(radio);
 }
 
 function criarCardRanking(radio, indice) {
-  const card = document.createElement("article");
+  const card = document.createElement("button");
+  card.type = "button";
   card.className =
     `ranking-card ${rankingClasses[indice] || "ranking-card-padrao"}`;
-  card.tabIndex = 0;
-  card.setAttribute("role", "button");
-  card.setAttribute("aria-label", `${indice + 1}º lugar: ${radio.nome}`);
+  card.setAttribute("aria-label", `${indice + 1}º lugar: ${radio.nome}. Ouvir agora.`);
 
   const topo = document.createElement("div");
   topo.className = "ranking-card-topo";
@@ -3065,7 +3146,8 @@ function criarCardRanking(radio, indice) {
 
   const logo = criarLogoRanking(radio, "ranking-logo");
 
-  const nome = document.createElement("h3");
+  const nome = document.createElement("span");
+  nome.className = "ranking-card-nome";
   nome.textContent = radio.nome;
 
   const segmento = document.createElement("span");
@@ -3086,15 +3168,7 @@ function criarCardRanking(radio, indice) {
   if (seloPopularidade) card.appendChild(seloPopularidade);
   card.appendChild(reproducoes);
 
-  const abrir = () => acionarRadioRanking(radio);
-  card.addEventListener("click", abrir);
-  card.addEventListener("keydown", evento => {
-    if (evento.key === "Enter" || evento.key === " ") {
-      evento.preventDefault();
-      abrir();
-    }
-  });
-
+  card.addEventListener("click", () => acionarRadioRanking(radio));
   return card;
 }
 
@@ -3169,26 +3243,20 @@ function registrarEventosRanking() {
   if (!modal || !abrir || !fechar) return;
 
   const abrirModal = () => {
-    modal.classList.remove("hidden");
-    document.body.style.overflow = "hidden";
-    fechar.focus();
+    window.CRBAcessibilidade?.abrirDialogo(modal, {
+      focoInicial: fechar,
+      anuncio: "Ranking Top 10 aberto."
+    });
   };
 
   const fecharModal = () => {
-    modal.classList.add("hidden");
-    document.body.style.overflow = "";
-    abrir.focus();
+    window.CRBAcessibilidade?.fecharDialogo({ anuncio: "Ranking Top 10 fechado." });
   };
 
   abrir.addEventListener("click", abrirModal);
   fechar.addEventListener("click", fecharModal);
   modal.addEventListener("click", evento => {
     if (evento.target === modal) fecharModal();
-  });
-  document.addEventListener("keydown", evento => {
-    if (evento.key === "Escape" && !modal.classList.contains("hidden")) {
-      fecharModal();
-    }
   });
 
   rankingEventosRegistrados = true;

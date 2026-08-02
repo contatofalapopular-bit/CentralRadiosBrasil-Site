@@ -2182,6 +2182,7 @@ margin:auto;
 }
 
 .ranking-card h3,
+.ranking-card-nome,
 .ranking-top10-nome {
     position: relative;
     z-index: 2;
@@ -3247,6 +3248,7 @@ html {
 }
 
 .ranking-card h3,
+.ranking-card-nome,
 .ranking-top10-nome,
 .ranking-segmento,
 .ranking-top10-categoria {
@@ -3322,5 +3324,82 @@ html {
   .ranking-logo,
   .ranking-top10-logo {
     flex-basis: 84px;
+  }
+}
+
+
+/* =========================================================
+   SITE 22.11.0 — ACESSIBILIDADE SEM ALTERAR O VISUAL
+   ========================================================= */
+
+.radio-card {
+  isolation: isolate;
+}
+
+.radio-card-acao {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.radio-card > :not(.radio-card-acao):not(.radio-favorita) {
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.radio-card:hover,
+.radio-card:focus-within {
+  transform: translateY(-5px);
+  border-color: rgba(55, 230, 255, 0.42);
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.32), 0 0 28px rgba(0, 140, 255, 0.08);
+}
+
+.radio-card:has(.radio-card-acao:focus-visible) {
+  border-color: #37e6ff;
+}
+
+.ranking-card {
+  appearance: none;
+  color: inherit;
+  font: inherit;
+}
+
+.ranking-top10-item:focus-visible,
+.ranking-card:focus-visible,
+.radio-card-acao:focus-visible {
+  outline: 3px solid #37e6ff !important;
+  outline-offset: 4px !important;
+}
+
+.ranking-modal-painel:focus,
+.modo-carro-painel:focus {
+  outline: none;
+}
+
+.player-status,
+.player-buffer,
+.modo-carro-status,
+.modo-carro-buffer {
+  forced-color-adjust: auto;
+}
+
+@media (forced-colors: active) {
+  .radio-card,
+  .ranking-card,
+  .ranking-top10-item,
+  .modo-carro-painel,
+  .ranking-modal-painel,
+  .player {
+    border: 2px solid CanvasText;
   }
 }

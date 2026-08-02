@@ -1,7 +1,7 @@
 "use strict";
 
 (() => {
-  const VERSAO_PWA = "22.10.1";
+  const VERSAO_PWA = "22.11.0";
   const scriptAtual = document.currentScript;
   const raizApp = scriptAtual
     ? new URL("./", scriptAtual.src)
@@ -127,15 +127,21 @@
         </section>`;
       document.body.appendChild(fundo);
       fundo.querySelector("button").addEventListener("click", () => {
-        fundo.hidden = true;
+        window.CRBAcessibilidade?.fecharDialogo({ anuncio: "Instruções de instalação fechadas." });
       });
       fundo.addEventListener("click", evento => {
-        if (evento.target === fundo) fundo.hidden = true;
+        if (evento.target === fundo) {
+          window.CRBAcessibilidade?.fecharDialogo({ anuncio: "Instruções de instalação fechadas." });
+        }
       });
     }
 
     fundo.hidden = false;
-    fundo.querySelector("button")?.focus();
+    const botao = fundo.querySelector("button");
+    window.CRBAcessibilidade?.abrirDialogo(fundo, {
+      focoInicial: botao,
+      anuncio: "Instruções para instalar no iPhone ou iPad abertas."
+    });
   }
 
   function prepararEstadoConexao() {
@@ -228,7 +234,9 @@
     if (!area) {
       area = document.createElement("div");
       area.className = "pwa-toast-area";
+      area.setAttribute("role", "status");
       area.setAttribute("aria-live", "polite");
+      area.setAttribute("aria-atomic", "false");
       document.body.appendChild(area);
     }
     return area;
