@@ -3558,13 +3558,13 @@ html {
 
 
 /* =========================================================
-   SITE 22.14.0 — INSTITUCIONAL, RODAPÉ E COMPARTILHAMENTO
+   SITE 22.14.1 — INSTITUCIONAL, RODAPÉ E COMPARTILHAMENTO
    ========================================================= */
 .rodape{padding-top:30px}.rodape-conteudo{display:grid;justify-items:center;gap:10px}.rodape-identidade{display:grid;gap:3px}.rodape-identidade strong{color:#dff5ff;font-size:1rem}.rodape-identidade span{color:#7890ac}.rodape-links{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 16px;margin:8px 0}.rodape-links a,.rodape-contato a{color:#9fd8ef;text-decoration:none}.rodape-links a:hover,.rodape-links a:focus-visible,.rodape-contato a:hover,.rodape-contato a:focus-visible{color:#37e6ff;text-decoration:underline}.botao-compartilhar:disabled{cursor:not-allowed;opacity:.45}.radio-card-compartilhada{border-color:#37e6ff!important;box-shadow:0 0 0 4px rgba(55,230,255,.18),0 24px 60px rgba(0,0,0,.42)!important;animation:destaque-radio-compartilhada 1.1s ease-in-out 2}@keyframes destaque-radio-compartilhada{0%,100%{transform:translateY(-5px) scale(1)}50%{transform:translateY(-7px) scale(1.025)}}@media(max-width:560px){.rodape-links{display:grid;grid-template-columns:1fr 1fr}.rodape-links a{padding:6px}.botao-compartilhar{display:grid}}
 
 
 /* =========================================================
-   SITE 22.14.0 — DESCOBERTA DE EMISSORAS E HOME DINÂMICA
+   SITE 22.14.1 — DESCOBERTA DE EMISSORAS E HOME DINÂMICA
    ========================================================= */
 
 #continuar-ouvindo,
@@ -3860,4 +3860,30 @@ html {
   .descoberta-grade { grid-template-columns: 1fr 1fr; gap: 10px; }
   .regioes-grade, .categorias-destaque-grade { grid-template-columns: 1fr 1fr; gap: 10px; }
   .regiao-card, .categoria-destaque-card { padding: 13px; }
+}
+
+
+/* =========================================================
+   SITE 22.14.1 — CORREÇÃO DE ESPAÇAMENTO DA HOME DINÂMICA
+   ========================================================= */
+
+/*
+ * Os filtros originalmente usam margem negativa para se sobrepor ao Hero.
+ * Depois da inclusão das seções dinâmicas, essa margem fazia o painel de
+ * filtros invadir a última seção visível. Quando houver qualquer seção de
+ * descoberta antes dos filtros, restauramos um espaçamento normal.
+ */
+.descoberta-secao:not(.hidden) ~ .filtros {
+  margin-top: 30px;
+}
+
+/* Mantém uma separação visual limpa entre o último card e o painel de filtros. */
+.descoberta-secao:not(.hidden) {
+  margin-bottom: 0;
+}
+
+@media (max-width: 760px) {
+  .descoberta-secao:not(.hidden) ~ .filtros {
+    margin-top: 22px;
+  }
 }

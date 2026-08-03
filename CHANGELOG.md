@@ -1,3 +1,11 @@
+## 22.14.1 — Correção de espaçamento da Home Dinâmica
+
+- Corrigida a sobreposição do painel de filtros com a última seção dinâmica da Home.
+- Restaurado espaçamento vertical consistente após Categorias em destaque e demais seções de descoberta.
+- Ajuste responsivo aplicado também em tablets e celulares.
+- Mantidos cards, filtros, catálogo, player, PWA e acessibilidade.
+- Cache PWA atualizado para 22.14.1.
+
 ## 22.14.0 — Descoberta de Emissoras e Home Dinâmica
 
 - Nova seção “Continuar ouvindo”, usando a última emissora salva no aparelho.

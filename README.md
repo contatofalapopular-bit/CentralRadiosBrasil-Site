@@ -1,6 +1,6 @@
-# Central Rádios Brasil — Site v22.14.0
+# Central Rádios Brasil — Site v22.14.1
 
-## Etapa 5.2 — revisão 22.14.0 com acessibilidade
+## Etapa 5.2 — revisão 22.14.1 com acessibilidade
 
 - Player premium com capa ampliada e iluminação discreta.
 - Tempo ouvido em tempo real.
@@ -78,3 +78,9 @@ Esta versão adiciona documentos institucionais, canal público de suporte, SEO 
 ## 22.14.0 — Descoberta de Emissoras e Home Dinâmica
 
 A Home passa a montar automaticamente Continuar ouvindo, Recém-chegadas, regiões, rádios verificadas e categorias em destaque a partir dos dados reais do catálogo e das preferências locais do aparelho.
+
+
+## 22.14.1 — Correção de espaçamento da Home Dinâmica
+
+- Evita que o painel de filtros invada a seção dinâmica anterior.
+- Mantém distância consistente no desktop, tablet e celular.
