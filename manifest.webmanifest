@@ -77,6 +77,12 @@
       "short_name": "Suporte",
       "description": "Falar com a Central Rádios Brasil",
       "url": "./suporte/"
+    },
+    {
+      "name": "Informar problema",
+      "short_name": "Ocorrência",
+      "description": "Informar rádio fora do ar ou problema no Portal",
+      "url": "./ocorrencias/"
     }
   ]
 }

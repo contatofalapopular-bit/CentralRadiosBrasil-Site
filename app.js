@@ -89,6 +89,7 @@ const elementos = {
   btnZap: document.getElementById("btn-zap"),
   btnModoCarro: document.getElementById("btn-modo-carro"),
   btnCompartilharRadio: document.getElementById("btn-compartilhar-radio"),
+  btnReportarRadio: document.getElementById("btn-reportar-radio"),
   btnFecharPlayer: document.getElementById("btn-fechar-player"),
 
   favoritas: document.getElementById("favoritas"),
@@ -259,6 +260,7 @@ function registrarEventos() {
   elementos.btnZap.addEventListener("click", alternarZap);
   elementos.btnModoCarro.addEventListener("click", abrirModoCarro);
   elementos.btnCompartilharRadio?.addEventListener("click", () => compartilharRadio(estado.radioAtual));
+  elementos.btnReportarRadio?.addEventListener("click", () => abrirOcorrenciaRadio(estado.radioAtual));
   elementos.btnFecharPlayer.addEventListener("click", fecharPlayer);
 
   elementos.btnCarroAnterior.addEventListener("click", () => tocarRadioRelativa(-1));
@@ -1906,6 +1908,7 @@ function atualizarIdentidadePlayer(radio) {
   atualizarInformacoesMusica(radio);
   atualizarBotoesFavorita();
   if (elementos.btnCompartilharRadio) elementos.btnCompartilharRadio.disabled = false;
+  if (elementos.btnReportarRadio) elementos.btnReportarRadio.disabled = false;
   atualizarSeloPopularidadePlayer(radio);
 
   const novoLogo = criarLogoRadio(radio, "player-logo");
@@ -1966,6 +1969,7 @@ function fecharPlayer() {
 
   elementos.player.classList.add("hidden");
   if (elementos.btnCompartilharRadio) elementos.btnCompartilharRadio.disabled = true;
+  if (elementos.btnReportarRadio) elementos.btnReportarRadio.disabled = true;
   document.title = "Central Rádios Brasil — Ouça rádios online do Brasil";
   atualizarMediaSession();
 }
@@ -2890,6 +2894,15 @@ async function compartilharRadio(radio) {
   }
 }
 
+
+
+function abrirOcorrenciaRadio(radio) {
+  if (!radio) return;
+  const url = new URL("ocorrencias/", window.location.href);
+  url.searchParams.set("tipo", "radio_fora_do_ar");
+  url.searchParams.set("radio", obterIdentificadorRadio(radio));
+  window.location.href = url.href;
+}
 
 const REGIOES_BRASIL = {
   Norte: ["AC", "AP", "AM", "PA", "RO", "RR", "TO"],

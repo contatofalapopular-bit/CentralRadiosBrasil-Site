@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Informe rádio fora do ar, dados incorretos, conteúdo inadequado ou problemas no Portal da Central Rádios Brasil.">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://centralradiosbrasil.com.br/ocorrencias/">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Central Rádios Brasil">
+  <meta property="og:title" content="Informar ocorrência — Central Rádios Brasil">
+  <meta property="og:description" content="Ajude a manter o catálogo confiável informando problemas com emissoras ou com o Portal.">
+  <meta property="og:url" content="https://centralradiosbrasil.com.br/ocorrencias/">
+  <meta property="og:image" content="https://centralradiosbrasil.com.br/assets/compartilhamento-central-radios-brasil.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Informar ocorrência — Central Rádios Brasil">
+  <meta name="twitter:description" content="Ajude a manter o catálogo confiável informando problemas com emissoras ou com o Portal.">
+  <meta name="theme-color" content="#00173d">
+  <link rel="manifest" href="../manifest.webmanifest?v=22.15.0">
+  <link rel="icon" type="image/png" sizes="64x64" href="../icons/favicon-64-v22113.png">
+  <link rel="apple-touch-icon" href="../icons/apple-touch-icon-v22113.png">
+  <link rel="stylesheet" href="../pwa.css?v=22.15.0">
+  <link rel="stylesheet" href="../style.css?v=22.15.0">
+  <link rel="stylesheet" href="../institucional.css?v=22.15.0">
+  <link rel="stylesheet" href="ocorrencias.css?v=22.15.0">
+  <title>Informar ocorrência — Central Rádios Brasil</title>
+</head>
+<body>
+  <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+  <header class="cabecalho">
+    <div class="cabecalho-conteudo">
+      <a class="marca" href="../" aria-label="Voltar para a Central Rádios Brasil">
+        <img class="marca-logo" src="../logo-central-radios-brasil.png" alt="Logo Central Rádios Brasil">
+        <div class="marca-texto"><strong>Central Rádios Brasil</strong><span>Confiabilidade do catálogo</span></div>
+      </a>
+      <div class="cabecalho-acoes-pwa">
+        <button class="pwa-install-button" type="button" hidden aria-label="Instalar Central Rádios Brasil"><span aria-hidden="true">⬇</span><span>Instalar app</span></button>
+        <a class="cadastro-voltar-topo" href="../">← Voltar ao portal</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="ocorrencias-pagina" id="conteudo-principal" tabindex="-1">
+    <header class="ocorrencias-hero">
+      <span class="ocorrencias-etiqueta">CATÁLOGO CONFIÁVEL</span>
+      <h1>Informe uma ocorrência</h1>
+      <p>Ajude a Central Rádios Brasil a verificar rádios fora do ar, informações incorretas, conteúdo inadequado e falhas no Portal.</p>
+    </header>
+
+    <section class="ocorrencias-aviso" aria-label="Como funciona">
+      <strong>Nenhuma emissora será retirada automaticamente.</strong>
+      <p>Cada relato recebe protocolo, é analisado pela equipe e só gera alteração após verificação.</p>
+    </section>
+
+    <section class="ocorrencias-card" id="formulario-area">
+      <form id="ocorrencias-form" novalidate>
+        <div class="ocorrencias-grid">
+          <label>
+            Tipo de ocorrência <span aria-hidden="true">*</span>
+            <select id="tipo-ocorrencia" name="tipo" required>
+              <option value="">Selecione</option>
+              <option value="radio_fora_do_ar">Rádio fora do ar</option>
+              <option value="dados_incorretos">Dados da emissora incorretos</option>
+              <option value="conteudo_inadequado">Conteúdo inadequado</option>
+              <option value="problema_no_portal">Problema no Portal ou aplicativo</option>
+              <option value="suporte_geral">Ajuda ou suporte geral</option>
+              <option value="seguranca_abuso">Segurança, fraude ou uso indevido da marca</option>
+            </select>
+          </label>
+
+          <label id="campo-emissora">
+            Emissora relacionada
+            <select id="emissora-id" name="radioId">
+              <option value="">Carregando emissoras…</option>
+            </select>
+            <small>Obrigatória para ocorrências relacionadas a uma rádio.</small>
+          </label>
+
+          <label>
+            Seu nome
+            <input id="nome-contato" name="nome" type="text" maxlength="120" autocomplete="name" placeholder="Opcional">
+          </label>
+
+          <label>
+            E-mail para retorno
+            <input id="email-contato" name="email" type="email" maxlength="160" autocomplete="email" placeholder="Opcional">
+          </label>
+        </div>
+
+        <label class="ocorrencias-mensagem">
+          Descreva o que aconteceu <span aria-hidden="true">*</span>
+          <textarea id="mensagem-ocorrencia" name="mensagem" minlength="10" maxlength="1500" required placeholder="Informe detalhes, data, horário e o que você observou."></textarea>
+          <small id="contador-mensagem">0 de 1500 caracteres</small>
+        </label>
+
+        <label class="ocorrencias-consentimento">
+          <input id="consentimento-ocorrencia" name="consentimento" type="checkbox" required>
+          <span>Confirmo que as informações são verdadeiras e autorizo o uso dos dados enviados para análise e atendimento, conforme o <a href="../privacidade/">Aviso de Privacidade</a>.</span>
+        </label>
+
+        <div class="ocorrencias-honeypot" aria-hidden="true">
+          <label>Endereço alternativo <input id="endereco-alternativo" name="enderecoAlternativo" type="text" tabindex="-1" autocomplete="off"></label>
+        </div>
+
+        <div id="ocorrencias-feedback" class="ocorrencias-feedback hidden" role="alert"></div>
+
+        <div class="ocorrencias-acoes">
+          <button id="enviar-ocorrencia" class="ocorrencias-enviar" type="submit">Enviar ocorrência</button>
+          <a href="../suporte/">Outras formas de suporte</a>
+        </div>
+      </form>
+    </section>
+
+    <section id="ocorrencias-sucesso" class="ocorrencias-sucesso hidden" tabindex="-1" aria-live="polite">
+      <span aria-hidden="true">✓</span>
+      <h2>Ocorrência recebida</h2>
+      <p>Guarde o protocolo abaixo. A equipe analisará o relato sem alterar automaticamente a emissora.</p>
+      <strong id="protocolo-ocorrencia">—</strong>
+      <button id="nova-ocorrencia" type="button">Informar outra ocorrência</button>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="rodape-conteudo">
+      <div class="rodape-identidade"><strong>Central Rádios Brasil</strong><span>Rádios de todo o país em um só lugar.</span></div>
+      <nav class="rodape-links" aria-label="Links institucionais">
+        <a href="../plataforma/">Sobre a plataforma</a>
+        <a href="../privacidade/">Privacidade</a>
+        <a href="../termos/">Termos de Uso</a>
+        <a href="../regras-emissoras/">Regras para Emissoras</a>
+        <a href="../suporte/">Suporte</a>
+      </nav>
+      <p class="rodape-contato">Atendimento: <a href="mailto:suporte@centralradiosbrasil.com.br">suporte@centralradiosbrasil.com.br</a></p>
+      <p>© 2026 Central Rádios Brasil. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <div class="sr-only" id="anuncio-acessibilidade" role="status" aria-live="polite" aria-atomic="true"></div>
+  <script src="../accessibility.js?v=22.15.0"></script>
+  <script src="../pwa.js?v=22.15.0"></script>
+  <script src="ocorrencias.js?v=22.15.0"></script>
+</body>
+</html>

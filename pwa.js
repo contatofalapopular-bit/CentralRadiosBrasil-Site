@@ -1,7 +1,7 @@
 "use strict";
 
 (() => {
-  const VERSAO_PWA = "22.14.2";
+  const VERSAO_PWA = "22.15.0";
   const scriptAtual = document.currentScript;
   const raizApp = scriptAtual
     ? new URL("./", scriptAtual.src)
