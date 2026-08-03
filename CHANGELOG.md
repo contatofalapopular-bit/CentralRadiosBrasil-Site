@@ -1,3 +1,15 @@
+## 22.13.0 — Estrutura Institucional, Privacidade, SEO e Compartilhamento
+
+- Criadas páginas públicas de Privacidade, Termos de Uso, Regras para Emissoras e Suporte.
+- Adicionado rodapé institucional em todas as páginas públicas.
+- Incluídos canonical, Open Graph, Twitter Card e JSON-LD.
+- Criados robots.txt, sitemap.xml e imagem social 1200 × 630.
+- Compartilhamento de rádio passa a gerar link exclusivo com `?radio=`.
+- Link direto abre e destaca a emissora, prepara o player e aguarda ação do usuário.
+- Adicionado botão de compartilhar ao player.
+- Consentimentos de cadastro e Streaming CRB ligados aos documentos institucionais.
+- Cache PWA atualizado para 22.13.0.
+
 ## 22.12.3 — Correção do espaçamento dos botões do Hero
 
 - Reorganizadas as cinco ações principais da Home.

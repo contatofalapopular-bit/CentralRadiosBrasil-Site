@@ -2,7 +2,7 @@
   "id": "./",
   "name": "Central Rádios Brasil",
   "short_name": "Central Rádios",
-  "description": "Ouça rádios online de todo o Brasil e acompanhe emissoras em um catálogo nacional.",
+  "description": "Ouça e descubra rádios online de todo o Brasil, salve favoritas e instale o aplicativo.",
   "lang": "pt-BR",
   "dir": "ltr",
   "start_url": "./?source=pwa",
@@ -71,6 +71,12 @@
       "short_name": "Acompanhar",
       "description": "Consultar uma solicitação",
       "url": "./acompanhar/"
+    },
+    {
+      "name": "Suporte",
+      "short_name": "Suporte",
+      "description": "Falar com a Central Rádios Brasil",
+      "url": "./suporte/"
     }
   ]
 }

@@ -3421,7 +3421,7 @@ html {
 }
 
 
-/* STREAMING CRB — acesso comercial v22.12.3 */
+/* STREAMING CRB — acesso comercial v22.12.0 */
 .hero-botao-streaming {
   position: relative;
   border: 1px solid rgba(66, 245, 158, 0.28);
@@ -3555,3 +3555,9 @@ html {
     font-size: 0.88em;
   }
 }
+
+
+/* =========================================================
+   SITE 22.13.0 — INSTITUCIONAL, RODAPÉ E COMPARTILHAMENTO
+   ========================================================= */
+.rodape{padding-top:30px}.rodape-conteudo{display:grid;justify-items:center;gap:10px}.rodape-identidade{display:grid;gap:3px}.rodape-identidade strong{color:#dff5ff;font-size:1rem}.rodape-identidade span{color:#7890ac}.rodape-links{display:flex;justify-content:center;flex-wrap:wrap;gap:8px 16px;margin:8px 0}.rodape-links a,.rodape-contato a{color:#9fd8ef;text-decoration:none}.rodape-links a:hover,.rodape-links a:focus-visible,.rodape-contato a:hover,.rodape-contato a:focus-visible{color:#37e6ff;text-decoration:underline}.botao-compartilhar:disabled{cursor:not-allowed;opacity:.45}.radio-card-compartilhada{border-color:#37e6ff!important;box-shadow:0 0 0 4px rgba(55,230,255,.18),0 24px 60px rgba(0,0,0,.42)!important;animation:destaque-radio-compartilhada 1.1s ease-in-out 2}@keyframes destaque-radio-compartilhada{0%,100%{transform:translateY(-5px) scale(1)}50%{transform:translateY(-7px) scale(1.025)}}@media(max-width:560px){.rodape-links{display:grid;grid-template-columns:1fr 1fr}.rodape-links a{padding:6px}.botao-compartilhar{display:grid}}

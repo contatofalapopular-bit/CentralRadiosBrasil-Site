@@ -88,6 +88,7 @@ const elementos = {
   playerVolume: document.getElementById("player-volume"),
   btnZap: document.getElementById("btn-zap"),
   btnModoCarro: document.getElementById("btn-modo-carro"),
+  btnCompartilharRadio: document.getElementById("btn-compartilhar-radio"),
   btnFecharPlayer: document.getElementById("btn-fechar-player"),
 
   favoritas: document.getElementById("favoritas"),
@@ -216,7 +217,8 @@ async function iniciarPortal() {
   atualizarTempoOuvidoTela();
   void iniciarHeroRotativo();
   await carregarBanco();
-  restaurarUltimaRadio();
+  const abriuRadioCompartilhada = prepararRadioCompartilhada();
+  if (!abriuRadioCompartilhada) restaurarUltimaRadio();
   tratarAtalhosDeAbertura();
 }
 
@@ -235,6 +237,7 @@ function registrarEventos() {
   elementos.playerVolume.addEventListener("input", evento => aplicarVolume(Number(evento.target.value) / 100));
   elementos.btnZap.addEventListener("click", alternarZap);
   elementos.btnModoCarro.addEventListener("click", abrirModoCarro);
+  elementos.btnCompartilharRadio?.addEventListener("click", () => compartilharRadio(estado.radioAtual));
   elementos.btnFecharPlayer.addEventListener("click", fecharPlayer);
 
   elementos.btnCarroAnterior.addEventListener("click", () => tocarRadioRelativa(-1));
@@ -1872,6 +1875,7 @@ function atualizarIdentidadePlayer(radio) {
 
   atualizarInformacoesMusica(radio);
   atualizarBotoesFavorita();
+  if (elementos.btnCompartilharRadio) elementos.btnCompartilharRadio.disabled = false;
   atualizarSeloPopularidadePlayer(radio);
 
   const novoLogo = criarLogoRadio(radio, "player-logo");
@@ -1931,6 +1935,8 @@ function fecharPlayer() {
   estado.fechandoPlayer = false;
 
   elementos.player.classList.add("hidden");
+  if (elementos.btnCompartilharRadio) elementos.btnCompartilharRadio.disabled = true;
+  document.title = "Central Rádios Brasil — Ouça rádios online do Brasil";
   atualizarMediaSession();
 }
 
@@ -2073,6 +2079,62 @@ function restaurarUltimaRadio() {
   }
   atualizarEstadoPlayer("Última rádio pronta", "▶");
   atualizarEstadoBuffer("Toque para continuar ouvindo");
+}
+
+function prepararRadioCompartilhada() {
+  const parametros = new URLSearchParams(window.location.search);
+  const radioId = String(parametros.get("radio") || "").trim();
+  if (!radioId) return false;
+
+  const radio = estado.radios.find(item =>
+    obterIdentificadorRadio(item) === radioId || obterRadioId(item) === radioId
+  );
+
+  if (!radio) {
+    mostrarMensagem("A emissora deste link não foi encontrada no catálogo atual.");
+    window.setTimeout(() => document.querySelector("#catalogo-emissoras")?.scrollIntoView({ behavior: "smooth" }), 250);
+    return true;
+  }
+
+  const indice = estado.radiosFiltradas.findIndex(item => obterIdentificadorRadio(item) === obterIdentificadorRadio(radio));
+  if (indice >= 0) {
+    estado.paginaAtual = Math.floor(indice / estado.radiosPorPagina) + 1;
+    renderizarRadios();
+  }
+
+  estado.radioAtual = radio;
+  estado.indiceStreamAtual = 0;
+  elementos.player.classList.remove("hidden");
+  atualizarIdentidadePlayer(radio);
+  salvarUltimaRadio(radio);
+
+  const stream = obterStreamsValidos(radio)[0];
+  if (stream) {
+    elementos.audio.src = stream;
+    elementos.audio.load();
+    atualizarEstadoPlayer("Pronta para ouvir", "▶");
+    atualizarEstadoBuffer("Link compartilhado • toque para iniciar");
+  } else {
+    atualizarEstadoPlayer("Transmissão indisponível", "▶");
+    atualizarEstadoBuffer("Esta emissora está temporariamente sem stream válido");
+  }
+
+  const nome = radio.nomeFantasia || radio.nome || "Emissora";
+  document.title = `${nome} — Central Rádios Brasil`;
+  window.CRBAcessibilidade?.anunciar(`${nome} aberta por um link compartilhado. Toque em reproduzir para ouvir.`);
+
+  window.setTimeout(() => {
+    const idCompartilhado = obterIdentificadorRadio(radio);
+    const card = Array.from(document.querySelectorAll("[data-radio-id]")).find(
+      item => item.dataset.radioId === idCompartilhado
+    );
+    if (card) {
+      card.classList.add("radio-card-compartilhada");
+      card.scrollIntoView({ behavior: "smooth", block: "center" });
+      window.setTimeout(() => card.classList.remove("radio-card-compartilhada"), 8000);
+    }
+  }, 350);
+  return true;
 }
 
 function tratarAtalhosDeAbertura() {
@@ -2753,16 +2815,36 @@ function atualizarMediaSession() {
   }
 }
 
-async function compartilharRadio(radio) {
-  const nome =
-    radio.nomeFantasia ||
-    radio.nome ||
-    "esta emissora";
+function criarLinkCompartilhavelRadio(radio) {
+  const url = new URL("https://centralradiosbrasil.com.br/");
+  url.searchParams.set("radio", obterIdentificadorRadio(radio));
+  return url.href;
+}
 
+async function copiarLinkCompartilhavel(texto) {
+  if (navigator.clipboard?.writeText) {
+    await navigator.clipboard.writeText(texto);
+    return;
+  }
+  const campo = document.createElement("textarea");
+  campo.value = texto;
+  campo.setAttribute("readonly", "");
+  campo.style.position = "fixed";
+  campo.style.opacity = "0";
+  document.body.appendChild(campo);
+  campo.select();
+  document.execCommand("copy");
+  campo.remove();
+}
+
+async function compartilharRadio(radio) {
+  if (!radio) return;
+  const nome = radio.nomeFantasia || radio.nome || "esta emissora";
+  const link = criarLinkCompartilhavelRadio(radio);
   const dados = {
-    title: nome,
+    title: `${nome} — Central Rádios Brasil`,
     text: `Ouça ${nome} na Central Rádios Brasil.`,
-    url: window.location.href
+    url: link
   };
 
   try {
@@ -2770,14 +2852,10 @@ async function compartilharRadio(radio) {
       await navigator.share(dados);
       return;
     }
-
-    await navigator.clipboard.writeText(window.location.href);
-
-    alert("Link do Portal copiado.");
+    await copiarLinkCompartilhavel(link);
+    mostrarAvisoPlayer("Link desta emissora copiado");
   } catch (erro) {
-    if (erro?.name !== "AbortError") {
-      console.error("Erro ao compartilhar:", erro);
-    }
+    if (erro?.name !== "AbortError") console.error("Erro ao compartilhar:", erro);
   }
 }
 

@@ -1,6 +1,6 @@
-# Central Rádios Brasil — Site v22.12.3
+# Central Rádios Brasil — Site v22.13.0
 
-## Etapa 5.2 — revisão 22.12.3 com acessibilidade
+## Etapa 5.2 — revisão 22.13.0 com acessibilidade
 
 - Player premium com capa ampliada e iluminação discreta.
 - Tempo ouvido em tempo real.
@@ -68,3 +68,8 @@ A versão adiciona a página `streaming/`, com apresentação do serviço em des
 ## 22.12.3 — Hero em duas linhas
 
 O título principal foi redimensionado e estruturado para exibir a frase em duas linhas no desktop, mantendo adaptação para telas menores.
+
+
+## 22.13.0 — Estrutura Institucional, Privacidade, SEO e Compartilhamento
+
+Esta versão adiciona documentos institucionais, canal público de suporte, SEO técnico e links diretos para compartilhar emissoras. Os textos jurídicos devem passar por revisão profissional antes da operação comercial em escala.

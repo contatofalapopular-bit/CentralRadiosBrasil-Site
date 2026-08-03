@@ -10,9 +10,30 @@
 
   <meta
     name="description"
-    content="Ouça rádios online de todo o Brasil na Central Rádios Brasil."
+    content="Ouça e descubra rádios online de todo o Brasil. Explore emissoras por cidade, estado e categoria, salve favoritas e instale o aplicativo."
   >
 
+
+  <!-- SEO e compartilhamento — 22.13.0 -->
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://centralradiosbrasil.com.br/">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Central Rádios Brasil">
+  <meta property="og:title" content="Central Rádios Brasil — Ouça rádios online do Brasil">
+  <meta property="og:description" content="Ouça e descubra rádios online de todo o Brasil. Explore emissoras por cidade, estado e categoria, salve favoritas e instale o aplicativo.">
+  <meta property="og:url" content="https://centralradiosbrasil.com.br/">
+  <meta property="og:image" content="https://centralradiosbrasil.com.br/assets/compartilhamento-central-radios-brasil.png">
+  <meta property="og:image:secure_url" content="https://centralradiosbrasil.com.br/assets/compartilhamento-central-radios-brasil.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Central Rádios Brasil — rádios de todo o país em um só lugar">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Central Rádios Brasil — Ouça rádios online do Brasil">
+  <meta name="twitter:description" content="Ouça e descubra rádios online de todo o Brasil. Explore emissoras por cidade, estado e categoria, salve favoritas e instale o aplicativo.">
+  <meta name="twitter:image" content="https://centralradiosbrasil.com.br/assets/compartilhamento-central-radios-brasil.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://centralradiosbrasil.com.br/#organization","name":"Central Rádios Brasil","url":"https://centralradiosbrasil.com.br/","logo":{"@type":"ImageObject","url":"https://centralradiosbrasil.com.br/logo-central-radios-brasil.png"},"email":"mailto:suporte@centralradiosbrasil.com.br"},{"@type":"WebSite","@id":"https://centralradiosbrasil.com.br/#website","url":"https://centralradiosbrasil.com.br/","name":"Central Rádios Brasil","description":"Portal nacional para ouvir e descobrir rádios online brasileiras.","inLanguage":"pt-BR","publisher":{"@id":"https://centralradiosbrasil.com.br/#organization"}}]}</script>
   <meta name="theme-color" content="#00173d">
 
   <meta name="application-name" content="Central Rádios Brasil">
@@ -20,14 +41,14 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Central Rádios">
-  <link rel="manifest" href="manifest.webmanifest?v=22.12.3">
+  <link rel="manifest" href="manifest.webmanifest?v=22.13.0">
   <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64-v22113.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon-v22113.png">
-  <link rel="stylesheet" href="pwa.css?v=22.12.3">
+  <link rel="stylesheet" href="pwa.css?v=22.13.0">
 
-  <title>Central Rádios Brasil</title>
+  <title>Central Rádios Brasil — Ouça rádios online do Brasil</title>
 
-  <link rel="stylesheet" href="style.css?v=22.12.3">
+  <link rel="stylesheet" href="style.css?v=22.13.0">
 </head>
 
 <body>
@@ -585,6 +606,7 @@
         </div>
         <button class="botao-player-secundario botao-zap" type="button" id="btn-zap" aria-label="Iniciar modo ZAP" aria-pressed="false"><span aria-hidden="true">📡</span></button>
         <button class="botao-player-secundario botao-modo-carro" type="button" id="btn-modo-carro" aria-label="Abrir modo carro"><span aria-hidden="true">🚗</span></button>
+        <button class="botao-player-secundario botao-compartilhar" type="button" id="btn-compartilhar-radio" aria-label="Compartilhar emissora" disabled><span aria-hidden="true">🔗</span></button>
 
         <button
           class="botao-fechar"
@@ -605,22 +627,29 @@
   </aside>
 
   <footer class="rodape">
-
-    <p>
-      © 2026 Central Rádios Brasil. Todos os direitos reservados.
-    </p>
-
-    <p id="informacao-banco">
-      Dados oficiais da Central Rádios Brasil.
-    </p>
-
+    <div class="rodape-conteudo">
+      <div class="rodape-identidade">
+        <strong>Central Rádios Brasil</strong>
+        <span>Rádios de todo o país em um só lugar.</span>
+      </div>
+      <nav class="rodape-links" aria-label="Links institucionais">
+        <a href="plataforma/">Sobre a plataforma</a>
+        <a href="privacidade/">Privacidade</a>
+        <a href="termos/">Termos de Uso</a>
+        <a href="regras-emissoras/">Regras para Emissoras</a>
+        <a href="suporte/">Suporte</a>
+      </nav>
+      <p class="rodape-contato">Atendimento: <a href="mailto:suporte@centralradiosbrasil.com.br">suporte@centralradiosbrasil.com.br</a></p>
+      <p>© 2026 Central Rádios Brasil. Todos os direitos reservados.</p>
+      <p id="informacao-banco">Dados oficiais da Central Rádios Brasil.</p>
+    </div>
   </footer>
 
   <div class="sr-only" id="anuncio-acessibilidade" role="status" aria-live="polite" aria-atomic="true"></div>
 
-  <script src="accessibility.js?v=22.12.3"></script>
-  <script src="app.js?v=22.12.3"></script>
-  <script src="pwa.js?v=22.12.3"></script>
+  <script src="accessibility.js?v=22.13.0"></script>
+  <script src="app.js?v=22.13.0"></script>
+  <script src="pwa.js?v=22.13.0"></script>
 
 </body>
 </html>
