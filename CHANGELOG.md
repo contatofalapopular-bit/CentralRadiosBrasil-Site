@@ -1,10 +1,20 @@
-## 22.11.3 — Ícone e abertura do aplicativo
+## 22.12.0 — Streaming CRB e pré-cadastro de interessados
+
+- Criada a nova página/aba pública **Streaming CRB**.
+- Adicionada apresentação do futuro serviço de streaming para rádios online.
+- Criado formulário acessível de pré-cadastro de interessados.
+- Integração preparada com o Worker principal e o banco D1.
+- Adicionado acesso ao Streaming CRB no cabeçalho e no Hero do Portal.
+- Service Worker atualizado para disponibilizar a nova página no PWA.
+- O pré-cadastro é gratuito e não representa contratação ou cobrança.
+
+## 22.12.0 — Ícone e abertura do aplicativo
 
 - Atualizados o ícone instalado, favicon e ícone de dispositivos Apple.
 - Criado novo ícone maskable com área segura para Android.
 - Corrigida a tela de abertura do PWA para usar fundo azul institucional e logo proporcional.
 - Renomeados os arquivos de ícone para impedir reutilização do cache antigo.
-- Cache PWA atualizado para 22.11.3.
+- Cache PWA atualizado para 22.12.0.
 
 ## 22.11.2 — Ajuste visual da logo do portal
 

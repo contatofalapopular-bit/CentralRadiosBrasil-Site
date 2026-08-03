@@ -3419,3 +3419,49 @@ html {
     border: 2px solid CanvasText;
   }
 }
+
+
+/* STREAMING CRB — acesso comercial v22.12.0 */
+.hero-botao-streaming {
+  position: relative;
+  border: 1px solid rgba(66, 245, 158, 0.28);
+  color: #dfffee;
+  background: linear-gradient(135deg, rgba(66,245,158,.11), rgba(55,230,255,.08));
+}
+.hero-botao-streaming:hover {
+  border-color: rgba(66, 245, 158, 0.58);
+  background: linear-gradient(135deg, rgba(66,245,158,.18), rgba(55,230,255,.14));
+}
+.hero-botao-streaming small {
+  margin-left: 4px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  color: #052116;
+  background: #42f59e;
+  font-size: .55rem;
+  font-weight: 950;
+  text-transform: uppercase;
+}
+
+/* Cinco ações da Home após inclusão do Streaming CRB. */
+.hero-acoes {
+  grid-template-columns: repeat(5, minmax(150px, 1fr)) !important;
+}
+
+@media (max-width: 1180px) {
+  .hero-acoes {
+    grid-template-columns: repeat(3, minmax(180px, 1fr)) !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .hero-acoes {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero-acoes {
+    grid-template-columns: 1fr !important;
+  }
+}

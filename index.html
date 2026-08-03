@@ -20,14 +20,14 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Central Rádios">
-  <link rel="manifest" href="manifest.webmanifest?v=22.11.3">
+  <link rel="manifest" href="manifest.webmanifest?v=22.12.0">
   <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64-v22113.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon-v22113.png">
-  <link rel="stylesheet" href="pwa.css?v=22.11.3">
+  <link rel="stylesheet" href="pwa.css?v=22.12.0">
 
   <title>Central Rádios Brasil</title>
 
-  <link rel="stylesheet" href="style.css?v=22.11.3">
+  <link rel="stylesheet" href="style.css?v=22.12.0">
 </head>
 
 <body>
@@ -53,6 +53,15 @@
 
       </a>
       <div class="cabecalho-acoes-pwa">
+        <a
+          class="cabecalho-streaming-link"
+          href="streaming/"
+          aria-label="Conhecer o Streaming CRB, serviço em breve"
+        >
+          <span aria-hidden="true">📡</span>
+          <span>Streaming CRB</span>
+          <small>Em breve</small>
+        </a>
         <button class="pwa-install-button" type="button" hidden aria-label="Instalar Central Rádios Brasil">
           <span aria-hidden="true">⬇</span>
           <span>Instalar aplicativo</span>
@@ -154,6 +163,17 @@
       >
         <span aria-hidden="true">📻</span>
         Cadastre sua rádio
+      </a>
+
+      <a
+        class="hero-botao hero-botao-streaming"
+        href="streaming/"
+        id="btn-streaming-crb"
+        aria-label="Conhecer o futuro serviço de Streaming CRB"
+      >
+        <span aria-hidden="true">📡</span>
+        Streaming CRB
+        <small>Em breve</small>
       </a>
 
       <a
@@ -598,9 +618,9 @@
 
   <div class="sr-only" id="anuncio-acessibilidade" role="status" aria-live="polite" aria-atomic="true"></div>
 
-  <script src="accessibility.js?v=22.11.3"></script>
-  <script src="app.js?v=22.11.3"></script>
-  <script src="pwa.js?v=22.11.3"></script>
+  <script src="accessibility.js?v=22.12.0"></script>
+  <script src="app.js?v=22.12.0"></script>
+  <script src="pwa.js?v=22.12.0"></script>
 
 </body>
 </html>

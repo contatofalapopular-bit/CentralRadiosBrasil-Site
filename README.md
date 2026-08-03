@@ -1,6 +1,6 @@
-# Central Rádios Brasil — Site v22.11.3
+# Central Rádios Brasil — Site v22.12.0
 
-## Etapa 5.2 — revisão 22.11.3 com acessibilidade
+## Etapa 5.2 — revisão 22.12.0 com acessibilidade
 
 - Player premium com capa ampliada e iluminação discreta.
 - Tempo ouvido em tempo real.
@@ -41,9 +41,14 @@ A revisão adiciona melhorias alinhadas à WCAG 2.2: navegação por teclado, fo
 - Nova imagem em PNG com recorte melhor e proporção mais equilibrada.
 
 
-## Correção 22.11.3 — Ícone e abertura do aplicativo
+## Correção 22.12.0 — Ícone e abertura do aplicativo
 
 - Novos ícones PWA produzidos a partir da logo ajustada.
 - Ícone adaptável (maskable) com área segura para Android.
 - Cor de abertura alterada para o azul institucional, removendo o fundo preto desproporcional.
 - Nomes de arquivos renovados para evitar que o celular reutilize ícones antigos do cache.
+
+
+## 22.12.0 — Streaming CRB
+
+A versão adiciona a página `streaming/`, com apresentação do serviço em desenvolvimento e formulário de pré-cadastro. O formulário depende da rota `POST /api/streaming/interesses` do Worker principal v1.10.0.

@@ -1,4 +1,36 @@
-/* Central Rádios Brasil — PWA v22.11.3 */
+/* Central Rádios Brasil — PWA v22.12.0 */
+
+.cabecalho-streaming-link {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  border: 1px solid rgba(55, 230, 255, 0.24);
+  border-radius: 999px;
+  color: #e6f8ff;
+  background: rgba(55, 230, 255, 0.075);
+  font-size: 0.74rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.cabecalho-streaming-link small {
+  padding: 3px 7px;
+  border-radius: 999px;
+  color: #071b2d;
+  background: #42f59e;
+  font-size: 0.56rem;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cabecalho-streaming-link:hover {
+  border-color: rgba(55, 230, 255, 0.55);
+  background: rgba(55, 230, 255, 0.13);
+}
+
 .cabecalho-acoes-pwa {
   display: flex;
   align-items: center;
@@ -185,6 +217,16 @@
 }
 
 @media (max-width: 520px) {
+  .cabecalho-streaming-link {
+    min-width: 38px;
+    padding: 0 10px;
+  }
+
+  .cabecalho-streaming-link span:nth-child(2),
+  .cabecalho-streaming-link small {
+    display: none;
+  }
+
   .cabecalho-conteudo {
     gap: 10px;
   }
@@ -200,7 +242,7 @@
 
 
 /* =========================================================
-   ACESSIBILIDADE — WCAG 2.2 / SITE 22.11.3
+   ACESSIBILIDADE — WCAG 2.2 / SITE 22.12.0
    ========================================================= */
 
 .sr-only {
