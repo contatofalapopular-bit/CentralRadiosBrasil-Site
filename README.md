@@ -1,6 +1,6 @@
-# Central Rádios Brasil — Site v22.13.0
+# Central Rádios Brasil — Site v22.14.0
 
-## Etapa 5.2 — revisão 22.13.0 com acessibilidade
+## Etapa 5.2 — revisão 22.14.0 com acessibilidade
 
 - Player premium com capa ampliada e iluminação discreta.
 - Tempo ouvido em tempo real.
@@ -73,3 +73,8 @@ O título principal foi redimensionado e estruturado para exibir a frase em duas
 ## 22.13.0 — Estrutura Institucional, Privacidade, SEO e Compartilhamento
 
 Esta versão adiciona documentos institucionais, canal público de suporte, SEO técnico e links diretos para compartilhar emissoras. Os textos jurídicos devem passar por revisão profissional antes da operação comercial em escala.
+
+
+## 22.14.0 — Descoberta de Emissoras e Home Dinâmica
+
+A Home passa a montar automaticamente Continuar ouvindo, Recém-chegadas, regiões, rádios verificadas e categorias em destaque a partir dos dados reais do catálogo e das preferências locais do aparelho.

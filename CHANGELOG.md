@@ -1,3 +1,14 @@
+## 22.14.0 — Descoberta de Emissoras e Home Dinâmica
+
+- Nova seção “Continuar ouvindo”, usando a última emissora salva no aparelho.
+- Nova seção “Recém-chegadas”, ordenada por datas reais do catálogo.
+- Nova exploração por regiões brasileiras, exibindo apenas regiões representadas no banco.
+- Nova seção de rádios verificadas, baseada no status oficial da emissora.
+- Novas categorias em destaque, calculadas pelas emissoras disponíveis.
+- Filtros rápidos por região e categoria integrados ao catálogo.
+- Cards com dimensões estáveis no desktop, tablet e celular.
+- Mantidos ranking, favoritas, player, Streaming CRB, PWA e acessibilidade.
+
 ## 22.13.0 — Estrutura Institucional, Privacidade, SEO e Compartilhamento
 
 - Criadas páginas públicas de Privacidade, Termos de Uso, Regras para Emissoras e Suporte.

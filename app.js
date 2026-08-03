@@ -95,6 +95,18 @@ const elementos = {
   gradeFavoritas: document.getElementById("grade-favoritas"),
   contadorFavoritas: document.getElementById("contador-favoritas"),
 
+  continuarOuvindo: document.getElementById("continuar-ouvindo"),
+  continuarOuvindoConteudo: document.getElementById("continuar-ouvindo-conteudo"),
+  recemChegadas: document.getElementById("recem-chegadas"),
+  gradeRecemChegadas: document.getElementById("grade-recem-chegadas"),
+  explorarRegioes: document.getElementById("explorar-regioes"),
+  gradeRegioes: document.getElementById("grade-regioes"),
+  radiosVerificadas: document.getElementById("radios-verificadas"),
+  gradeVerificadas: document.getElementById("grade-verificadas"),
+  categoriasDestaque: document.getElementById("categorias-destaque"),
+  gradeCategoriasDestaque: document.getElementById("grade-categorias-destaque"),
+  filtroDescobertaAtivo: document.getElementById("filtro-descoberta-ativo"),
+
   modoCarro: document.getElementById("modo-carro"),
   modoCarroLogo: document.getElementById("modo-carro-logo"),
   modoCarroStatus: document.getElementById("modo-carro-status"),
@@ -129,6 +141,7 @@ const estado = {
   paginaAtual: 1,
   radiosPorPagina: 12,
   favoritas: new Set(),
+  regiaoSelecionada: "",
   usuarioPausou: false,
   fechandoPlayer: false,
   indiceStreamAtual: 0,
@@ -224,8 +237,16 @@ async function iniciarPortal() {
 
 function registrarEventos() {
   elementos.pesquisa.addEventListener("input", aplicarFiltros);
-  elementos.filtroEstado.addEventListener("change", aplicarFiltros);
+  elementos.filtroEstado.addEventListener("change", () => {
+    estado.regiaoSelecionada = "";
+    atualizarFiltroDescobertaAtivo();
+    aplicarFiltros();
+  });
   elementos.filtroCategoria.addEventListener("change", aplicarFiltros);
+
+  document.querySelectorAll("[data-descoberta-acao]").forEach(botao => {
+    botao.addEventListener("click", () => abrirCatalogoPorDescoberta(botao.dataset.descobertaAcao));
+  });
 
   elementos.btnLimpar.addEventListener("click", limparFiltros);
 
@@ -721,6 +742,7 @@ async function carregarBanco() {
     preencherFiltros();
     renderizarRadios();
     renderizarFavoritas();
+    renderizarDescobertaHome();
     atualizarRadioDestaque();
     atualizarRankingNacional();
   } catch (erro) {
@@ -1091,6 +1113,11 @@ function aplicarFiltros() {
       !estadoSelecionado ||
       radio.localizacao?.uf === estadoSelecionado;
 
+    const ufsDaRegiao = obterUfsDaRegiao(estado.regiaoSelecionada);
+    const correspondeRegiao =
+      !estado.regiaoSelecionada ||
+      ufsDaRegiao.includes(String(radio.localizacao?.uf || "").toUpperCase());
+
     const correspondeCategoria =
       !categoriaSelecionada ||
       categorias.includes(categoriaSelecionada);
@@ -1098,6 +1125,7 @@ function aplicarFiltros() {
     return (
       correspondePesquisa &&
       correspondeEstado &&
+      correspondeRegiao &&
       correspondeCategoria
     );
   });
@@ -1110,6 +1138,8 @@ function limparFiltros() {
   elementos.pesquisa.value = "";
   elementos.filtroEstado.value = "";
   elementos.filtroCategoria.value = "";
+  estado.regiaoSelecionada = "";
+  atualizarFiltroDescobertaAtivo();
 
   estado.radiosFiltradas = [...estado.radios];
 
@@ -2056,6 +2086,7 @@ function renderizarFavoritas() {
 function salvarUltimaRadio(radio) {
   try {
     localStorage.setItem(CHAVE_ULTIMA_RADIO, obterIdentificadorRadio(radio));
+    renderizarContinuarOuvindo();
   } catch (erro) {
     console.warn("Não foi possível salvar a última rádio:", erro);
   }
@@ -2857,6 +2888,241 @@ async function compartilharRadio(radio) {
   } catch (erro) {
     if (erro?.name !== "AbortError") console.error("Erro ao compartilhar:", erro);
   }
+}
+
+
+const REGIOES_BRASIL = {
+  Norte: ["AC", "AP", "AM", "PA", "RO", "RR", "TO"],
+  Nordeste: ["AL", "BA", "CE", "MA", "PB", "PE", "PI", "RN", "SE"],
+  "Centro-Oeste": ["DF", "GO", "MT", "MS"],
+  Sudeste: ["ES", "MG", "RJ", "SP"],
+  Sul: ["PR", "RS", "SC"]
+};
+
+const ICONES_REGIOES = {
+  Norte: "🌿",
+  Nordeste: "☀️",
+  "Centro-Oeste": "◆",
+  Sudeste: "🏙️",
+  Sul: "🧭"
+};
+
+const ICONES_CATEGORIAS = {
+  Gospel: "🙏",
+  Sertanejo: "🤠",
+  Notícias: "📰",
+  Eclética: "🎶",
+  Pop: "🎤",
+  Rock: "🎸",
+  Forró: "🪗",
+  Comunitária: "🤝",
+  Esportes: "⚽",
+  Católica: "⛪"
+};
+
+function renderizarDescobertaHome() {
+  renderizarContinuarOuvindo();
+  renderizarRecemChegadas();
+  renderizarRegioes();
+  renderizarVerificadas();
+  renderizarCategoriasDestaque();
+}
+
+function preencherGradeDescoberta(container, radios) {
+  if (!container) return;
+  container.innerHTML = "";
+  const fragmento = document.createDocumentFragment();
+  radios.forEach(radio => fragmento.appendChild(criarCardRadio(radio)));
+  container.appendChild(fragmento);
+}
+
+function obterUltimaRadioSalva() {
+  let id = "";
+  try { id = localStorage.getItem(CHAVE_ULTIMA_RADIO) || ""; } catch {}
+  if (!id) return null;
+  return estado.radios.find(radio => obterIdentificadorRadio(radio) === id) || null;
+}
+
+function renderizarContinuarOuvindo() {
+  if (!elementos.continuarOuvindo || !elementos.continuarOuvindoConteudo || !estado.radios.length) return;
+  const radio = obterUltimaRadioSalva();
+  elementos.continuarOuvindoConteudo.innerHTML = "";
+  elementos.continuarOuvindo.classList.toggle("hidden", !radio);
+  if (!radio) return;
+
+  const nome = radio.nomeFantasia || radio.nome || "Emissora";
+  const card = document.createElement("article");
+  card.className = "continuar-card";
+
+  const logo = criarLogoRadio(radio, "continuar-card-logo");
+  const info = document.createElement("div");
+  info.className = "continuar-card-info";
+  const etiqueta = document.createElement("span");
+  etiqueta.className = "continuar-card-etiqueta";
+  etiqueta.textContent = "Última rádio ouvida";
+  const titulo = document.createElement("h3");
+  titulo.textContent = nome;
+  const detalhe = document.createElement("p");
+  detalhe.textContent = `${montarLocalizacao(radio)} • ${radio.classificacao?.categoriaPrincipal || "Rádio online"}`;
+  info.append(etiqueta, titulo, detalhe);
+
+  const acao = document.createElement("button");
+  acao.type = "button";
+  acao.className = "continuar-card-acao";
+  acao.innerHTML = '<span aria-hidden="true">▶</span><span>Continuar ouvindo</span>';
+  acao.setAttribute("aria-label", `Continuar ouvindo ${nome}`);
+  acao.addEventListener("click", () => selecionarRadio(radio));
+
+  card.append(logo, info, acao);
+  elementos.continuarOuvindoConteudo.appendChild(card);
+}
+
+function renderizarRecemChegadas() {
+  if (!elementos.recemChegadas || !elementos.gradeRecemChegadas) return;
+  const radios = estado.radios
+    .map(radio => ({ radio, data: obterDataPublicacaoRadio(radio) }))
+    .filter(item => item.data)
+    .sort((a, b) => b.data.getTime() - a.data.getTime())
+    .slice(0, 6)
+    .map(item => item.radio);
+  elementos.recemChegadas.classList.toggle("hidden", radios.length === 0);
+  preencherGradeDescoberta(elementos.gradeRecemChegadas, radios);
+}
+
+function obterNomeRegiaoPorUf(uf) {
+  const sigla = String(uf || "").toUpperCase();
+  return Object.entries(REGIOES_BRASIL).find(([, ufs]) => ufs.includes(sigla))?.[0] || "";
+}
+
+function obterUfsDaRegiao(regiao) {
+  return REGIOES_BRASIL[regiao] || [];
+}
+
+function renderizarRegioes() {
+  if (!elementos.explorarRegioes || !elementos.gradeRegioes) return;
+  const contagens = new Map();
+  estado.radios.forEach(radio => {
+    const regiao = obterNomeRegiaoPorUf(radio.localizacao?.uf);
+    if (regiao) contagens.set(regiao, (contagens.get(regiao) || 0) + 1);
+  });
+  const regioes = Object.keys(REGIOES_BRASIL).filter(regiao => contagens.has(regiao));
+  elementos.explorarRegioes.classList.toggle("hidden", regioes.length === 0);
+  elementos.gradeRegioes.innerHTML = "";
+  regioes.forEach(regiao => {
+    const total = contagens.get(regiao) || 0;
+    const botao = document.createElement("button");
+    botao.type = "button";
+    botao.className = "regiao-card";
+    botao.dataset.regiao = regiao;
+    botao.setAttribute("aria-pressed", "false");
+    botao.setAttribute("aria-label", `Explorar ${total} ${total === 1 ? "emissora" : "emissoras"} da região ${regiao}`);
+    botao.innerHTML = `
+      <span class="regiao-card-icone" aria-hidden="true">${ICONES_REGIOES[regiao] || "📻"}</span>
+      <span class="regiao-card-info"><strong>${regiao}</strong><small>${total} ${total === 1 ? "emissora" : "emissoras"}</small></span>
+      <span class="regiao-card-seta" aria-hidden="true">→</span>`;
+    botao.addEventListener("click", () => filtrarPorRegiao(regiao));
+    elementos.gradeRegioes.appendChild(botao);
+  });
+}
+
+function renderizarVerificadas() {
+  if (!elementos.radiosVerificadas || !elementos.gradeVerificadas) return;
+  const radios = estado.radios.filter(radio => radio.status?.verificada === true).slice(0, 6);
+  elementos.radiosVerificadas.classList.toggle("hidden", radios.length === 0);
+  preencherGradeDescoberta(elementos.gradeVerificadas, radios);
+}
+
+function renderizarCategoriasDestaque() {
+  if (!elementos.categoriasDestaque || !elementos.gradeCategoriasDestaque) return;
+  const contagens = new Map();
+  estado.radios.forEach(radio => {
+    const categoriasDaRadio = [...new Set(obterCategorias(radio).map(valor => String(valor || "").trim()).filter(Boolean))];
+    categoriasDaRadio.forEach(categoria => {
+      contagens.set(categoria, (contagens.get(categoria) || 0) + 1);
+    });
+  });
+  const categorias = [...contagens.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "pt-BR"))
+    .slice(0, 6);
+  elementos.categoriasDestaque.classList.toggle("hidden", categorias.length === 0);
+  elementos.gradeCategoriasDestaque.innerHTML = "";
+  categorias.forEach(([categoria, total]) => {
+    const botao = document.createElement("button");
+    botao.type = "button";
+    botao.className = "categoria-destaque-card";
+    botao.setAttribute("aria-label", `Ver ${total} ${total === 1 ? "emissora" : "emissoras"} da categoria ${categoria}`);
+
+    const icone = document.createElement("span");
+    icone.className = "categoria-destaque-icone";
+    icone.setAttribute("aria-hidden", "true");
+    icone.textContent = ICONES_CATEGORIAS[categoria] || "🎧";
+
+    const nome = document.createElement("strong");
+    nome.textContent = categoria;
+
+    const quantidade = document.createElement("small");
+    quantidade.textContent = `${total} ${total === 1 ? "emissora" : "emissoras"}`;
+
+    botao.append(icone, nome, quantidade);
+    botao.addEventListener("click", () => filtrarPorCategoria(categoria));
+    elementos.gradeCategoriasDestaque.appendChild(botao);
+  });
+}
+
+function filtrarPorRegiao(regiao) {
+  estado.regiaoSelecionada = regiao;
+  estado.paginaAtual = 1;
+  elementos.filtroEstado.value = "";
+  atualizarFiltroDescobertaAtivo();
+  aplicarFiltros();
+  document.querySelector("#catalogo-emissoras")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  window.CRBAcessibilidade?.anunciar(`Catálogo filtrado pela região ${regiao}.`);
+}
+
+function filtrarPorCategoria(categoria) {
+  estado.regiaoSelecionada = "";
+  estado.paginaAtual = 1;
+  elementos.filtroEstado.value = "";
+  elementos.filtroCategoria.value = categoria;
+  atualizarFiltroDescobertaAtivo();
+  aplicarFiltros();
+  document.querySelector("#catalogo-emissoras")?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function atualizarFiltroDescobertaAtivo() {
+  if (!elementos.filtroDescobertaAtivo) return;
+  const regiao = estado.regiaoSelecionada;
+  elementos.filtroDescobertaAtivo.classList.toggle("hidden", !regiao);
+  elementos.filtroDescobertaAtivo.textContent = regiao ? `Filtro ativo: região ${regiao}. Use “Limpar filtros” para mostrar todo o catálogo.` : "";
+  document.querySelectorAll(".regiao-card").forEach(botao => {
+    const ativo = botao.dataset.regiao === regiao;
+    botao.classList.toggle("ativo", ativo);
+    botao.setAttribute("aria-pressed", String(ativo));
+  });
+}
+
+function abrirCatalogoPorDescoberta(acao) {
+  estado.regiaoSelecionada = "";
+  elementos.pesquisa.value = "";
+  elementos.filtroEstado.value = "";
+  elementos.filtroCategoria.value = "";
+  if (acao === "verificadas") {
+    estado.radiosFiltradas = estado.radios.filter(radio => radio.status?.verificada === true);
+    estado.paginaAtual = 1;
+    renderizarRadios();
+    window.CRBAcessibilidade?.anunciar("Catálogo exibindo rádios verificadas.");
+  } else {
+    estado.radiosFiltradas = [...estado.radios].sort((a, b) => {
+      const dataA = obterDataPublicacaoRadio(a)?.getTime() || 0;
+      const dataB = obterDataPublicacaoRadio(b)?.getTime() || 0;
+      return dataB - dataA;
+    });
+    estado.paginaAtual = 1;
+    renderizarRadios();
+    window.CRBAcessibilidade?.anunciar("Catálogo organizado pelas emissoras mais recentes.");
+  }
+  atualizarFiltroDescobertaAtivo();
+  document.querySelector("#catalogo-emissoras")?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 function mostrarMensagem(texto) {
