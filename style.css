@@ -3421,7 +3421,7 @@ html {
 }
 
 
-/* STREAMING CRB — acesso comercial v22.12.2 */
+/* STREAMING CRB — acesso comercial v22.12.3 */
 .hero-botao-streaming {
   position: relative;
   border: 1px solid rgba(66, 245, 158, 0.28);
@@ -3444,7 +3444,7 @@ html {
 }
 
 /* =========================================================
-   HOME — CINCO AÇÕES ORGANIZADAS — VERSÃO 22.12.2
+   HOME — CINCO AÇÕES ORGANIZADAS — VERSÃO 22.12.3
    Três botões na primeira linha e dois centralizados na segunda.
    Evita sobreposição de textos e mantém leitura em todos os tamanhos.
    ========================================================= */
@@ -3509,5 +3509,49 @@ html {
   .hero-acoes .hero-botao:nth-child(5) {
     grid-column: auto;
     width: 100% !important;
+  }
+}
+
+
+/* =========================================================
+   HERO — TÍTULO EM DUAS LINHAS — VERSÃO 22.12.3
+   Mantém cada parte da frase em uma linha no desktop,
+   com redução progressiva e quebra segura em telas pequenas.
+   ========================================================= */
+.apresentacao-premium .hero-titulo-principal {
+  max-width: 1040px;
+  font-size: clamp(3rem, 6.1vw, 5.7rem);
+  line-height: 0.98;
+  letter-spacing: -0.058em;
+}
+
+.apresentacao-premium .hero-titulo-linha {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+}
+
+.apresentacao-premium .hero-titulo-destaque {
+  margin-top: 10px;
+  white-space: nowrap;
+  font-size: 0.9em;
+  letter-spacing: -0.05em;
+}
+
+@media (max-width: 760px) {
+  .apresentacao-premium .hero-titulo-principal {
+    max-width: 100%;
+    font-size: clamp(2.55rem, 12vw, 4.35rem);
+    line-height: 1;
+    letter-spacing: -0.052em;
+  }
+
+  .apresentacao-premium .hero-titulo-linha {
+    width: auto;
+  }
+
+  .apresentacao-premium .hero-titulo-destaque {
+    white-space: normal;
+    font-size: 0.88em;
   }
 }

@@ -1,6 +1,6 @@
-# Central Rádios Brasil — Site v22.12.2
+# Central Rádios Brasil — Site v22.12.3
 
-## Etapa 5.2 — revisão 22.12.2 com acessibilidade
+## Etapa 5.2 — revisão 22.12.3 com acessibilidade
 
 - Player premium com capa ampliada e iluminação discreta.
 - Tempo ouvido em tempo real.
@@ -54,12 +54,17 @@ A revisão adiciona melhorias alinhadas à WCAG 2.2: navegação por teclado, fo
 A versão adiciona a página `streaming/`, com apresentação do serviço em desenvolvimento e formulário de pré-cadastro. O formulário depende da rota `POST /api/streaming/interesses` do Worker principal v1.10.0.
 
 
-## 22.12.2 — Correção do Hero
+## 22.12.3 — Correção do Hero
 
 - As cinco ações principais foram reorganizadas para eliminar sobreposição e espaçamento irregular.
 - O layout agora se adapta corretamente a desktop, tablet e celular.
 
 
-## 22.12.2 — Hero “Conexão”
+## 22.12.3 — Hero “Conexão”
 
 - A frase principal da Home passa a exibir “O Brasil inteiro em uma só Conexão.”
+
+
+## 22.12.3 — Hero em duas linhas
+
+O título principal foi redimensionado e estruturado para exibir a frase em duas linhas no desktop, mantendo adaptação para telas menores.
