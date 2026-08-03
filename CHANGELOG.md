@@ -1,3 +1,12 @@
+## 22.12.1 — Correção do espaçamento dos botões do Hero
+
+- Reorganizadas as cinco ações principais da Home.
+- Desktop: três botões na primeira linha e dois centralizados na segunda.
+- Tablet: duas colunas, com a última ação centralizada.
+- Celular: uma coluna, sem sobreposição ou corte de texto.
+- Permitida quebra de texto controlada dentro dos botões.
+- Mantidos Streaming CRB, pré-cadastro, player, PWA e acessibilidade.
+
 ## 22.12.0 — Streaming CRB e pré-cadastro de interessados
 
 - Criada a nova página/aba pública **Streaming CRB**.

@@ -3421,7 +3421,7 @@ html {
 }
 
 
-/* STREAMING CRB — acesso comercial v22.12.0 */
+/* STREAMING CRB — acesso comercial v22.12.1 */
 .hero-botao-streaming {
   position: relative;
   border: 1px solid rgba(66, 245, 158, 0.28);
@@ -3443,25 +3443,71 @@ html {
   text-transform: uppercase;
 }
 
-/* Cinco ações da Home após inclusão do Streaming CRB. */
+/* =========================================================
+   HOME — CINCO AÇÕES ORGANIZADAS — VERSÃO 22.12.1
+   Três botões na primeira linha e dois centralizados na segunda.
+   Evita sobreposição de textos e mantém leitura em todos os tamanhos.
+   ========================================================= */
 .hero-acoes {
-  grid-template-columns: repeat(5, minmax(150px, 1fr)) !important;
+  width: min(100%, 1120px);
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  align-items: stretch;
+  gap: 12px;
 }
 
-@media (max-width: 1180px) {
-  .hero-acoes {
-    grid-template-columns: repeat(3, minmax(180px, 1fr)) !important;
-  }
+.hero-acoes .hero-botao {
+  grid-column: span 2;
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 58px;
+  height: auto;
+  padding: 10px 16px;
+  line-height: 1.2;
+  white-space: normal;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
 }
 
-@media (max-width: 760px) {
+.hero-acoes .hero-botao:nth-child(4) {
+  grid-column: 2 / span 2;
+}
+
+.hero-acoes .hero-botao:nth-child(5) {
+  grid-column: 4 / span 2;
+}
+
+.hero-botao-streaming small {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+@media (max-width: 1080px) {
   .hero-acoes {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
+
+  .hero-acoes .hero-botao,
+  .hero-acoes .hero-botao:nth-child(4) {
+    grid-column: auto;
+  }
+
+  .hero-acoes .hero-botao:nth-child(5) {
+    grid-column: 1 / -1;
+    width: min(100%, 540px) !important;
+    justify-self: center;
+  }
 }
 
-@media (max-width: 520px) {
+@media (max-width: 680px) {
   .hero-acoes {
     grid-template-columns: 1fr !important;
+  }
+
+  .hero-acoes .hero-botao,
+  .hero-acoes .hero-botao:nth-child(4),
+  .hero-acoes .hero-botao:nth-child(5) {
+    grid-column: auto;
+    width: 100% !important;
   }
 }
