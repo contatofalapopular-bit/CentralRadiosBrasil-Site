@@ -1,4 +1,4 @@
-## 22.12.1 — Correção do espaçamento dos botões do Hero
+## 22.12.2 — Correção do espaçamento dos botões do Hero
 
 - Reorganizadas as cinco ações principais da Home.
 - Desktop: três botões na primeira linha e dois centralizados na segunda.
