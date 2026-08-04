@@ -210,6 +210,11 @@ const estado = {
     ultimoEstadoPlayer: "",
     timerFiltros: null
   },
+  autoplay: {
+    interacaoArmada: false,
+    handlerPointer: null,
+    handlerTeclado: null
+  },
   hero: {
     mensagens: [...HERO_MENSAGENS_PADRAO],
     indice: 0,
@@ -283,6 +288,7 @@ function registrarEventos() {
   document.addEventListener("visibilitychange", tratarVisibilidadeWakeLock);
 
   elementos.audio.addEventListener("play", () => {
+    desarmarReproducaoNaPrimeiraInteracao();
     estado.carregandoAudio = false;
     estado.usuarioPausou = false;
     atualizarEstadoPlayer("AO VIVO", "⏸");
@@ -1414,6 +1420,92 @@ function montarLocalizacao(radio) {
   return cidade || uf || "Brasil";
 }
 
+function desarmarReproducaoNaPrimeiraInteracao() {
+  if (!estado.autoplay.interacaoArmada) return;
+
+  if (estado.autoplay.handlerPointer) {
+    document.removeEventListener("pointerup", estado.autoplay.handlerPointer);
+  }
+
+  if (estado.autoplay.handlerTeclado) {
+    document.removeEventListener("keydown", estado.autoplay.handlerTeclado);
+  }
+
+  estado.autoplay.interacaoArmada = false;
+  estado.autoplay.handlerPointer = null;
+  estado.autoplay.handlerTeclado = null;
+}
+
+function armarReproducaoNaPrimeiraInteracao() {
+  if (estado.autoplay.interacaoArmada) return;
+
+  const tentarNovamente = evento => {
+    const alvo = evento?.target;
+
+    if (
+      alvo instanceof Element &&
+      alvo.closest("#btn-fechar-player, #btn-play-pause, #btn-carro-play")
+    ) {
+      return;
+    }
+
+    desarmarReproducaoNaPrimeiraInteracao();
+
+    if (
+      !estado.radioAtual ||
+      estado.usuarioPausou ||
+      estado.fechandoPlayer ||
+      !elementos.audio.paused
+    ) {
+      return;
+    }
+
+    void tentarReproducaoAutomatica({ origem: "primeira_interacao" });
+  };
+
+  estado.autoplay.interacaoArmada = true;
+  estado.autoplay.handlerPointer = tentarNovamente;
+  estado.autoplay.handlerTeclado = tentarNovamente;
+
+  document.addEventListener("pointerup", tentarNovamente);
+  document.addEventListener("keydown", tentarNovamente);
+}
+
+async function tentarReproducaoAutomatica(opcoes = {}) {
+  if (!estado.radioAtual || !elementos.audio.src) return false;
+
+  estado.usuarioPausou = false;
+  estado.fechandoPlayer = false;
+  estado.carregandoAudio = true;
+
+  atualizarEstadoPlayer("Conectando automaticamente...", "…");
+  atualizarEstadoBuffer("Iniciando a última rádio ouvida");
+
+  try {
+    await elementos.audio.play();
+    desarmarReproducaoNaPrimeiraInteracao();
+    return true;
+  } catch (erro) {
+    estado.carregandoAudio = false;
+
+    if (erro?.name === "NotAllowedError") {
+      console.info(
+        "O navegador bloqueou a reprodução automática com som.",
+        opcoes.origem || "abertura"
+      );
+      atualizarEstadoPlayer("Pronta para tocar automaticamente", "▶");
+      atualizarEstadoBuffer("Toque em qualquer área do portal para liberar o áudio");
+      armarReproducaoNaPrimeiraInteracao();
+      return false;
+    }
+
+    console.error("Falha na reprodução automática:", erro);
+    atualizarEstadoPlayer("Não foi possível iniciar automaticamente", "▶");
+    atualizarEstadoBuffer("Use o botão reproduzir para tentar novamente");
+    return false;
+  }
+}
+
 async function selecionarRadio(radio, opcoes = {}) {
   const streams = obterStreamsValidos(radio);
 
@@ -1943,11 +2035,13 @@ async function alternarReproducao() {
   }
 
   estado.usuarioPausou = true;
+  desarmarReproducaoNaPrimeiraInteracao();
   cancelarReconexaoAutomatica();
   elementos.audio.pause();
 }
 
 function fecharPlayer() {
+  desarmarReproducaoNaPrimeiraInteracao();
   estado.fechandoPlayer = true;
   estado.usuarioPausou = true;
   cancelarReconexaoAutomatica();
@@ -2111,9 +2205,11 @@ function restaurarUltimaRadio() {
   if (stream) {
     elementos.audio.src = stream;
     elementos.audio.load();
+    void tentarReproducaoAutomatica({ origem: "ultima_radio" });
+    return;
   }
-  atualizarEstadoPlayer("Última rádio pronta", "▶");
-  atualizarEstadoBuffer("Toque para continuar ouvindo");
+  atualizarEstadoPlayer("Transmissão indisponível", "▶");
+  atualizarEstadoBuffer("A última rádio está temporariamente sem stream válido");
 }
 
 function prepararRadioCompartilhada() {
@@ -2147,8 +2243,7 @@ function prepararRadioCompartilhada() {
   if (stream) {
     elementos.audio.src = stream;
     elementos.audio.load();
-    atualizarEstadoPlayer("Pronta para ouvir", "▶");
-    atualizarEstadoBuffer("Link compartilhado • toque para iniciar");
+    void tentarReproducaoAutomatica({ origem: "link_compartilhado" });
   } else {
     atualizarEstadoPlayer("Transmissão indisponível", "▶");
     atualizarEstadoBuffer("Esta emissora está temporariamente sem stream válido");
@@ -2156,7 +2251,7 @@ function prepararRadioCompartilhada() {
 
   const nome = radio.nomeFantasia || radio.nome || "Emissora";
   document.title = `${nome} — Central Rádios Brasil`;
-  window.CRBAcessibilidade?.anunciar(`${nome} aberta por um link compartilhado. Toque em reproduzir para ouvir.`);
+  window.CRBAcessibilidade?.anunciar(`${nome} aberta por um link compartilhado. Tentando iniciar a transmissão automaticamente.`);
 
   window.setTimeout(() => {
     const idCompartilhado = obterIdentificadorRadio(radio);

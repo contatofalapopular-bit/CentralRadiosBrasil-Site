@@ -1,6 +1,6 @@
-# Central Rádios Brasil — Site v22.15.1
+# Central Rádios Brasil — Site v22.16.0
 
-## Etapa 5.2 — revisão 22.15.1 com acessibilidade
+## Etapa 5.2 — revisão 22.16.0 com acessibilidade
 
 - Player premium com capa ampliada e iluminação discreta.
 - Tempo ouvido em tempo real.
@@ -80,22 +80,26 @@ Esta versão adiciona documentos institucionais, canal público de suporte, SEO 
 A Home passa a montar automaticamente Continuar ouvindo, Recém-chegadas, regiões, rádios verificadas e categorias em destaque a partir dos dados reais do catálogo e das preferências locais do aparelho.
 
 
-## 22.15.1 — Correção de espaçamento da Home Dinâmica
+## 22.16.0 — Correção de espaçamento da Home Dinâmica
 
 - Evita que o painel de filtros invada a seção dinâmica anterior.
 - Mantém distância consistente no desktop, tablet e celular.
 
 
-## 22.15.1 — Ajustes de texto e centralização do Hero
+## 22.16.0 — Ajustes de texto e centralização do Hero
 
 - Simplificada a descrição da seção Recém-chegadas.
 - Centralizadas as duas linhas do título principal do Hero pelo mesmo eixo horizontal.
 
 
-## 22.15.1 — Ocorrências e confiabilidade
+## 22.16.0 — Ocorrências e confiabilidade
 
 O Portal permite registrar problemas com emissoras e com a plataforma em `/ocorrencias/`, gerando protocolo e enviando os dados ao Worker principal.
-## 22.15.1 — Correção crítica do fluxo de solicitações
+## 22.16.0 — Correção crítica do fluxo de solicitações
 
 Esta revisão impede que o navegador preencha automaticamente o campo antirrobô e elimina a possibilidade de o portal exibir um protocolo que não foi persistido. Também melhora o diagnóstico de falhas de conexão na página de acompanhamento.
 
+
+
+## v22.16.0 — reprodução automática
+Ao abrir ou atualizar o Portal, a última rádio é restaurada e o áudio é iniciado automaticamente quando permitido pelo navegador. Se o navegador bloquear áudio com som, a primeira interação na página libera a reprodução.

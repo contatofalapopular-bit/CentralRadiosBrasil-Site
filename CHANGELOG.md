@@ -1,3 +1,11 @@
+## 22.16.0 — Reprodução automática da última rádio
+
+- Tenta reproduzir automaticamente a última emissora ao abrir ou atualizar o Portal.
+- Tenta iniciar automaticamente emissoras abertas por link compartilhado.
+- Quando o navegador bloqueia o áudio, a primeira interação em qualquer área do Portal libera a reprodução sem exigir o botão Play.
+- Pausar ou fechar o player respeita a decisão do ouvinte e cancela novas tentativas automáticas.
+- Cache PWA atualizado para 22.16.0.
+
 ## 22.15.1 — Correção do cadastro e acompanhamento
 
 - Eliminado o falso protocolo causado pelo preenchimento automático do campo antirrobô.
