@@ -9,6 +9,7 @@ const RESOLUCAO_MAXIMA_LOGO = 4096;
 const TEMPO_MAXIMO_TESTE_STREAM_MS = 15000;
 const TEMPO_MAXIMO_REPRODUCAO_STREAM_MS = 20000;
 const TEMPO_CONFIRMACAO_REPRODUCAO_MS = 3500;
+const TEMPO_MAXIMO_CONSULTA_MS = 20000;
 
 const formularioConsulta = document.getElementById("form-acompanhar");
 const campoProtocolo = document.getElementById("protocolo");
@@ -93,7 +94,7 @@ async function consultarCadastro(evento) {
   botaoConsultar.textContent = "Consultando...";
 
   try {
-    const resposta = await fetch(
+    const resposta = await consultarCadastroComTimeout(
       `${URL_API_ACOMPANHAMENTO}/api/solicitacoes/acompanhar`,
       {
         method: "POST",
@@ -136,6 +137,38 @@ async function consultarCadastro(evento) {
   } finally {
     botaoConsultar.disabled = false;
     botaoConsultar.textContent = "Consultar cadastro";
+  }
+}
+
+async function consultarCadastroComTimeout(url, opcoes) {
+  const controlador = new AbortController();
+  const temporizador = window.setTimeout(
+    () => controlador.abort(),
+    TEMPO_MAXIMO_CONSULTA_MS
+  );
+
+  try {
+    return await fetch(url, {
+      ...opcoes,
+      cache: "no-store",
+      signal: controlador.signal
+    });
+  } catch (erro) {
+    if (erro?.name === "AbortError") {
+      throw new Error(
+        "A consulta demorou mais que o esperado. Aguarde alguns instantes e tente novamente."
+      );
+    }
+
+    if (erro instanceof TypeError) {
+      throw new Error(
+        "Não foi possível conectar ao sistema de acompanhamento. Verifique a internet e tente novamente."
+      );
+    }
+
+    throw erro;
+  } finally {
+    window.clearTimeout(temporizador);
   }
 }
 

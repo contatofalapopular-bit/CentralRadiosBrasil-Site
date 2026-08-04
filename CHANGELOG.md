@@ -1,10 +1,17 @@
-## 22.15.0 — Correção de espaçamento da Home Dinâmica
+## 22.15.1 — Correção do cadastro e acompanhamento
+
+- Eliminado o falso protocolo causado pelo preenchimento automático do campo antirrobô.
+- O envio remove o campo de segurança antes de montar o formulário.
+- A consulta agora apresenta mensagens claras para indisponibilidade e tempo excedido.
+- Cache do PWA atualizado para forçar a entrega dos arquivos corrigidos.
+
+## 22.15.1 — Correção de espaçamento da Home Dinâmica
 
 - Corrigida a sobreposição do painel de filtros com a última seção dinâmica da Home.
 - Restaurado espaçamento vertical consistente após Categorias em destaque e demais seções de descoberta.
 - Ajuste responsivo aplicado também em tablets e celulares.
 - Mantidos cards, filtros, catálogo, player, PWA e acessibilidade.
-- Cache PWA atualizado para 22.15.0.
+- Cache PWA atualizado para 22.15.1.
 
 ## 22.14.0 — Descoberta de Emissoras e Home Dinâmica
 

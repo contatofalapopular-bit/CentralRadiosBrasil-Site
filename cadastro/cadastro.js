@@ -11,6 +11,7 @@ const TEMPO_MAXIMO_REPRODUCAO_STREAM_MS = 20000;
 const TEMPO_CONFIRMACAO_REPRODUCAO_MS = 3500;
 const CHAVE_RASCUNHO_CADASTRO = "crb-cadastro-rascunho-v1";
 const TEMPO_ESPERA_DUPLICIDADE_MS = 650;
+const TEMPO_MAXIMO_ENVIO_CADASTRO_MS = 35000;
 
 const CODIGOS_IBGE_UF = {
   AC: 12, AL: 27, AP: 16, AM: 13, BA: 29,
@@ -1119,6 +1120,9 @@ async function enviarCadastro(evento) {
 
   const dados = new FormData(formulario);
 
+  // Evita que preenchimentos automáticos do navegador acionem o campo de segurança.
+  dados.delete("enderecoAlternativo");
+
   if (!logoValidada) {
     dados.delete("logo");
   }
@@ -1127,7 +1131,7 @@ async function enviarCadastro(evento) {
   botaoEnviar.textContent = "Enviando...";
 
   try {
-    const resposta = await fetch(
+    const resposta = await enviarCadastroComTimeout(
       `${URL_API_CADASTRO}/api/solicitacoes`,
       {
         method: "POST",
@@ -1162,6 +1166,38 @@ async function enviarCadastro(evento) {
   } finally {
     botaoEnviar.textContent = "Enviar para análise";
     atualizarEstadoBotaoEnviar();
+  }
+}
+
+async function enviarCadastroComTimeout(url, opcoes) {
+  const controlador = new AbortController();
+  const temporizador = window.setTimeout(
+    () => controlador.abort(),
+    TEMPO_MAXIMO_ENVIO_CADASTRO_MS
+  );
+
+  try {
+    return await fetch(url, {
+      ...opcoes,
+      cache: "no-store",
+      signal: controlador.signal
+    });
+  } catch (erro) {
+    if (erro?.name === "AbortError") {
+      throw new Error(
+        "O servidor demorou para confirmar o cadastro. Aguarde alguns instantes e tente novamente."
+      );
+    }
+
+    if (erro instanceof TypeError) {
+      throw new Error(
+        "Não foi possível conectar ao sistema de cadastro. Verifique a internet e tente novamente."
+      );
+    }
+
+    throw erro;
+  } finally {
+    window.clearTimeout(temporizador);
   }
 }
 

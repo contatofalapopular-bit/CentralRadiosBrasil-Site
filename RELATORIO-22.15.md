@@ -10,4 +10,4 @@
 
 ## Dependência
 
-Publicar o Worker principal 1.11.0 antes do Portal 22.15.0.
+Publicar o Worker principal 1.11.0 antes do Portal 22.15.1.
