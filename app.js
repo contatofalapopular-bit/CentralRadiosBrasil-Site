@@ -90,6 +90,7 @@ const elementos = {
   btnModoCarro: document.getElementById("btn-modo-carro"),
   btnCompartilharRadio: document.getElementById("btn-compartilhar-radio"),
   btnReportarRadio: document.getElementById("btn-reportar-radio"),
+  btnRecolherPlayer: document.getElementById("btn-recolher-player"),
   btnFecharPlayer: document.getElementById("btn-fechar-player"),
 
   favoritas: document.getElementById("favoritas"),
@@ -145,6 +146,7 @@ const estado = {
   regiaoSelecionada: "",
   usuarioPausou: false,
   fechandoPlayer: false,
+  playerRecolhido: false,
   indiceStreamAtual: 0,
   reconexao: {
     tentativa: 0,
@@ -229,6 +231,7 @@ document.addEventListener("DOMContentLoaded", iniciarPortal);
 
 async function iniciarPortal() {
   carregarPreferenciasLocais();
+  carregarPreferenciaPlayerRecolhido();
   registrarEventos();
   configurarMediaSession();
   atualizarControlesVolume();
@@ -239,6 +242,46 @@ async function iniciarPortal() {
   const abriuRadioCompartilhada = prepararRadioCompartilhada();
   if (!abriuRadioCompartilhada) restaurarUltimaRadio();
   tratarAtalhosDeAbertura();
+}
+
+
+const CHAVE_PLAYER_RECOLHIDO = "crb_player_recolhido";
+
+function carregarPreferenciaPlayerRecolhido() {
+  try {
+    estado.playerRecolhido = localStorage.getItem(CHAVE_PLAYER_RECOLHIDO) === "1";
+  } catch {}
+  aplicarEstadoPlayerRecolhido();
+}
+
+function salvarPreferenciaPlayerRecolhido() {
+  try {
+    localStorage.setItem(CHAVE_PLAYER_RECOLHIDO, estado.playerRecolhido ? "1" : "0");
+  } catch {}
+}
+
+function atualizarClassesPlayerVisivel() {
+  const visivel = !elementos.player?.classList.contains("hidden");
+  document.body.classList.toggle("player-visivel", visivel);
+  document.body.classList.toggle("player-recolhido-visivel", visivel && estado.playerRecolhido);
+}
+
+function aplicarEstadoPlayerRecolhido() {
+  elementos.player?.classList.toggle("player-recolhido", Boolean(estado.playerRecolhido));
+  if (elementos.btnRecolherPlayer) {
+    const recolhido = Boolean(estado.playerRecolhido);
+    elementos.btnRecolherPlayer.textContent = recolhido ? "→" : "←";
+    elementos.btnRecolherPlayer.setAttribute("aria-label", recolhido ? "Expandir controles do player" : "Recolher player para a esquerda");
+    elementos.btnRecolherPlayer.setAttribute("aria-expanded", String(!recolhido));
+    elementos.btnRecolherPlayer.title = recolhido ? "Expandir controles" : "Recolher player";
+  }
+  atualizarClassesPlayerVisivel();
+}
+
+function alternarPlayerRecolhido() {
+  estado.playerRecolhido = !estado.playerRecolhido;
+  aplicarEstadoPlayerRecolhido();
+  salvarPreferenciaPlayerRecolhido();
 }
 
 function registrarEventos() {
@@ -266,6 +309,7 @@ function registrarEventos() {
   elementos.btnModoCarro.addEventListener("click", abrirModoCarro);
   elementos.btnCompartilharRadio?.addEventListener("click", () => compartilharRadio(estado.radioAtual));
   elementos.btnReportarRadio?.addEventListener("click", () => abrirOcorrenciaRadio(estado.radioAtual));
+  elementos.btnRecolherPlayer?.addEventListener("click", alternarPlayerRecolhido);
   elementos.btnFecharPlayer.addEventListener("click", fecharPlayer);
 
   elementos.btnCarroAnterior.addEventListener("click", () => tocarRadioRelativa(-1));
@@ -1534,6 +1578,8 @@ async function selecionarRadio(radio, opcoes = {}) {
 
   salvarUltimaRadio(radio);
   elementos.player.classList.remove("hidden");
+  atualizarClassesPlayerVisivel();
+  aplicarEstadoPlayerRecolhido();
 
   atualizarIdentidadePlayer(radio);
   window.CRBAcessibilidade?.anunciar(
@@ -2062,6 +2108,7 @@ function fecharPlayer() {
   estado.fechandoPlayer = false;
 
   elementos.player.classList.add("hidden");
+  atualizarClassesPlayerVisivel();
   if (elementos.btnCompartilharRadio) elementos.btnCompartilharRadio.disabled = true;
   if (elementos.btnReportarRadio) elementos.btnReportarRadio.disabled = true;
   document.title = "Central Rádios Brasil — Ouça rádios online do Brasil";
@@ -2200,6 +2247,8 @@ function restaurarUltimaRadio() {
   estado.radioAtual = radio;
   estado.indiceStreamAtual = 0;
   elementos.player.classList.remove("hidden");
+  atualizarClassesPlayerVisivel();
+  aplicarEstadoPlayerRecolhido();
   atualizarIdentidadePlayer(radio);
   const stream = obterStreamsValidos(radio)[0];
   if (stream) {
@@ -2236,6 +2285,8 @@ function prepararRadioCompartilhada() {
   estado.radioAtual = radio;
   estado.indiceStreamAtual = 0;
   elementos.player.classList.remove("hidden");
+  atualizarClassesPlayerVisivel();
+  aplicarEstadoPlayerRecolhido();
   atualizarIdentidadePlayer(radio);
   salvarUltimaRadio(radio);
 

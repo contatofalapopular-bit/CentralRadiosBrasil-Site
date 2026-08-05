@@ -1,4 +1,4 @@
-CENTRAL RÁDIOS BRASIL — SITE v22.16.2
+CENTRAL RÁDIOS BRASIL — SITE v22.16.3
 
 1. Este ZIP já abre diretamente nos arquivos do site.
 2. Após descompactar, envie TODOS os arquivos e pastas desta pasta para a RAIZ do repositório do Site Público.

@@ -1,10 +1,10 @@
-## 22.16.2 — Apoio voluntário por Pix
+## 22.16.3 — Apoio voluntário por Pix
 
 - Criada página pública de apoio com QR Code Pix estático.
 - Adicionada chave `centralradiosbrasil@gmail.com` e botão de cópia.
 - Adicionados links no cabeçalho, Home e rodapés públicos.
 - Página incluída no PWA, sitemap e atalhos do manifesto.
-- Cache PWA atualizado para 22.16.2.
+- Cache PWA atualizado para 22.16.3.
 
 ## 22.16.0 — Reprodução automática da última rádio
 
@@ -135,7 +135,7 @@
 - Atualização do cache PWA para 22.10.0.
 
 
-## 22.16.2 — Correção de publicação do Apoio Pix
+## 22.16.3 — Correção de publicação do Apoio Pix
 - Arquivos entregues diretamente na raiz do pacote.
 - Cache da PWA atualizado.
 - Atalho flutuante de apoio adicionado à Home.

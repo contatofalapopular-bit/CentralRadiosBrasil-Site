@@ -3942,7 +3942,7 @@ html {
 
 /* 22.16.2 — atalho de apoio sempre visível */
 .apoio-flutuante{
-  position:fixed;right:18px;bottom:96px;z-index:950;
+  position:fixed;right:18px;bottom:126px;z-index:950;
   display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:10px 16px;
   border:1px solid rgba(255,255,255,.25);border-radius:999px;
   color:#fff;text-decoration:none;font-weight:800;letter-spacing:.01em;
@@ -3953,5 +3953,64 @@ html {
 .apoio-flutuante:hover,.apoio-flutuante:focus-visible{transform:translateY(-2px);filter:brightness(1.08)}
 .apoio-flutuante span{font-size:1.05rem}
 @media(max-width:620px){
-  .apoio-flutuante{right:12px;bottom:88px;padding:10px 13px;font-size:.88rem}
+  .apoio-flutuante{right:12px;bottom:118px;padding:10px 13px;font-size:.88rem}
+}
+
+
+/* 22.16.3 — Player recolhível e ajuste do botão Apoie */
+body.player-visivel .apoio-flutuante{bottom:168px;}
+body.player-recolhido-visivel .apoio-flutuante{bottom:118px;}
+.player.player-recolhido{
+  left:16px;
+  right:auto;
+  bottom:18px;
+  width:min(calc(100% - 32px), 470px);
+  transform:none;
+}
+.player.player-recolhido .player-conteudo{
+  min-height:76px;
+  gap:12px;
+  padding:12px 14px;
+}
+.player.player-recolhido .player-identidade{
+  flex:1 1 auto;
+  min-width:0;
+  gap:12px;
+}
+.player.player-recolhido .player-logo{
+  flex:0 0 54px;
+  width:54px;
+  height:54px;
+  border-radius:16px;
+}
+.player.player-recolhido .player-informacoes{gap:2px;}
+.player.player-recolhido .player-informacoes strong{max-width:220px;font-size:.98rem;}
+.player.player-recolhido .player-informacoes small{max-width:220px;font-size:.81rem;}
+.player.player-recolhido .player-musica,
+.player.player-recolhido .player-metricas,
+.player.player-recolhido .estabilidade-barra,
+.player.player-recolhido .player-buffer,
+.player.player-recolhido #player-popularidade,
+.player.player-recolhido #btn-player-favorita,
+.player.player-recolhido #btn-radio-anterior,
+.player.player-recolhido #btn-play-pause,
+.player.player-recolhido #btn-proxima-radio,
+.player.player-recolhido .player-volume-area,
+.player.player-recolhido #btn-zap,
+.player.player-recolhido #btn-modo-carro,
+.player.player-recolhido #btn-compartilhar-radio,
+.player.player-recolhido #btn-reportar-radio{display:none !important;}
+.player.player-recolhido .player-acoes{
+  flex:0 0 auto;
+  gap:8px;
+  margin-left:auto;
+}
+.player.player-recolhido .botao-fechar{width:38px;height:38px;border-radius:12px;}
+.player.player-recolhido .botao-recolher-player{background:rgba(55,230,255,.12);border-color:rgba(55,230,255,.28);}
+@media (max-width: 760px){
+  body.player-visivel .apoio-flutuante{bottom:158px;}
+  body.player-recolhido-visivel .apoio-flutuante{bottom:108px;}
+  .player.player-recolhido{left:12px;width:min(calc(100% - 24px), 420px);}
+  .player.player-recolhido .player-informacoes strong,
+  .player.player-recolhido .player-informacoes small{max-width:150px;}
 }

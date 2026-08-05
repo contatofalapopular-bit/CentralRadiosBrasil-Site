@@ -1,6 +1,6 @@
-# Central Rádios Brasil — Site v22.16.2
+# Central Rádios Brasil — Site v22.16.3
 
-## 22.16.2 — Apoio voluntário por Pix
+## 22.16.3 — Apoio voluntário por Pix
 
 - Nova página pública `apoie/` com QR Code Pix e chave por e-mail.
 - Botão para copiar a chave Pix com retorno acessível.
@@ -113,7 +113,7 @@ Esta revisão impede que o navegador preencha automaticamente o campo antirrobô
 Ao abrir ou atualizar o Portal, a última rádio é restaurada e o áudio é iniciado automaticamente quando permitido pelo navegador. Se o navegador bloquear áudio com som, a primeira interação na página libera a reprodução.
 
 
-## 22.16.2 — Correção de publicação do Apoio Pix
+## 22.16.3 — Correção de publicação do Apoio Pix
 - Arquivos entregues diretamente na raiz do pacote.
 - Cache da PWA atualizado.
 - Atalho flutuante de apoio adicionado à Home.
