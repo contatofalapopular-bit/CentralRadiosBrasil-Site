@@ -102,7 +102,23 @@ const elementos = {
   recemChegadas: document.getElementById("recem-chegadas"),
   gradeRecemChegadas: document.getElementById("grade-recem-chegadas"),
   explorarRegioes: document.getElementById("explorar-regioes"),
-  gradeRegioes: document.getElementById("grade-regioes"),
+  mapaResumoGeral: document.getElementById("mapa-resumo-geral"),
+  mapaEstados: document.getElementById("mapa-estados"),
+  mapaEstadosLista: document.getElementById("mapa-estados-lista"),
+  mapaPainelEtiqueta: document.getElementById("mapa-painel-etiqueta"),
+  mapaPainelTitulo: document.getElementById("mapa-painel-titulo"),
+  mapaPainelDescricao: document.getElementById("mapa-painel-descricao"),
+  mapaTotalEmissoras: document.getElementById("mapa-total-emissoras"),
+  mapaTotalCidades: document.getElementById("mapa-total-cidades"),
+  mapaTotalEstados: document.getElementById("mapa-total-estados"),
+  mapaCidadeNova: document.getElementById("mapa-cidade-nova"),
+  mapaCidadeNovaNome: document.getElementById("mapa-cidade-nova-nome"),
+  mapaCidades: document.getElementById("mapa-cidades"),
+  mapaCidadesContador: document.getElementById("mapa-cidades-contador"),
+  mapaRadiosLista: document.getElementById("mapa-radios-lista"),
+  mapaRadiosContador: document.getElementById("mapa-radios-contador"),
+  btnOuvirMapa: document.getElementById("btn-ouvir-mapa"),
+  btnVerMapaCatalogo: document.getElementById("btn-ver-mapa-catalogo"),
   radiosVerificadas: document.getElementById("radios-verificadas"),
   gradeVerificadas: document.getElementById("grade-verificadas"),
   categoriasDestaque: document.getElementById("categorias-destaque"),
@@ -144,6 +160,8 @@ const estado = {
   radiosPorPagina: 12,
   favoritas: new Set(),
   regiaoSelecionada: "",
+  mapaRegiaoSelecionada: "",
+  mapaUfSelecionada: "",
   usuarioPausou: false,
   fechandoPlayer: false,
   playerRecolhido: false,
@@ -288,6 +306,12 @@ function registrarEventos() {
   elementos.pesquisa.addEventListener("input", aplicarFiltros);
   elementos.filtroEstado.addEventListener("change", () => {
     estado.regiaoSelecionada = "";
+    if (elementos.filtroEstado.value) {
+      estado.mapaUfSelecionada = elementos.filtroEstado.value;
+      estado.mapaRegiaoSelecionada = "";
+      renderizarPainelMapaSonoro();
+      atualizarSelecaoMapaSonoro();
+    }
     atualizarFiltroDescobertaAtivo();
     aplicarFiltros();
   });
@@ -296,6 +320,12 @@ function registrarEventos() {
   document.querySelectorAll("[data-descoberta-acao]").forEach(botao => {
     botao.addEventListener("click", () => abrirCatalogoPorDescoberta(botao.dataset.descobertaAcao));
   });
+
+  document.querySelectorAll("[data-mapa-regiao]").forEach(botao => {
+    botao.addEventListener("click", () => selecionarRegiaoMapa(botao.dataset.mapaRegiao || ""));
+  });
+  elementos.btnOuvirMapa?.addEventListener("click", ouvirRadioDoMapa);
+  elementos.btnVerMapaCatalogo?.addEventListener("click", abrirCatalogoDoMapa);
 
   elementos.btnLimpar.addEventListener("click", limparFiltros);
 
@@ -3066,6 +3096,36 @@ const ICONES_REGIOES = {
   Sul: "🧭"
 };
 
+const ESTADOS_BRASIL = {
+  AC: { nome: "Acre", regiao: "Norte", x: 12, y: 49 },
+  AM: { nome: "Amazonas", regiao: "Norte", x: 27, y: 34 },
+  RR: { nome: "Roraima", regiao: "Norte", x: 31, y: 13 },
+  AP: { nome: "Amapá", regiao: "Norte", x: 59, y: 13 },
+  PA: { nome: "Pará", regiao: "Norte", x: 52, y: 31 },
+  RO: { nome: "Rondônia", regiao: "Norte", x: 27, y: 52 },
+  TO: { nome: "Tocantins", regiao: "Norte", x: 56, y: 48 },
+  MA: { nome: "Maranhão", regiao: "Nordeste", x: 69, y: 37 },
+  PI: { nome: "Piauí", regiao: "Nordeste", x: 74, y: 48 },
+  CE: { nome: "Ceará", regiao: "Nordeste", x: 84, y: 44 },
+  RN: { nome: "Rio Grande do Norte", regiao: "Nordeste", x: 93, y: 45, pequeno: true },
+  PB: { nome: "Paraíba", regiao: "Nordeste", x: 92, y: 51, pequeno: true },
+  PE: { nome: "Pernambuco", regiao: "Nordeste", x: 87, y: 56 },
+  AL: { nome: "Alagoas", regiao: "Nordeste", x: 88, y: 62, pequeno: true },
+  SE: { nome: "Sergipe", regiao: "Nordeste", x: 84, y: 66, pequeno: true },
+  BA: { nome: "Bahia", regiao: "Nordeste", x: 73, y: 62 },
+  MT: { nome: "Mato Grosso", regiao: "Centro-Oeste", x: 43, y: 55 },
+  MS: { nome: "Mato Grosso do Sul", regiao: "Centro-Oeste", x: 43, y: 72 },
+  GO: { nome: "Goiás", regiao: "Centro-Oeste", x: 58, y: 66 },
+  DF: { nome: "Distrito Federal", regiao: "Centro-Oeste", x: 61, y: 63, pequeno: true },
+  MG: { nome: "Minas Gerais", regiao: "Sudeste", x: 69, y: 73 },
+  ES: { nome: "Espírito Santo", regiao: "Sudeste", x: 81, y: 75, pequeno: true },
+  RJ: { nome: "Rio de Janeiro", regiao: "Sudeste", x: 75, y: 82, pequeno: true },
+  SP: { nome: "São Paulo", regiao: "Sudeste", x: 61, y: 80 },
+  PR: { nome: "Paraná", regiao: "Sul", x: 56, y: 87 },
+  SC: { nome: "Santa Catarina", regiao: "Sul", x: 58, y: 92, pequeno: true },
+  RS: { nome: "Rio Grande do Sul", regiao: "Sul", x: 51, y: 96 }
+};
+
 const ICONES_CATEGORIAS = {
   Gospel: "🙏",
   Sertanejo: "🤠",
@@ -3082,7 +3142,7 @@ const ICONES_CATEGORIAS = {
 function renderizarDescobertaHome() {
   renderizarContinuarOuvindo();
   renderizarRecemChegadas();
-  renderizarRegioes();
+  renderizarMapaSonoro();
   renderizarVerificadas();
   renderizarCategoriasDestaque();
 }
@@ -3157,31 +3217,292 @@ function obterUfsDaRegiao(regiao) {
   return REGIOES_BRASIL[regiao] || [];
 }
 
-function renderizarRegioes() {
-  if (!elementos.explorarRegioes || !elementos.gradeRegioes) return;
-  const contagens = new Map();
-  estado.radios.forEach(radio => {
-    const regiao = obterNomeRegiaoPorUf(radio.localizacao?.uf);
-    if (regiao) contagens.set(regiao, (contagens.get(regiao) || 0) + 1);
+function normalizarCidadeMapa(valor) {
+  const texto = String(valor || "").trim().replace(/\s+/g, " ");
+  if (!texto) return "";
+  const conectivos = new Set(["da", "das", "de", "do", "dos", "e"]);
+  return texto
+    .toLocaleLowerCase("pt-BR")
+    .split(" ")
+    .map((parte, indice) => indice > 0 && conectivos.has(parte)
+      ? parte
+      : `${parte.charAt(0).toLocaleUpperCase("pt-BR")}${parte.slice(1)}`)
+    .join(" ");
+}
+
+function obterRadiosRecorteMapa() {
+  let radios = [...estado.radios];
+  if (estado.mapaUfSelecionada) {
+    radios = radios.filter(radio => String(radio.localizacao?.uf || "").toUpperCase() === estado.mapaUfSelecionada);
+  } else if (estado.mapaRegiaoSelecionada) {
+    const ufs = obterUfsDaRegiao(estado.mapaRegiaoSelecionada);
+    radios = radios.filter(radio => ufs.includes(String(radio.localizacao?.uf || "").toUpperCase()));
+  }
+  return radios;
+}
+
+function obterResumoCidadesMapa(radios) {
+  const mapa = new Map();
+  radios.forEach(radio => {
+    const cidade = normalizarCidadeMapa(radio.localizacao?.cidade);
+    const uf = String(radio.localizacao?.uf || "").toUpperCase();
+    if (!cidade || !uf) return;
+    const chave = `${uf}|${cidade.toLocaleLowerCase("pt-BR")}`;
+    const data = obterDataPublicacaoRadio(radio);
+    if (!mapa.has(chave)) {
+      mapa.set(chave, { cidade, uf, total: 0, primeiraData: data || null });
+    }
+    const item = mapa.get(chave);
+    item.total += 1;
+    if (data && (!item.primeiraData || data < item.primeiraData)) item.primeiraData = data;
   });
-  const regioes = Object.keys(REGIOES_BRASIL).filter(regiao => contagens.has(regiao));
-  elementos.explorarRegioes.classList.toggle("hidden", regioes.length === 0);
-  elementos.gradeRegioes.innerHTML = "";
-  regioes.forEach(regiao => {
-    const total = contagens.get(regiao) || 0;
-    const botao = document.createElement("button");
-    botao.type = "button";
-    botao.className = "regiao-card";
-    botao.dataset.regiao = regiao;
-    botao.setAttribute("aria-pressed", "false");
-    botao.setAttribute("aria-label", `Explorar ${total} ${total === 1 ? "emissora" : "emissoras"} da região ${regiao}`);
-    botao.innerHTML = `
-      <span class="regiao-card-icone" aria-hidden="true">${ICONES_REGIOES[regiao] || "📻"}</span>
-      <span class="regiao-card-info"><strong>${regiao}</strong><small>${total} ${total === 1 ? "emissora" : "emissoras"}</small></span>
-      <span class="regiao-card-seta" aria-hidden="true">→</span>`;
-    botao.addEventListener("click", () => filtrarPorRegiao(regiao));
-    elementos.gradeRegioes.appendChild(botao);
+  return [...mapa.values()];
+}
+
+function obterCidadeRecemChegada(radios) {
+  return obterResumoCidadesMapa(radios)
+    .filter(item => item.primeiraData)
+    .sort((a, b) => b.primeiraData.getTime() - a.primeiraData.getTime())[0] || null;
+}
+
+function criarBotaoEstadoMapa(uf, dados, total, cidadeNova) {
+  const botao = document.createElement("button");
+  botao.type = "button";
+  botao.className = "mapa-uf";
+  if (dados.pequeno) botao.classList.add("mapa-uf-pequeno");
+  if (total > 0) botao.classList.add("tem-radio");
+  if (cidadeNova?.uf === uf) botao.classList.add("tem-cidade-nova");
+  botao.dataset.uf = uf;
+  botao.dataset.regiao = dados.regiao;
+  botao.dataset.nome = dados.nome;
+  botao.style.setProperty("--mapa-x", `${dados.x}%`);
+  botao.style.setProperty("--mapa-y", `${dados.y}%`);
+  botao.setAttribute("aria-pressed", "false");
+  botao.setAttribute("aria-label", `${dados.nome}: ${total} ${total === 1 ? "emissora" : "emissoras"}`);
+  botao.title = `${dados.nome} — ${total} ${total === 1 ? "emissora" : "emissoras"}`;
+  botao.innerHTML = `<span class="mapa-uf-sigla">${uf}</span><span class="mapa-uf-contagem">${total}</span>`;
+  botao.addEventListener("click", () => selecionarUfMapa(uf));
+  return botao;
+}
+
+function criarBotaoEstadoListaMapa(uf, dados, total) {
+  const botao = document.createElement("button");
+  botao.type = "button";
+  botao.className = "mapa-estado-lista-botao";
+  if (total > 0) botao.classList.add("tem-radio");
+  botao.dataset.uf = uf;
+  botao.setAttribute("aria-pressed", "false");
+  botao.innerHTML = `<strong>${uf}</strong><span>${dados.nome}</span><small>${total}</small>`;
+  botao.addEventListener("click", () => selecionarUfMapa(uf));
+  return botao;
+}
+
+function renderizarMapaSonoro() {
+  if (!elementos.explorarRegioes || !elementos.mapaEstados) return;
+  const radios = estado.radios;
+  elementos.explorarRegioes.classList.toggle("hidden", radios.length === 0);
+  if (!radios.length) return;
+
+  const contagemUfs = new Map();
+  radios.forEach(radio => {
+    const uf = String(radio.localizacao?.uf || "").toUpperCase();
+    if (ESTADOS_BRASIL[uf]) contagemUfs.set(uf, (contagemUfs.get(uf) || 0) + 1);
   });
+  const cidades = obterResumoCidadesMapa(radios);
+  const cidadeNova = obterCidadeRecemChegada(radios);
+  elementos.mapaResumoGeral.textContent = `${radios.length} ${radios.length === 1 ? "emissora" : "emissoras"} • ${contagemUfs.size} ${contagemUfs.size === 1 ? "estado" : "estados"} • ${cidades.length} ${cidades.length === 1 ? "cidade" : "cidades"}`;
+
+  elementos.mapaEstados.innerHTML = "";
+  elementos.mapaEstadosLista.innerHTML = "";
+  Object.entries(ESTADOS_BRASIL).forEach(([uf, dados]) => {
+    const total = contagemUfs.get(uf) || 0;
+    elementos.mapaEstados.appendChild(criarBotaoEstadoMapa(uf, dados, total, cidadeNova));
+    elementos.mapaEstadosLista.appendChild(criarBotaoEstadoListaMapa(uf, dados, total));
+  });
+
+  document.querySelectorAll("[data-mapa-regiao-total]").forEach(item => {
+    const regiao = item.dataset.mapaRegiaoTotal;
+    const total = regiao === "Brasil"
+      ? radios.length
+      : radios.filter(radio => obterUfsDaRegiao(regiao).includes(String(radio.localizacao?.uf || "").toUpperCase())).length;
+    item.textContent = total;
+  });
+
+  renderizarPainelMapaSonoro();
+  atualizarSelecaoMapaSonoro();
+}
+
+function selecionarUfMapa(uf) {
+  estado.mapaUfSelecionada = estado.mapaUfSelecionada === uf ? "" : uf;
+  estado.mapaRegiaoSelecionada = "";
+  renderizarPainelMapaSonoro();
+  atualizarSelecaoMapaSonoro();
+  window.CRBAcessibilidade?.anunciar(
+    estado.mapaUfSelecionada
+      ? `Mapa sonoro selecionado: ${ESTADOS_BRASIL[estado.mapaUfSelecionada]?.nome || estado.mapaUfSelecionada}.`
+      : "Mapa sonoro voltou ao panorama nacional."
+  );
+}
+
+function selecionarRegiaoMapa(regiao) {
+  estado.mapaRegiaoSelecionada = estado.mapaRegiaoSelecionada === regiao ? "" : regiao;
+  estado.mapaUfSelecionada = "";
+  renderizarPainelMapaSonoro();
+  atualizarSelecaoMapaSonoro();
+  window.CRBAcessibilidade?.anunciar(
+    estado.mapaRegiaoSelecionada ? `Mapa sonoro selecionado: região ${estado.mapaRegiaoSelecionada}.` : "Mapa sonoro selecionado: Brasil inteiro."
+  );
+}
+
+function atualizarSelecaoMapaSonoro() {
+  document.querySelectorAll(".mapa-uf, .mapa-estado-lista-botao").forEach(botao => {
+    const selecionado = Boolean(estado.mapaUfSelecionada && botao.dataset.uf === estado.mapaUfSelecionada);
+    const emRegiao = Boolean(!estado.mapaUfSelecionada && estado.mapaRegiaoSelecionada && ESTADOS_BRASIL[botao.dataset.uf]?.regiao === estado.mapaRegiaoSelecionada);
+    botao.classList.toggle("selecionado", selecionado);
+    botao.classList.toggle("em-regiao", emRegiao);
+    botao.setAttribute("aria-pressed", String(selecionado));
+  });
+  document.querySelectorAll("[data-mapa-regiao]").forEach(botao => {
+    const selecionado = (botao.dataset.mapaRegiao || "") === estado.mapaRegiaoSelecionada && !estado.mapaUfSelecionada;
+    botao.classList.toggle("ativo", selecionado);
+    botao.setAttribute("aria-pressed", String(selecionado));
+  });
+}
+
+function criarRadioCompactaMapa(radio) {
+  const artigo = document.createElement("article");
+  artigo.className = "mapa-radio-item";
+  const nome = radio.nomeFantasia || radio.nome || "Emissora";
+  const logo = criarLogoRadio(radio, "mapa-radio-logo");
+  logo.setAttribute("aria-hidden", "true");
+  const info = document.createElement("div");
+  info.className = "mapa-radio-info";
+  const titulo = document.createElement("strong");
+  titulo.textContent = nome;
+  const detalhe = document.createElement("small");
+  detalhe.textContent = `${montarLocalizacao(radio)} • ${radio.classificacao?.categoriaPrincipal || "Rádio online"}`;
+  info.append(titulo, detalhe);
+  const ouvir = document.createElement("button");
+  ouvir.type = "button";
+  ouvir.className = "mapa-radio-ouvir";
+  ouvir.setAttribute("aria-label", `Ouvir ${nome}`);
+  ouvir.innerHTML = '<span aria-hidden="true">▶</span>';
+  ouvir.addEventListener("click", () => selecionarRadio(radio));
+  artigo.append(logo, info, ouvir);
+  return artigo;
+}
+
+function renderizarPainelMapaSonoro() {
+  if (!elementos.mapaPainelTitulo) return;
+  const radios = obterRadiosRecorteMapa();
+  const cidades = obterResumoCidadesMapa(radios);
+  const estadosRepresentados = new Set(radios.map(radio => String(radio.localizacao?.uf || "").toUpperCase()).filter(Boolean));
+  const cidadeNova = obterCidadeRecemChegada(radios);
+
+  let titulo = "Brasil inteiro";
+  let etiqueta = "PANORAMA NACIONAL";
+  let descricao = "Explore a presença real das emissoras cadastradas em todo o país.";
+  if (estado.mapaUfSelecionada) {
+    const dados = ESTADOS_BRASIL[estado.mapaUfSelecionada];
+    titulo = dados?.nome || estado.mapaUfSelecionada;
+    etiqueta = `${dados?.regiao || "ESTADO"} • ${estado.mapaUfSelecionada}`.toUpperCase();
+    descricao = radios.length
+      ? `Conheça as rádios e cidades que representam ${titulo} na Central.`
+      : `${titulo} ainda aguarda sua primeira emissora no mapa.`;
+  } else if (estado.mapaRegiaoSelecionada) {
+    titulo = `Região ${estado.mapaRegiaoSelecionada}`;
+    etiqueta = "RECORTE REGIONAL";
+    descricao = radios.length
+      ? `Vozes, cidades e estilos da região ${estado.mapaRegiaoSelecionada}.`
+      : `A região ${estado.mapaRegiaoSelecionada} ainda aguarda sua primeira emissora.`;
+  }
+
+  elementos.mapaPainelEtiqueta.textContent = etiqueta;
+  elementos.mapaPainelTitulo.textContent = titulo;
+  elementos.mapaPainelDescricao.textContent = descricao;
+  elementos.mapaTotalEmissoras.textContent = radios.length;
+  elementos.mapaTotalCidades.textContent = cidades.length;
+  elementos.mapaTotalEstados.textContent = estadosRepresentados.size;
+
+  elementos.mapaCidadeNova.classList.toggle("hidden", !cidadeNova);
+  if (cidadeNova) elementos.mapaCidadeNovaNome.textContent = `${cidadeNova.cidade} • ${cidadeNova.uf}`;
+
+  elementos.mapaCidades.innerHTML = "";
+  elementos.mapaCidadesContador.textContent = cidades.length ? `${cidades.length} no total` : "";
+  if (cidades.length) {
+    cidades
+      .sort((a, b) => b.total - a.total || a.cidade.localeCompare(b.cidade, "pt-BR"))
+      .slice(0, 8)
+      .forEach(item => {
+        const botao = document.createElement("button");
+        botao.type = "button";
+        botao.className = "mapa-cidade-chip";
+        if (cidadeNova && item.cidade === cidadeNova.cidade && item.uf === cidadeNova.uf) botao.classList.add("nova");
+        botao.innerHTML = `<span>${item.cidade}</span><small>${item.uf} • ${item.total}</small>`;
+        botao.setAttribute("aria-label", `Ver rádios de ${item.cidade}, ${item.uf}`);
+        botao.addEventListener("click", () => abrirCatalogoPorCidadeMapa(item.cidade, item.uf));
+        elementos.mapaCidades.appendChild(botao);
+      });
+  } else {
+    const vazio = document.createElement("p");
+    vazio.className = "mapa-vazio";
+    vazio.textContent = "Nenhuma cidade representada nesta área por enquanto.";
+    elementos.mapaCidades.appendChild(vazio);
+  }
+
+  elementos.mapaRadiosLista.innerHTML = "";
+  elementos.mapaRadiosContador.textContent = radios.length ? `${radios.length} disponíveis` : "";
+  if (radios.length) {
+    [...radios]
+      .sort((a, b) => Number(b.status?.verificada === true) - Number(a.status?.verificada === true) || (a.nomeFantasia || a.nome || "").localeCompare(b.nomeFantasia || b.nome || "", "pt-BR"))
+      .slice(0, 3)
+      .forEach(radio => elementos.mapaRadiosLista.appendChild(criarRadioCompactaMapa(radio)));
+  } else {
+    const vazio = document.createElement("div");
+    vazio.className = "mapa-vazio mapa-vazio-destaque";
+    vazio.innerHTML = '<span aria-hidden="true">📡</span><p>Esta área está pronta para receber sua primeira emissora.</p><a href="cadastro/">Cadastrar uma rádio</a>';
+    elementos.mapaRadiosLista.appendChild(vazio);
+  }
+
+  elementos.btnOuvirMapa.disabled = radios.length === 0;
+  elementos.btnVerMapaCatalogo.disabled = radios.length === 0;
+  elementos.btnOuvirMapa.innerHTML = radios.length
+    ? '<span aria-hidden="true">▶</span> Ouvir uma rádio desta área'
+    : '<span aria-hidden="true">▶</span> Nenhuma rádio disponível';
+}
+
+function ouvirRadioDoMapa() {
+  const radios = obterRadiosRecorteMapa();
+  if (!radios.length) return;
+  const radio = radios[Math.floor(Math.random() * radios.length)];
+  selecionarRadio(radio);
+  window.CRBAcessibilidade?.anunciar(`Rádio sorteada no Mapa Sonoro: ${radio.nomeFantasia || radio.nome || "emissora"}.`);
+}
+
+function abrirCatalogoDoMapa() {
+  const radios = obterRadiosRecorteMapa();
+  if (!radios.length) return;
+  estado.paginaAtual = 1;
+  elementos.pesquisa.value = "";
+  elementos.filtroCategoria.value = "";
+  elementos.filtroEstado.value = estado.mapaUfSelecionada || "";
+  estado.regiaoSelecionada = estado.mapaUfSelecionada ? "" : estado.mapaRegiaoSelecionada;
+  atualizarFiltroDescobertaAtivo();
+  aplicarFiltros();
+  document.querySelector("#catalogo-emissoras")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  window.CRBAcessibilidade?.anunciar(`Catálogo aberto para ${elementos.mapaPainelTitulo.textContent}.`);
+}
+
+function abrirCatalogoPorCidadeMapa(cidade, uf) {
+  estado.paginaAtual = 1;
+  estado.regiaoSelecionada = "";
+  elementos.pesquisa.value = cidade;
+  elementos.filtroEstado.value = uf;
+  elementos.filtroCategoria.value = "";
+  atualizarFiltroDescobertaAtivo();
+  aplicarFiltros();
+  document.querySelector("#catalogo-emissoras")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  window.CRBAcessibilidade?.anunciar(`Catálogo filtrado pela cidade ${cidade}, ${uf}.`);
 }
 
 function renderizarVerificadas() {
@@ -3253,11 +3574,7 @@ function atualizarFiltroDescobertaAtivo() {
   const regiao = estado.regiaoSelecionada;
   elementos.filtroDescobertaAtivo.classList.toggle("hidden", !regiao);
   elementos.filtroDescobertaAtivo.textContent = regiao ? `Filtro ativo: região ${regiao}. Use “Limpar filtros” para mostrar todo o catálogo.` : "";
-  document.querySelectorAll(".regiao-card").forEach(botao => {
-    const ativo = botao.dataset.regiao === regiao;
-    botao.classList.toggle("ativo", ativo);
-    botao.setAttribute("aria-pressed", String(ativo));
-  });
+  // A seleção visual do Mapa Sonoro é independente dos filtros do catálogo.
 }
 
 function abrirCatalogoPorDescoberta(acao) {

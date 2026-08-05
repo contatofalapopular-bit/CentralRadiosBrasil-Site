@@ -14,7 +14,7 @@
   >
 
 
-  <!-- SEO e compartilhamento — 22.16.4 -->
+  <!-- SEO e compartilhamento — 22.17.0 -->
   <meta name="robots" content="index, follow, max-image-preview:large">
   <link rel="canonical" href="https://centralradiosbrasil.com.br/">
   <meta property="og:locale" content="pt_BR">
@@ -41,14 +41,14 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Central Rádios">
-  <link rel="manifest" href="manifest.webmanifest?v=22.16.4">
+  <link rel="manifest" href="manifest.webmanifest?v=22.17.0">
   <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64-v22113.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon-v22113.png">
-  <link rel="stylesheet" href="pwa.css?v=22.16.4">
+  <link rel="stylesheet" href="pwa.css?v=22.17.0">
 
   <title>Central Rádios Brasil — Ouça rádios online do Brasil</title>
 
-  <link rel="stylesheet" href="style.css?v=22.16.4">
+  <link rel="stylesheet" href="style.css?v=22.17.0">
 </head>
 
 <body>
@@ -408,15 +408,103 @@
   <div class="grade-radios descoberta-grade" id="grade-recem-chegadas"></div>
 </section>
 
-<section class="descoberta-secao hidden" id="explorar-regioes" aria-labelledby="explorar-regioes-titulo">
-  <div class="descoberta-cabecalho">
+<section class="descoberta-secao mapa-sonoro-secao hidden" id="explorar-regioes" aria-labelledby="mapa-sonoro-titulo">
+  <div class="descoberta-cabecalho mapa-sonoro-cabecalho">
     <div>
       <span class="titulo-menor">BRASIL DE NORTE A SUL</span>
-      <h2 id="explorar-regioes-titulo"><span aria-hidden="true">🗺️</span> Explore por regiões</h2>
-      <p>Descubra emissoras das regiões representadas no catálogo atual.</p>
+      <h2 id="mapa-sonoro-titulo"><span aria-hidden="true">🗺️</span> Mapa Sonoro do Brasil</h2>
+      <p>Clique em uma região, estado ou cidade para descobrir as vozes que já fazem parte da Central.</p>
     </div>
+    <div class="mapa-resumo-geral" id="mapa-resumo-geral" aria-live="polite">Carregando presença nacional...</div>
   </div>
-  <div class="regioes-grade" id="grade-regioes"></div>
+
+  <div class="mapa-regioes-navegacao" aria-label="Escolher região do Brasil">
+    <button class="mapa-regiao-botao ativo" type="button" data-mapa-regiao="" aria-pressed="true">
+      <span aria-hidden="true">🇧🇷</span><strong>Brasil</strong><small data-mapa-regiao-total="Brasil">0</small>
+    </button>
+    <button class="mapa-regiao-botao" type="button" data-mapa-regiao="Norte" aria-pressed="false">
+      <span aria-hidden="true">🌿</span><strong>Norte</strong><small data-mapa-regiao-total="Norte">0</small>
+    </button>
+    <button class="mapa-regiao-botao" type="button" data-mapa-regiao="Nordeste" aria-pressed="false">
+      <span aria-hidden="true">☀️</span><strong>Nordeste</strong><small data-mapa-regiao-total="Nordeste">0</small>
+    </button>
+    <button class="mapa-regiao-botao" type="button" data-mapa-regiao="Centro-Oeste" aria-pressed="false">
+      <span aria-hidden="true">◆</span><strong>Centro-Oeste</strong><small data-mapa-regiao-total="Centro-Oeste">0</small>
+    </button>
+    <button class="mapa-regiao-botao" type="button" data-mapa-regiao="Sudeste" aria-pressed="false">
+      <span aria-hidden="true">🏙️</span><strong>Sudeste</strong><small data-mapa-regiao-total="Sudeste">0</small>
+    </button>
+    <button class="mapa-regiao-botao" type="button" data-mapa-regiao="Sul" aria-pressed="false">
+      <span aria-hidden="true">🧭</span><strong>Sul</strong><small data-mapa-regiao-total="Sul">0</small>
+    </button>
+  </div>
+
+  <div class="mapa-sonoro-layout">
+    <div class="mapa-sonoro-visual">
+      <div class="mapa-brasil-stage" role="group" aria-label="Mapa interativo dos estados brasileiros">
+        <svg class="mapa-brasil-silhueta" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+          <defs>
+            <linearGradient id="mapa-brasil-gradiente" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#0c8de8" stop-opacity=".28"/>
+              <stop offset=".55" stop-color="#37e6ff" stop-opacity=".16"/>
+              <stop offset="1" stop-color="#46efb3" stop-opacity=".2"/>
+            </linearGradient>
+            <filter id="mapa-brilho" x="-20%" y="-20%" width="140%" height="140%">
+              <feGaussianBlur stdDeviation="1.5" result="blur"/>
+              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <path class="mapa-brasil-contorno" d="M21 3 38 6 47 13 59 11 67 17 79 18 82 25 91 27 96 35 94 43 99 49 95 58 88 61 86 69 79 73 76 82 68 85 64 93 56 99 49 94 47 86 41 81 35 76 28 74 25 67 18 63 15 55 10 50 12 42 8 36 10 28 7 21 14 16 16 9Z"/>
+          <path class="mapa-brasil-pulso" d="M21 3 38 6 47 13 59 11 67 17 79 18 82 25 91 27 96 35 94 43 99 49 95 58 88 61 86 69 79 73 76 82 68 85 64 93 56 99 49 94 47 86 41 81 35 76 28 74 25 67 18 63 15 55 10 50 12 42 8 36 10 28 7 21 14 16 16 9Z"/>
+        </svg>
+        <div class="mapa-estados" id="mapa-estados"></div>
+        <div class="mapa-legenda" aria-hidden="true">
+          <span><i class="mapa-legenda-ponto com-radio"></i>Com emissoras</span>
+          <span><i class="mapa-legenda-ponto"></i>Aguardando emissora</span>
+        </div>
+      </div>
+      <p class="mapa-instrucao"><span aria-hidden="true">◎</span> Estados iluminados já possuem rádios no catálogo. Todos permanecem disponíveis para exploração.</p>
+      <div class="mapa-estados-lista" id="mapa-estados-lista" aria-label="Lista alternativa de estados"></div>
+    </div>
+
+    <aside class="mapa-sonoro-painel" id="mapa-sonoro-painel" aria-live="polite">
+      <div class="mapa-painel-cabecalho">
+        <span class="mapa-painel-etiqueta" id="mapa-painel-etiqueta">PANORAMA NACIONAL</span>
+        <h3 id="mapa-painel-titulo">Brasil inteiro</h3>
+        <p id="mapa-painel-descricao">Selecione uma área do mapa para conhecer suas emissoras e cidades.</p>
+      </div>
+
+      <div class="mapa-painel-metricas">
+        <div><strong id="mapa-total-emissoras">0</strong><span>Emissoras</span></div>
+        <div><strong id="mapa-total-cidades">0</strong><span>Cidades</span></div>
+        <div><strong id="mapa-total-estados">0</strong><span>Estados</span></div>
+      </div>
+
+      <div class="mapa-cidade-nova hidden" id="mapa-cidade-nova">
+        <span class="mapa-cidade-nova-icone" aria-hidden="true">✨</span>
+        <div><small>Cidade recém-chegada ao mapa</small><strong id="mapa-cidade-nova-nome">—</strong></div>
+      </div>
+
+      <div class="mapa-painel-grupo">
+        <div class="mapa-painel-subtitulo"><strong>Cidades representadas</strong><span id="mapa-cidades-contador"></span></div>
+        <div class="mapa-cidades" id="mapa-cidades"></div>
+      </div>
+
+      <div class="mapa-painel-grupo">
+        <div class="mapa-painel-subtitulo"><strong>Rádios desta área</strong><span id="mapa-radios-contador"></span></div>
+        <div class="mapa-radios-lista" id="mapa-radios-lista"></div>
+      </div>
+
+      <div class="mapa-painel-acoes">
+        <button class="mapa-acao mapa-acao-principal" type="button" id="btn-ouvir-mapa">
+          <span aria-hidden="true">▶</span> Ouvir uma rádio desta área
+        </button>
+        <button class="mapa-acao mapa-acao-secundaria" type="button" id="btn-ver-mapa-catalogo">
+          Ver todas no catálogo →
+        </button>
+      </div>
+    </aside>
+  </div>
 </section>
 
 <section class="descoberta-secao hidden" id="radios-verificadas" aria-labelledby="radios-verificadas-titulo">
@@ -737,9 +825,9 @@
 
   <div class="sr-only" id="anuncio-acessibilidade" role="status" aria-live="polite" aria-atomic="true"></div>
 
-  <script src="accessibility.js?v=22.16.4"></script>
-  <script src="app.js?v=22.16.4"></script>
-  <script src="pwa.js?v=22.16.4"></script>
+  <script src="accessibility.js?v=22.17.0"></script>
+  <script src="app.js?v=22.17.0"></script>
+  <script src="pwa.js?v=22.17.0"></script>
 
 
   <a class="apoio-flutuante" href="apoie/" aria-label="Apoie voluntariamente a Central Rádios Brasil por Pix">

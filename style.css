@@ -4128,3 +4128,745 @@ body.player-recolhido-visivel .apoio-flutuante{bottom:118px;}
     right: 52px;
   }
 }
+
+/* =========================================================
+   SITE 22.17.0 — MAPA SONORO DO BRASIL
+   Substitui os antigos cartões "Explore por regiões".
+   ========================================================= */
+.mapa-sonoro-secao {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(22px, 3.2vw, 38px);
+  background:
+    radial-gradient(circle at 8% 12%, rgba(70,239,179,.13), transparent 30%),
+    radial-gradient(circle at 92% 16%, rgba(55,230,255,.13), transparent 34%),
+    linear-gradient(145deg, rgba(4,26,58,.97), rgba(2,13,32,.98));
+  box-shadow: 0 32px 70px rgba(0,0,0,.28);
+}
+
+.mapa-sonoro-secao::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .32;
+  background-image:
+    linear-gradient(rgba(255,255,255,.026) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.026) 1px, transparent 1px);
+  background-size: 34px 34px;
+  mask-image: linear-gradient(to bottom, #000, transparent 88%);
+}
+
+.mapa-sonoro-secao > * {
+  position: relative;
+  z-index: 1;
+}
+
+.mapa-sonoro-cabecalho {
+  align-items: center;
+}
+
+.mapa-resumo-geral {
+  flex: 0 0 auto;
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 16px;
+  border: 1px solid rgba(70,239,179,.25);
+  border-radius: 999px;
+  color: #d8fff0;
+  background: rgba(70,239,179,.08);
+  font-size: .82rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.mapa-regioes-navegacao {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0,1fr));
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.mapa-regiao-botao {
+  min-width: 0;
+  min-height: 64px;
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr) auto;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 18px;
+  color: #d7e7f9;
+  background: rgba(8,34,69,.72);
+  cursor: pointer;
+  text-align: left;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+.mapa-regiao-botao:hover,
+.mapa-regiao-botao:focus-visible,
+.mapa-regiao-botao.ativo {
+  transform: translateY(-2px);
+  border-color: rgba(55,230,255,.52);
+  color: #fff;
+  background: linear-gradient(145deg, rgba(14,74,122,.92), rgba(7,35,69,.96));
+  box-shadow: 0 14px 30px rgba(0,0,0,.22);
+}
+
+.mapa-regiao-botao > span {
+  font-size: 1.15rem;
+}
+
+.mapa-regiao-botao strong {
+  overflow: hidden;
+  font-size: .84rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mapa-regiao-botao small {
+  min-width: 28px;
+  min-height: 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: #d6fbff;
+  background: rgba(55,230,255,.11);
+  font-size: .72rem;
+  font-weight: 900;
+}
+
+.mapa-sonoro-layout {
+  display: grid;
+  grid-template-columns: minmax(0,1.16fr) minmax(340px,.84fr);
+  align-items: start;
+  gap: clamp(20px, 3vw, 34px);
+}
+
+.mapa-sonoro-visual {
+  min-width: 0;
+}
+
+.mapa-brasil-stage {
+  position: relative;
+  width: min(100%, 720px);
+  aspect-ratio: 1 / .94;
+  margin-inline: auto;
+  isolation: isolate;
+}
+
+.mapa-brasil-stage::before {
+  content: "";
+  position: absolute;
+  inset: 9% 7% 5%;
+  z-index: -2;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(18,112,186,.22), transparent 68%);
+  filter: blur(4px);
+}
+
+.mapa-brasil-silhueta {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 22px 38px rgba(0,0,0,.34));
+}
+
+.mapa-brasil-contorno {
+  fill: url(#mapa-brasil-gradiente);
+  stroke: rgba(105,225,255,.34);
+  stroke-width: .62;
+  vector-effect: non-scaling-stroke;
+}
+
+.mapa-brasil-pulso {
+  fill: none;
+  stroke: rgba(70,239,179,.22);
+  stroke-width: .5;
+  stroke-dasharray: 2.4 3.4;
+  vector-effect: non-scaling-stroke;
+  filter: url(#mapa-brilho);
+  animation: mapa-contorno-pulso 5s linear infinite;
+}
+
+@keyframes mapa-contorno-pulso {
+  to { stroke-dashoffset: -24; }
+}
+
+.mapa-estados {
+  position: absolute;
+  inset: 0;
+}
+
+.mapa-uf {
+  --mapa-cor: #6f8eaf;
+  position: absolute;
+  left: var(--mapa-x);
+  top: var(--mapa-y);
+  width: clamp(32px, 4.2vw, 46px);
+  height: clamp(32px, 4.2vw, 46px);
+  display: grid;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  border: 1px solid rgba(201,221,241,.25);
+  border-radius: 50%;
+  color: #9fb4ca;
+  background: rgba(5,24,50,.9);
+  cursor: pointer;
+  box-shadow: 0 7px 18px rgba(0,0,0,.3);
+  transition: transform .18s ease, color .18s ease, background .18s ease, border-color .18s ease, opacity .18s ease, box-shadow .18s ease;
+}
+
+.mapa-uf[data-regiao="Norte"] { --mapa-cor: #46efb3; }
+.mapa-uf[data-regiao="Nordeste"] { --mapa-cor: #ffd166; }
+.mapa-uf[data-regiao="Centro-Oeste"] { --mapa-cor: #37e6ff; }
+.mapa-uf[data-regiao="Sudeste"] { --mapa-cor: #6ca8ff; }
+.mapa-uf[data-regiao="Sul"] { --mapa-cor: #d48cff; }
+
+.mapa-uf:hover,
+.mapa-uf:focus-visible,
+.mapa-uf.selecionado {
+  z-index: 4;
+  transform: translate(-50%, -50%) scale(1.15);
+  border-color: var(--mapa-cor);
+  color: #fff;
+  background: color-mix(in srgb, var(--mapa-cor) 28%, #051832);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--mapa-cor) 17%, transparent), 0 12px 26px rgba(0,0,0,.38);
+}
+
+.mapa-uf.tem-radio {
+  border-color: color-mix(in srgb, var(--mapa-cor) 68%, white 6%);
+  color: #fff;
+  background: color-mix(in srgb, var(--mapa-cor) 21%, #051832);
+}
+
+.mapa-uf.tem-radio::after {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  z-index: -1;
+  border: 1px solid color-mix(in srgb, var(--mapa-cor) 48%, transparent);
+  border-radius: 50%;
+  animation: mapa-estado-pulso 2.5s ease-out infinite;
+}
+
+@keyframes mapa-estado-pulso {
+  0%, 25% { opacity: .72; transform: scale(.88); }
+  80%, 100% { opacity: 0; transform: scale(1.48); }
+}
+
+.mapa-uf.em-regiao:not(.tem-radio) {
+  border-color: color-mix(in srgb, var(--mapa-cor) 35%, transparent);
+  color: #d5e8f8;
+  opacity: .9;
+}
+
+.mapa-uf:not(.tem-radio):not(.em-regiao):not(.selecionado) {
+  opacity: .66;
+}
+
+.mapa-uf-pequeno {
+  width: clamp(27px, 3.4vw, 38px);
+  height: clamp(27px, 3.4vw, 38px);
+}
+
+.mapa-uf-sigla {
+  font-size: clamp(.61rem, 1.1vw, .78rem);
+  font-weight: 950;
+  letter-spacing: -.02em;
+}
+
+.mapa-uf-contagem {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  min-width: 19px;
+  height: 19px;
+  display: grid;
+  place-items: center;
+  padding: 0 4px;
+  border: 2px solid #04162f;
+  border-radius: 999px;
+  color: #001b2f;
+  background: var(--mapa-cor);
+  font-size: .57rem;
+  font-weight: 950;
+  opacity: 0;
+  transform: scale(.75);
+}
+
+.mapa-uf.tem-radio .mapa-uf-contagem {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.mapa-uf.tem-cidade-nova::before {
+  content: "✦";
+  position: absolute;
+  left: -7px;
+  top: -11px;
+  color: #ffe48b;
+  font-size: .78rem;
+  filter: drop-shadow(0 0 7px rgba(255,228,139,.8));
+}
+
+.mapa-legenda {
+  position: absolute;
+  left: 5%;
+  bottom: 2%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px 14px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 12px;
+  color: #91a8c2;
+  background: rgba(2,14,34,.74);
+  font-size: .67rem;
+  backdrop-filter: blur(8px);
+}
+
+.mapa-legenda span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mapa-legenda-ponto {
+  width: 9px;
+  height: 9px;
+  border: 1px solid rgba(190,210,233,.5);
+  border-radius: 50%;
+  background: #16304e;
+}
+
+.mapa-legenda-ponto.com-radio {
+  border-color: #37e6ff;
+  background: #37e6ff;
+  box-shadow: 0 0 8px rgba(55,230,255,.6);
+}
+
+.mapa-instrucao {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin: 4px auto 0;
+  color: #849db8;
+  font-size: .75rem;
+  text-align: center;
+}
+
+.mapa-instrucao span {
+  color: #46efb3;
+}
+
+.mapa-estados-lista {
+  display: none;
+}
+
+.mapa-sonoro-painel {
+  min-width: 0;
+  display: grid;
+  gap: 17px;
+  padding: clamp(18px, 2.4vw, 26px);
+  border: 1px solid rgba(55,230,255,.17);
+  border-radius: 26px;
+  background:
+    radial-gradient(circle at 100% 0%, rgba(55,230,255,.12), transparent 38%),
+    linear-gradient(155deg, rgba(10,45,82,.94), rgba(3,18,40,.97));
+  box-shadow: 0 24px 48px rgba(0,0,0,.24);
+}
+
+.mapa-painel-cabecalho {
+  min-width: 0;
+}
+
+.mapa-painel-etiqueta {
+  display: inline-flex;
+  margin-bottom: 7px;
+  color: #46efb3;
+  font-size: .69rem;
+  font-weight: 950;
+  letter-spacing: .11em;
+}
+
+.mapa-painel-cabecalho h3 {
+  color: #fff;
+  font-size: clamp(1.65rem, 3.4vw, 2.5rem);
+  line-height: 1;
+  letter-spacing: -.045em;
+}
+
+.mapa-painel-cabecalho p {
+  margin-top: 9px;
+  color: #a8bdd4;
+  line-height: 1.5;
+}
+
+.mapa-painel-metricas {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 9px;
+}
+
+.mapa-painel-metricas div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+  padding: 12px 10px;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 16px;
+  background: rgba(1,15,35,.48);
+  text-align: center;
+}
+
+.mapa-painel-metricas strong {
+  color: #fff;
+  font-size: 1.35rem;
+}
+
+.mapa-painel-metricas span {
+  overflow: hidden;
+  color: #88a4c0;
+  font-size: .67rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mapa-cidade-nova {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255,209,102,.24);
+  border-radius: 17px;
+  background: linear-gradient(135deg, rgba(255,209,102,.11), rgba(70,239,179,.06));
+}
+
+.mapa-cidade-nova-icone {
+  font-size: 1.45rem;
+}
+
+.mapa-cidade-nova div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.mapa-cidade-nova small {
+  color: #d2b967;
+  font-size: .66rem;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+
+.mapa-cidade-nova strong {
+  overflow: hidden;
+  color: #fff6ce;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mapa-painel-grupo {
+  min-width: 0;
+  display: grid;
+  gap: 9px;
+}
+
+.mapa-painel-subtitulo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  color: #dcecff;
+  font-size: .79rem;
+}
+
+.mapa-painel-subtitulo span {
+  color: #7190ad;
+  font-size: .66rem;
+}
+
+.mapa-cidades {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.mapa-cidade-chip {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 10px;
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 999px;
+  color: #d4e8f9;
+  background: rgba(9,35,65,.8);
+  cursor: pointer;
+  font-size: .72rem;
+  transition: border-color .18s ease, transform .18s ease, background .18s ease;
+}
+
+.mapa-cidade-chip:hover,
+.mapa-cidade-chip:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(55,230,255,.48);
+  background: rgba(12,58,96,.92);
+}
+
+.mapa-cidade-chip.nova {
+  border-color: rgba(255,209,102,.38);
+  color: #fff2bd;
+}
+
+.mapa-cidade-chip.nova::before {
+  content: "✦";
+  color: #ffd166;
+}
+
+.mapa-cidade-chip small {
+  color: #7897b5;
+  font-size: .59rem;
+  font-weight: 850;
+}
+
+.mapa-radios-lista {
+  display: grid;
+  gap: 8px;
+}
+
+.mapa-radio-item {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 44px minmax(0,1fr) 38px;
+  align-items: center;
+  gap: 10px;
+  padding: 9px;
+  border: 1px solid rgba(255,255,255,.075);
+  border-radius: 15px;
+  background: rgba(1,15,34,.48);
+}
+
+.mapa-radio-logo {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid rgba(55,230,255,.16);
+  border-radius: 12px;
+  color: #bfefff;
+  background: #071f3d;
+  font-size: .74rem;
+  font-weight: 900;
+}
+
+.mapa-radio-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.mapa-radio-info {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+
+.mapa-radio-info strong,
+.mapa-radio-info small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mapa-radio-info strong {
+  color: #f4fbff;
+  font-size: .79rem;
+}
+
+.mapa-radio-info small {
+  color: #809db9;
+  font-size: .63rem;
+}
+
+.mapa-radio-ouvir {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 12px;
+  color: #00172a;
+  background: linear-gradient(135deg, #37e6ff, #46efb3);
+  cursor: pointer;
+  font-weight: 950;
+}
+
+.mapa-radio-ouvir:hover,
+.mapa-radio-ouvir:focus-visible {
+  filter: brightness(1.08);
+  transform: scale(1.04);
+}
+
+.mapa-vazio {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px dashed rgba(255,255,255,.13);
+  border-radius: 14px;
+  color: #829db8;
+  background: rgba(0,10,27,.25);
+  font-size: .72rem;
+  line-height: 1.45;
+}
+
+.mapa-vazio-destaque {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  padding: 18px;
+  text-align: center;
+}
+
+.mapa-vazio-destaque > span {
+  font-size: 1.5rem;
+}
+
+.mapa-vazio-destaque a {
+  color: #37e6ff;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.mapa-painel-acoes {
+  display: grid;
+  gap: 9px;
+}
+
+.mapa-acao {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0 15px;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: 900;
+}
+
+.mapa-acao-principal {
+  border: 0;
+  color: #00182a;
+  background: linear-gradient(135deg, #37e6ff, #46efb3);
+  box-shadow: 0 13px 26px rgba(55,230,255,.13);
+}
+
+.mapa-acao-secundaria {
+  border: 1px solid rgba(55,230,255,.2);
+  color: #cdefff;
+  background: rgba(7,39,72,.7);
+}
+
+.mapa-acao:hover:not(:disabled),
+.mapa-acao:focus-visible:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.07);
+}
+
+.mapa-acao:disabled {
+  cursor: not-allowed;
+  opacity: .46;
+}
+
+@media (max-width: 1180px) {
+  .mapa-regioes-navegacao { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .mapa-sonoro-layout { grid-template-columns: minmax(0,1fr) minmax(310px,.8fr); }
+}
+
+@media (max-width: 900px) {
+  .mapa-sonoro-layout { grid-template-columns: 1fr; }
+  .mapa-brasil-stage { max-width: 650px; }
+  .mapa-sonoro-painel { max-width: 680px; width: 100%; margin-inline: auto; }
+  .mapa-estados-lista {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 4px 1px 10px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scroll-snap-type: x proximity;
+  }
+  .mapa-estado-lista-botao {
+    flex: 0 0 auto;
+    min-width: 126px;
+    min-height: 48px;
+    display: grid;
+    grid-template-columns: 32px minmax(0,1fr) 22px;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 9px;
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 14px;
+    color: #b7cce1;
+    background: rgba(5,27,54,.85);
+    scroll-snap-align: start;
+  }
+  .mapa-estado-lista-botao.tem-radio,
+  .mapa-estado-lista-botao.selecionado,
+  .mapa-estado-lista-botao.em-regiao {
+    border-color: rgba(55,230,255,.42);
+    color: #fff;
+    background: rgba(9,59,96,.92);
+  }
+  .mapa-estado-lista-botao strong { font-size: .78rem; }
+  .mapa-estado-lista-botao span { overflow: hidden; font-size: .68rem; text-overflow: ellipsis; white-space: nowrap; }
+  .mapa-estado-lista-botao small { min-width: 22px; height: 22px; display: grid; place-items: center; border-radius: 999px; background: rgba(55,230,255,.1); font-size: .6rem; }
+}
+
+@media (max-width: 620px) {
+  .mapa-sonoro-secao { padding: 20px 13px; }
+  .mapa-sonoro-cabecalho { align-items: flex-start; }
+  .mapa-resumo-geral { width: 100%; justify-content: center; min-height: 42px; font-size: .75rem; white-space: normal; text-align: center; }
+  .mapa-regioes-navegacao {
+    display: flex;
+    gap: 8px;
+    margin-inline: -2px;
+    overflow-x: auto;
+    padding: 2px 2px 9px;
+    scroll-snap-type: x mandatory;
+  }
+  .mapa-regiao-botao {
+    flex: 0 0 142px;
+    min-height: 52px;
+    border-radius: 15px;
+    scroll-snap-align: start;
+  }
+  .mapa-brasil-stage { aspect-ratio: 1 / 1.02; }
+  .mapa-uf { width: 30px; height: 30px; }
+  .mapa-uf-pequeno { width: 25px; height: 25px; }
+  .mapa-uf-sigla { font-size: .56rem; }
+  .mapa-uf-contagem { top: -6px; right: -6px; min-width: 17px; height: 17px; font-size: .51rem; }
+  .mapa-legenda { left: 2%; bottom: 0; padding: 6px 8px; font-size: .6rem; }
+  .mapa-instrucao { font-size: .68rem; }
+  .mapa-sonoro-painel { padding: 17px 14px; border-radius: 22px; }
+  .mapa-painel-metricas strong { font-size: 1.18rem; }
+  .mapa-painel-metricas span { font-size: .6rem; }
+  .mapa-cidade-chip { flex: 1 1 calc(50% - 5px); justify-content: space-between; border-radius: 13px; }
+}
+
+@media (max-width: 390px) {
+  .mapa-uf { width: 27px; height: 27px; }
+  .mapa-uf-pequeno { width: 22px; height: 22px; }
+  .mapa-uf-sigla { font-size: .5rem; }
+  .mapa-cidade-chip { flex-basis: 100%; }
+  .mapa-painel-metricas { gap: 6px; }
+  .mapa-painel-metricas div { padding-inline: 6px; }
+}

@@ -1,4 +1,16 @@
-# Central Rádios Brasil — Site v22.16.4
+# Central Rádios Brasil — Site v22.17.0
+
+## 22.17.0 — Mapa Sonoro do Brasil
+
+- Substitui a antiga seção “Explore por regiões” por uma experiência nacional interativa.
+- Mapa estilizado com os 26 estados e o Distrito Federal.
+- Contagens reais por estado, região e cidade, calculadas a partir de `radios.json`.
+- Destaque automático da cidade que entrou mais recentemente no mapa.
+- Seleção de regiões, estados e cidades sem duplicar seções da Home.
+- Lista compacta de rádios da área e ação para ouvir uma emissora aleatória.
+- Botão para abrir o catálogo já filtrado pela área escolhida.
+- Layout responsivo e alternativa de navegação por estados no celular.
+- Nenhuma mudança no Worker, D1, Admin ou Portal do Cliente.
 
 ## 22.16.4 — Correção móvel do player
 

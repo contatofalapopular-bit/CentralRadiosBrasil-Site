@@ -1,3 +1,13 @@
+## 22.17.0 — Mapa Sonoro do Brasil
+
+- Antiga seção “Explore por regiões” substituída pelo Mapa Sonoro do Brasil.
+- Estados, regiões, cidades e quantidades usam os dados reais do catálogo.
+- Seleção de Goiás e demais UFs exibe rádios e cidades da área.
+- Nova ação “Ouvir uma rádio desta área” escolhe uma emissora real do recorte.
+- Cidades recém-chegadas recebem destaque automático com base na primeira publicação da cidade.
+- Catálogo pode ser aberto filtrado por região, estado ou cidade.
+- Cache PWA atualizado para 22.17.0.
+
 ## 22.16.4 — Correção móvel do player
 
 - Corrigida a sobreposição entre os botões Recolher e Fechar.
