@@ -1,0 +1,94 @@
+{
+  "id": "./",
+  "name": "Central Rádios Brasil",
+  "short_name": "Central Rádios",
+  "description": "Ouça e descubra rádios online de todo o Brasil, salve favoritas e instale o aplicativo.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "./?source=pwa",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "standalone",
+    "minimal-ui"
+  ],
+  "background_color": "#00173d",
+  "theme_color": "#00173d",
+  "orientation": "any",
+  "categories": [
+    "music",
+    "entertainment",
+    "news"
+  ],
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "icons/icon-192-v22113.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512-v22113.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512-v22113.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Ouvir rádios",
+      "short_name": "Ouvir",
+      "description": "Abrir o catálogo de emissoras",
+      "url": "./#catalogo-emissoras"
+    },
+    {
+      "name": "Minhas favoritas",
+      "short_name": "Favoritas",
+      "description": "Abrir as rádios favoritas deste aparelho",
+      "url": "./?abrir=favoritas#favoritas"
+    },
+    {
+      "name": "Modo carro",
+      "short_name": "Carro",
+      "description": "Abrir o player com controles grandes",
+      "url": "./?modo=carro"
+    },
+    {
+      "name": "Cadastrar rádio",
+      "short_name": "Cadastrar",
+      "description": "Enviar uma nova emissora",
+      "url": "./cadastro/"
+    },
+    {
+      "name": "Acompanhar cadastro",
+      "short_name": "Acompanhar",
+      "description": "Consultar uma solicitação",
+      "url": "./acompanhar/"
+    },
+    {
+      "name": "Suporte",
+      "short_name": "Suporte",
+      "description": "Falar com a Central Rádios Brasil",
+      "url": "./suporte/"
+    },
+    {
+      "name": "Informar problema",
+      "short_name": "Ocorrência",
+      "description": "Informar rádio fora do ar ou problema no Portal",
+      "url": "./ocorrencias/"
+    },
+    {
+      "name": "Apoie o projeto",
+      "short_name": "Apoie",
+      "description": "Contribua voluntariamente por Pix",
+      "url": "./apoie/"
+    }
+  ]
+}

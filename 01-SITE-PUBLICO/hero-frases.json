@@ -1,0 +1,114 @@
+{
+  "versao": "1.1",
+  "fusoHorario": "America/Sao_Paulo",
+  "intervaloSegundos": 6,
+  "transicaoMilissegundos": 450,
+  "mensagensPadrao": [
+    {
+      "superior": "Descubra rádios de todas as regiões do Brasil.",
+      "inferior": "Encontre emissoras, cidades e estilos em um catálogo nacional."
+    },
+    {
+      "superior": "Encontre novas vozes, cidades e culturas.",
+      "inferior": "Cada sintonia aproxima você de uma nova região do país."
+    },
+    {
+      "superior": "Ouça sua cidade onde estiver.",
+      "inferior": "Leve as vozes e a programação da sua região com você."
+    },
+    {
+      "superior": "Uma sintonia para cada momento do seu dia.",
+      "inferior": "Música, informação, cultura e entretenimento em um só lugar."
+    },
+    {
+      "superior": "Conectando ouvintes e emissoras de todo o país.",
+      "inferior": "Uma plataforma criada para ampliar o alcance das rádios brasileiras."
+    },
+    {
+      "superior": "Sua próxima rádio favorita está aqui.",
+      "inferior": "Explore o catálogo e descubra novas emissoras ao vivo."
+    }
+  ],
+  "campanhas": [
+    {
+      "id": "festas-juninas",
+      "nome": "Festas Juninas",
+      "ativa": true,
+      "anual": true,
+      "inicio": "06-01",
+      "fim": "06-30",
+      "prioridade": 20,
+      "modo": "misturar",
+      "mensagens": [
+        {
+          "superior": "O Brasil celebra suas tradições em uma só sintonia.",
+          "inferior": "Música, alegria e cultura brasileira em clima de São João."
+        },
+        {
+          "superior": "A festa junina também toca na Central Rádios Brasil.",
+          "inferior": "Sintonize as tradições e os ritmos que animam o país."
+        }
+      ]
+    },
+    {
+      "id": "independencia-brasil",
+      "nome": "Semana da Independência",
+      "ativa": true,
+      "anual": true,
+      "inicio": "09-01",
+      "fim": "09-07",
+      "prioridade": 30,
+      "modo": "substituir",
+      "mensagens": [
+        {
+          "superior": "Neste 7 de Setembro, o Brasil inteiro está em uma só sintonia.",
+          "inferior": "Vozes de todas as regiões celebrando a história e a diversidade do país."
+        },
+        {
+          "superior": "Nossa independência também se celebra pelas ondas do rádio.",
+          "inferior": "Uma homenagem às emissoras que levam o Brasil a todos os lugares."
+        }
+      ]
+    },
+    {
+      "id": "natal",
+      "nome": "Natal",
+      "ativa": true,
+      "anual": true,
+      "inicio": "12-15",
+      "fim": "12-26",
+      "prioridade": 40,
+      "modo": "substituir",
+      "mensagens": [
+        {
+          "superior": "Que o Natal leve música, esperança e união a todos os lares.",
+          "inferior": "A Central Rádios Brasil deseja um Feliz Natal em perfeita sintonia."
+        },
+        {
+          "superior": "Um Feliz Natal em sintonia com todo o Brasil.",
+          "inferior": "Que cada canção aproxime famílias, cidades e corações."
+        }
+      ]
+    },
+    {
+      "id": "ano-novo",
+      "nome": "Ano-Novo",
+      "ativa": true,
+      "anual": true,
+      "inicio": "12-27",
+      "fim": "01-02",
+      "prioridade": 50,
+      "modo": "substituir",
+      "mensagens": [
+        {
+          "superior": "Um novo ano começa com o Brasil inteiro em uma só sintonia.",
+          "inferior": "Que o próximo ciclo traga novas vozes, conexões e conquistas."
+        },
+        {
+          "superior": "Novas histórias, novas emissoras e novas sintonias.",
+          "inferior": "Feliz Ano-Novo da Central Rádios Brasil."
+        }
+      ]
+    }
+  ]
+}

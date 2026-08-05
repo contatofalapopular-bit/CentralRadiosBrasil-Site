@@ -1,0 +1,321 @@
+/* Central Rádios Brasil — PWA v22.16.1 */
+
+.cabecalho-streaming-link {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  border: 1px solid rgba(55, 230, 255, 0.24);
+  border-radius: 999px;
+  color: #e6f8ff;
+  background: rgba(55, 230, 255, 0.075);
+  font-size: 0.74rem;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.cabecalho-streaming-link small {
+  padding: 3px 7px;
+  border-radius: 999px;
+  color: #071b2d;
+  background: #42f59e;
+  font-size: 0.56rem;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.cabecalho-streaming-link:hover {
+  border-color: rgba(55, 230, 255, 0.55);
+  background: rgba(55, 230, 255, 0.13);
+}
+
+.cabecalho-acoes-pwa {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.pwa-install-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 15px;
+  border: 1px solid rgba(55, 230, 255, 0.34);
+  border-radius: 999px;
+  color: #ffffff;
+  background: linear-gradient(135deg, rgba(0, 140, 255, 0.92), rgba(39, 181, 255, 0.88));
+  box-shadow: 0 10px 26px rgba(0, 140, 255, 0.22);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: transform 160ms ease, filter 160ms ease, border-color 160ms ease;
+}
+
+.pwa-install-button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.08);
+  border-color: rgba(255, 255, 255, 0.46);
+}
+
+.pwa-install-button:active {
+  transform: translateY(0);
+}
+
+.pwa-install-button[hidden] {
+  display: none !important;
+}
+
+.pwa-toast-area {
+  position: fixed;
+  z-index: 9999;
+  right: 18px;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  width: min(390px, calc(100vw - 36px));
+  display: grid;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.pwa-toast {
+  pointer-events: auto;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 14px;
+  padding: 15px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 18px;
+  color: #ffffff;
+  background: rgba(4, 17, 38, 0.96);
+  box-shadow: 0 22px 65px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  animation: pwa-toast-entrada 220ms ease-out both;
+}
+
+.pwa-toast strong {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 0.92rem;
+}
+
+.pwa-toast p {
+  margin: 0;
+  color: #b8cce5;
+  font-size: 0.79rem;
+  line-height: 1.45;
+}
+
+.pwa-toast button {
+  min-height: 36px;
+  padding: 0 13px;
+  border-radius: 999px;
+  color: #001127;
+  background: #37e6ff;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.pwa-toast--offline {
+  border-color: rgba(255, 201, 74, 0.46);
+}
+
+.pwa-toast--success {
+  border-color: rgba(66, 245, 158, 0.42);
+}
+
+.pwa-dialogo-fundo {
+  position: fixed;
+  z-index: 10000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 5, 18, 0.76);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.pwa-dialogo-fundo[hidden] {
+  display: none !important;
+}
+
+.pwa-dialogo {
+  width: min(520px, 100%);
+  padding: 26px;
+  border: 1px solid rgba(55, 230, 255, 0.24);
+  border-radius: 24px;
+  background: linear-gradient(160deg, #0a234a, #041126 72%);
+  box-shadow: 0 32px 90px rgba(0, 0, 0, 0.55);
+}
+
+.pwa-dialogo h2 {
+  margin: 0 0 10px;
+  font-size: 1.35rem;
+}
+
+.pwa-dialogo p,
+.pwa-dialogo li {
+  color: #b8cce5;
+  line-height: 1.55;
+}
+
+.pwa-dialogo ol {
+  margin: 16px 0 20px 22px;
+  display: grid;
+  gap: 8px;
+}
+
+.pwa-dialogo-acoes {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.pwa-dialogo-acoes button {
+  min-height: 42px;
+  padding: 0 18px;
+  border-radius: 999px;
+  color: #001127;
+  background: #37e6ff;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+@keyframes pwa-toast-entrada {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (max-width: 760px) {
+  .cabecalho-acoes-pwa {
+    gap: 7px;
+  }
+
+  .pwa-install-button {
+    min-height: 36px;
+    padding: 0 11px;
+    font-size: 0.72rem;
+  }
+
+  .cabecalho-acoes-pwa .versao-banco {
+    display: none;
+  }
+
+  .cabecalho-acoes-pwa .cadastro-voltar-topo {
+    min-height: 36px;
+    padding-inline: 12px;
+    font-size: 0.72rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .cabecalho-streaming-link {
+    min-width: 38px;
+    padding: 0 10px;
+  }
+
+  .cabecalho-streaming-link span:nth-child(2),
+  .cabecalho-streaming-link small {
+    display: none;
+  }
+
+  .cabecalho-conteudo {
+    gap: 10px;
+  }
+
+  .marca-texto span {
+    display: none;
+  }
+
+  .pwa-install-button span:last-child {
+    display: none;
+  }
+}
+
+
+/* =========================================================
+   ACESSIBILIDADE — WCAG 2.2 / SITE 22.16.1
+   ========================================================= */
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+.skip-link {
+  position: fixed;
+  z-index: 20000;
+  top: 10px;
+  left: 10px;
+  padding: 12px 18px;
+  border: 3px solid #ffffff;
+  border-radius: 12px;
+  color: #001127;
+  background: #37e6ff;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
+  font-weight: 900;
+  text-decoration: none;
+  transform: translateY(-180%);
+  transition: transform 120ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 3px solid #37e6ff !important;
+  outline-offset: 3px !important;
+  box-shadow: 0 0 0 6px rgba(0, 8, 25, 0.92) !important;
+}
+
+:where(input, select, textarea)[aria-invalid="true"],
+:where(input, select, textarea):invalid:focus {
+  border-color: #ff8b9f !important;
+  box-shadow: 0 0 0 3px rgba(255, 91, 123, 0.25) !important;
+}
+
+body.dialogo-aberto {
+  overflow: hidden;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (forced-colors: active) {
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 3px solid Highlight !important;
+    box-shadow: none !important;
+  }
+
+  .skip-link,
+  .pwa-install-button,
+  .pwa-dialogo-acoes button {
+    border: 2px solid ButtonText;
+  }
+}

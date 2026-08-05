@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="description"
+    content="Acompanhe o cadastro da sua emissora na Central Rádios Brasil e complete o envio da logomarca."
+  >
+
+  <!-- SEO e compartilhamento — 22.16.1 -->
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://centralradiosbrasil.com.br/acompanhar/">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Central Rádios Brasil">
+  <meta property="og:title" content="Acompanhar cadastro — Central Rádios Brasil">
+  <meta property="og:description" content="Consulte o protocolo, acompanhe a análise e envie atualizações da sua emissora.">
+  <meta property="og:url" content="https://centralradiosbrasil.com.br/acompanhar/">
+  <meta property="og:image" content="https://centralradiosbrasil.com.br/assets/compartilhamento-central-radios-brasil.png">
+  <meta property="og:image:secure_url" content="https://centralradiosbrasil.com.br/assets/compartilhamento-central-radios-brasil.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Central Rádios Brasil — rádios de todo o país em um só lugar">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Acompanhar cadastro — Central Rádios Brasil">
+  <meta name="twitter:description" content="Consulte o protocolo, acompanhe a análise e envie atualizações da sua emissora.">
+  <meta name="twitter:image" content="https://centralradiosbrasil.com.br/assets/compartilhamento-central-radios-brasil.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Acompanhar cadastro — Central Rádios Brasil","description":"Consulte o protocolo, acompanhe a análise e envie atualizações da sua emissora.","url":"https://centralradiosbrasil.com.br/acompanhar/","inLanguage":"pt-BR","isPartOf":{"@id":"https://centralradiosbrasil.com.br/#website"}}</script>
+  <meta name="theme-color" content="#00173d">
+  <meta name="application-name" content="Central Rádios Brasil">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Central Rádios">
+  <link rel="manifest" href="../manifest.webmanifest">
+  <link rel="icon" type="image/png" sizes="64x64" href="../icons/favicon-64-v22113.png">
+  <link rel="apple-touch-icon" href="../icons/apple-touch-icon-v22113.png">
+  <link rel="stylesheet" href="../pwa.css?v=22.16.1">
+
+  <title>Acompanhar cadastro — Central Rádios Brasil</title>
+
+  <link rel="stylesheet" href="../style.css?v=22.16.1">
+  <link rel="stylesheet" href="../cadastro/cadastro.css?v=22.16.1">
+  <link rel="stylesheet" href="acompanhar.css?v=22.16.1">
+</head>
+
+<body>
+  <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+  <header class="cabecalho">
+    <div class="cabecalho-conteudo">
+      <a
+        class="marca"
+        href="../"
+        aria-label="Voltar para a Central Rádios Brasil"
+      >
+        <img
+          class="marca-logo"
+          src="../logo-central-radios-brasil.png"
+          alt="Logo Central Rádios Brasil"
+        >
+
+        <div class="marca-texto">
+          <strong>Central Rádios Brasil</strong>
+          <span>Portal da Emissora</span>
+        </div>
+      </a>
+      <div class="cabecalho-acoes-pwa">
+        <button class="pwa-install-button" type="button" hidden aria-label="Instalar Central Rádios Brasil">
+          <span aria-hidden="true">⬇</span>
+          <span>Instalar app</span>
+        </button>
+      <a class="cadastro-voltar-topo" href="../">
+        ← Voltar ao portal
+      </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="cadastro-pagina acompanhar-pagina" id="conteudo-principal" tabindex="-1">
+    <section class="cadastro-apresentacao">
+      <span class="titulo-menor">PORTAL DA EMISSORA</span>
+      <h1>Acompanhar cadastro</h1>
+      <p>
+        Consulte a situação da sua solicitação usando o protocolo e o
+        mesmo e-mail informado no cadastro.
+      </p>
+
+      <div class="cadastro-passos" aria-label="Recursos disponíveis">
+        <span><strong>1</strong> Consulte o status</span>
+        <span><strong>2</strong> Veja as pendências</span>
+        <span><strong>3</strong> Complete a logomarca</span>
+      </div>
+    </section>
+
+    <section class="cadastro-container acompanhar-container">
+      <form
+        class="cadastro-formulario acompanhar-consulta"
+        id="form-acompanhar"
+        novalidate
+      >
+        <div class="cadastro-secao-titulo">
+          <span>01</span>
+          <div>
+            <h2>Localizar solicitação</h2>
+            <p>Os dois dados precisam corresponder ao cadastro enviado.</p>
+          </div>
+        </div>
+
+        <div class="cadastro-grade cadastro-grade-dupla">
+          <div class="cadastro-campo">
+            <label for="protocolo">
+              Protocolo <em aria-hidden="true">*</em>
+            </label>
+            <input
+              type="text"
+              id="protocolo"
+              name="protocolo"
+              maxlength="40"
+              placeholder="CRB-20260731-00000000"
+              autocomplete="one-time-code"
+              required
+            >
+          </div>
+
+          <div class="cadastro-campo">
+            <label for="email-acompanhamento">
+              E-mail da emissora <em aria-hidden="true">*</em>
+            </label>
+            <input
+              type="email"
+              id="email-acompanhamento"
+              name="email"
+              maxlength="160"
+              autocomplete="email"
+              required
+            >
+          </div>
+        </div>
+
+        <div
+          class="cadastro-alerta hidden"
+          id="alerta-consulta"
+          role="alert"
+        ></div>
+
+        <div class="cadastro-acoes acompanhar-acoes-consulta">
+          <a
+            class="cadastro-botao cadastro-botao-secundario"
+            href="../cadastro/"
+          >
+            Fazer novo cadastro
+          </a>
+
+          <button
+            class="cadastro-botao cadastro-botao-principal"
+            type="submit"
+            id="btn-consultar"
+          >
+            Consultar cadastro
+          </button>
+        </div>
+      </form>
+
+      <section
+        class="acompanhar-resultado hidden"
+        tabindex="-1"
+        id="resultado-cadastro"
+      >
+        <div class="acompanhar-resultado-topo">
+          <div>
+            <span class="titulo-menor">SOLICITAÇÃO LOCALIZADA</span>
+            <h2 id="resultado-nome-radio">Emissora</h2>
+            <p id="resultado-protocolo">Protocolo</p>
+          </div>
+
+          <span
+            class="acompanhar-status"
+            id="resultado-status"
+          >
+            Pendente
+          </span>
+        </div>
+
+        <div class="acompanhar-resumo">
+          <article>
+            <small>Localização</small>
+            <strong id="resultado-localizacao">—</strong>
+          </article>
+          <article>
+            <small>Categoria</small>
+            <strong id="resultado-categoria">—</strong>
+          </article>
+          <article>
+            <small>Plano solicitado</small>
+            <strong id="resultado-plano">—</strong>
+          </article>
+          <article>
+            <small>Última atualização</small>
+            <strong id="resultado-atualizacao">—</strong>
+          </article>
+        </div>
+
+        <div
+          class="acompanhar-observacao hidden"
+          id="resultado-observacao"
+        ></div>
+
+        <div class="cadastro-divisor"></div>
+
+        <div class="cadastro-secao-titulo">
+          <span>02</span>
+          <div>
+            <h2>Logomarca da emissora</h2>
+            <p id="texto-situacao-logo">
+              Consulte a situação do arquivo enviado.
+            </p>
+          </div>
+        </div>
+
+        <div class="logo-cadastro-layout">
+          <div
+            class="logo-cadastro-preview"
+            id="acompanhar-logo-preview"
+          >
+            <span>📻</span>
+            <small>Logomarca pendente</small>
+          </div>
+
+          <div class="logo-cadastro-dados">
+            <div
+              class="acompanhar-logo-confirmada hidden"
+              id="logo-confirmada"
+            >
+              <strong>✓ Logomarca recebida</strong>
+              <p id="logo-dimensoes"></p>
+            </div>
+
+            <form
+              class="acompanhar-upload"
+              id="form-enviar-logo"
+              enctype="multipart/form-data"
+              novalidate
+            >
+              <label
+                class="logo-cadastro-seletor"
+                for="logo-acompanhamento"
+              >
+                <span id="texto-selecionar-logo">
+                  Selecionar logomarca
+                </span>
+                <small>PNG, JPG ou WebP</small>
+              </label>
+
+              <input
+                class="acompanhar-input-arquivo"
+                type="file"
+                id="logo-acompanhamento"
+                name="logo"
+                accept="image/png,image/jpeg,image/webp"
+              >
+
+              <div class="logo-cadastro-regras">
+                <strong>Padrão aceito</strong>
+                <ul>
+                  <li>Imagem quadrada, proporção 1:1</li>
+                  <li>Mínimo de 512 × 512 pixels</li>
+                  <li>Recomendado: 1024 × 1024 pixels</li>
+                  <li>Máximo de 2 MB</li>
+                </ul>
+              </div>
+
+              <p
+                class="cadastro-mensagem-campo"
+                id="mensagem-logo-acompanhamento"
+                role="status"
+              >
+                Nenhum novo arquivo selecionado.
+              </p>
+
+              <div
+                class="cadastro-alerta hidden"
+                id="alerta-logo"
+                role="alert"
+              ></div>
+
+              <button
+                class="cadastro-botao cadastro-botao-principal acompanhar-botao-logo"
+                type="submit"
+                id="btn-enviar-logo"
+                disabled
+              >
+                Enviar logomarca
+              </button>
+            </form>
+
+            <div
+              class="acompanhar-aprovada hidden"
+              id="mensagem-cadastro-aprovado"
+            >
+              <strong>Cadastro aprovado</strong>
+              <p>
+                A emissora pode solicitar alterações sem sair do catálogo.
+                Os dados publicados permanecem ativos até a nova aprovação.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <section
+          class="acompanhar-alteracao hidden"
+          id="secao-alteracao-emissora"
+        >
+          <div class="cadastro-divisor"></div>
+
+          <div class="cadastro-secao-titulo">
+            <span>03</span>
+            <div>
+              <h2>Solicitar alteração dos dados</h2>
+              <p>
+                A versão atual continuará publicada até a análise e a
+                próxima publicação oficial.
+              </p>
+            </div>
+          </div>
+
+          <div
+            class="acompanhar-alteracao-pendente hidden"
+            id="alteracao-pendente-aviso"
+          >
+            <strong>Alteração aguardando análise</strong>
+            <p id="alteracao-pendente-texto"></p>
+          </div>
+
+          <form
+            class="cadastro-formulario acompanhar-form-alteracao"
+            id="form-alteracao-emissora"
+            enctype="multipart/form-data"
+            novalidate
+          >
+            <div class="cadastro-grade cadastro-grade-dupla">
+              <div class="cadastro-campo">
+                <label for="alteracao-nome-radio">Nome da rádio <em aria-hidden="true">*</em></label>
+                <input id="alteracao-nome-radio" name="nomeRadio" maxlength="120" autocomplete="organization" required>
+              </div>
+
+              <div class="cadastro-campo">
+                <label for="alteracao-categoria">Categoria principal <em aria-hidden="true">*</em></label>
+                <input id="alteracao-categoria" name="categoriaPrincipal" maxlength="60" required>
+              </div>
+
+              <div class="cadastro-campo">
+                <label for="alteracao-cidade">Cidade <em aria-hidden="true">*</em></label>
+                <input id="alteracao-cidade" name="cidade" maxlength="80" autocomplete="address-level2" required>
+              </div>
+
+              <div class="cadastro-campo">
+                <label for="alteracao-estado">Estado <em aria-hidden="true">*</em></label>
+                <select id="alteracao-estado" name="estado" autocomplete="address-level1" required>
+                  <option value="">Selecione</option>
+                  <option value="AC">AC</option><option value="AL">AL</option>
+                  <option value="AP">AP</option><option value="AM">AM</option>
+                  <option value="BA">BA</option><option value="CE">CE</option>
+                  <option value="DF">DF</option><option value="ES">ES</option>
+                  <option value="GO">GO</option><option value="MA">MA</option>
+                  <option value="MT">MT</option><option value="MS">MS</option>
+                  <option value="MG">MG</option><option value="PA">PA</option>
+                  <option value="PB">PB</option><option value="PR">PR</option>
+                  <option value="PE">PE</option><option value="PI">PI</option>
+                  <option value="RJ">RJ</option><option value="RN">RN</option>
+                  <option value="RS">RS</option><option value="RO">RO</option>
+                  <option value="RR">RR</option><option value="SC">SC</option>
+                  <option value="SP">SP</option><option value="SE">SE</option>
+                  <option value="TO">TO</option>
+                </select>
+              </div>
+
+              <div class="cadastro-campo">
+                <label for="alteracao-email">E-mail de contato <em aria-hidden="true">*</em></label>
+                <input id="alteracao-email" name="email" type="email" maxlength="160" autocomplete="email" required>
+              </div>
+
+              <div class="cadastro-campo">
+                <label for="alteracao-whatsapp">WhatsApp <em aria-hidden="true">*</em></label>
+                <input id="alteracao-whatsapp" name="whatsapp" maxlength="24" autocomplete="tel" required>
+              </div>
+
+              <div class="cadastro-campo cadastro-campo-largo">
+                <label for="alteracao-site">Site</label>
+                <input id="alteracao-site" name="site" type="url" maxlength="240" autocomplete="url" placeholder="https://">
+              </div>
+
+              <div class="cadastro-campo cadastro-campo-largo">
+                <label for="alteracao-stream">URL direta do stream <em aria-hidden="true">*</em></label>
+                <div class="acompanhar-stream-linha">
+                  <input id="alteracao-stream" name="streamUrl" type="url" maxlength="500" autocomplete="url" aria-describedby="mensagem-stream-alteracao" required>
+                  <button
+                    class="cadastro-botao cadastro-botao-secundario"
+                    type="button"
+                    id="btn-testar-stream-alteracao"
+                  >
+                    🔊 Testar transmissão
+                  </button>
+                </div>
+                <p
+                  class="cadastro-stream-resultado aguardando"
+                  id="mensagem-stream-alteracao"
+                  role="status"
+                >
+                  O stream atual já foi validado. Teste novamente apenas se alterar o endereço.
+                </p>
+              </div>
+
+              <div class="cadastro-campo cadastro-campo-largo">
+                <label for="alteracao-descricao">Descrição</label>
+                <textarea id="alteracao-descricao" name="descricao" rows="4" maxlength="600"></textarea>
+              </div>
+
+              <div class="cadastro-campo cadastro-campo-largo">
+                <label for="alteracao-logo">Nova logomarca (opcional)</label>
+                <input
+                  id="alteracao-logo"
+                  name="logo"
+                  type="file"
+                  accept="image/png,image/jpeg,image/webp"
+                >
+                <small>Quadrada, entre 512 × 512 e 4096 × 4096 pixels, até 2 MB.</small>
+              </div>
+            </div>
+
+            <div
+              class="cadastro-alerta hidden"
+              id="alerta-alteracao"
+              role="alert"
+            ></div>
+
+            <div class="cadastro-acoes">
+              <button
+                class="cadastro-botao cadastro-botao-principal"
+                type="submit"
+                id="btn-enviar-alteracao"
+              >
+                Enviar alteração para análise
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <div class="cadastro-acoes">
+          <button
+            class="cadastro-botao cadastro-botao-secundario"
+            type="button"
+            id="btn-nova-consulta"
+          >
+            Consultar outro protocolo
+          </button>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <div class="rodape-conteudo">
+      <div class="rodape-identidade">
+        <strong>Central Rádios Brasil</strong>
+        <span>Rádios de todo o país em um só lugar.</span>
+      </div>
+      <nav class="rodape-links" aria-label="Links institucionais">
+        <a href="../plataforma/">Sobre a plataforma</a>
+        <a href="../privacidade/">Privacidade</a>
+        <a href="../termos/">Termos de Uso</a>
+        <a href="../regras-emissoras/">Regras para Emissoras</a>
+        <a href="../suporte/">Suporte</a>
+        <a href="../apoie/">❤ Apoie o projeto</a>
+      </nav>
+      <p class="rodape-contato">Atendimento: <a href="mailto:suporte@centralradiosbrasil.com.br">suporte@centralradiosbrasil.com.br</a></p>
+      <p>© 2026 Central Rádios Brasil. Todos os direitos reservados.</p>
+      <p id="informacao-banco">Use seu protocolo para acompanhar e atualizar a solicitação.</p>
+    </div>
+  </footer>
+
+  <script src="../accessibility.js?v=22.16.1"></script>
+  <script src="acompanhar.js?v=22.16.1"></script>
+  <script src="../pwa.js?v=22.16.1"></script>
+</body>
+</html>

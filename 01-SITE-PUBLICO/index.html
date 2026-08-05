@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Ouça e descubra rádios online de todo o Brasil. Explore emissoras por cidade, estado e categoria, salve favoritas e instale o aplicativo."
+  >
+
+
+  <!-- SEO e compartilhamento — 22.16.1 -->
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <link rel="canonical" href="https://centralradiosbrasil.com.br/">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Central Rádios Brasil">
+  <meta property="og:title" content="Central Rádios Brasil — Ouça rádios online do Brasil">
+  <meta property="og:description" content="Ouça e descubra rádios online de todo o Brasil. Explore emissoras por cidade, estado e categoria, salve favoritas e instale o aplicativo.">
+  <meta property="og:url" content="https://centralradiosbrasil.com.br/">
+  <meta property="og:image" content="https://centralradiosbrasil.com.br/assets/compartilhamento-central-radios-brasil.png">
+  <meta property="og:image:secure_url" content="https://centralradiosbrasil.com.br/assets/compartilhamento-central-radios-brasil.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Central Rádios Brasil — rádios de todo o país em um só lugar">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Central Rádios Brasil — Ouça rádios online do Brasil">
+  <meta name="twitter:description" content="Ouça e descubra rádios online de todo o Brasil. Explore emissoras por cidade, estado e categoria, salve favoritas e instale o aplicativo.">
+  <meta name="twitter:image" content="https://centralradiosbrasil.com.br/assets/compartilhamento-central-radios-brasil.png">
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"https://centralradiosbrasil.com.br/#organization","name":"Central Rádios Brasil","url":"https://centralradiosbrasil.com.br/","logo":{"@type":"ImageObject","url":"https://centralradiosbrasil.com.br/logo-central-radios-brasil.png"},"email":"mailto:suporte@centralradiosbrasil.com.br"},{"@type":"WebSite","@id":"https://centralradiosbrasil.com.br/#website","url":"https://centralradiosbrasil.com.br/","name":"Central Rádios Brasil","description":"Portal nacional para ouvir e descobrir rádios online brasileiras.","inLanguage":"pt-BR","publisher":{"@id":"https://centralradiosbrasil.com.br/#organization"}}]}</script>
+  <meta name="theme-color" content="#00173d">
+
+  <meta name="application-name" content="Central Rádios Brasil">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Central Rádios">
+  <link rel="manifest" href="manifest.webmanifest?v=22.16.1">
+  <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64-v22113.png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon-v22113.png">
+  <link rel="stylesheet" href="pwa.css?v=22.16.1">
+
+  <title>Central Rádios Brasil — Ouça rádios online do Brasil</title>
+
+  <link rel="stylesheet" href="style.css?v=22.16.1">
+</head>
+
+<body>
+
+  <a class="skip-link" href="#conteudo-principal">Pular para o conteúdo principal</a>
+
+  <header class="cabecalho">
+
+    <div class="cabecalho-conteudo">
+
+      <a class="marca" href="./" aria-label="Central Rádios Brasil">
+
+        <img
+          class="marca-logo"
+          src="logo-central-radios-brasil.png"
+          alt="Logo Central Rádios Brasil"
+        >
+
+        <div class="marca-texto">
+          <strong>Central Rádios Brasil</strong>
+          <span>Rádios de todo o país em um só lugar</span>
+        </div>
+
+      </a>
+      <div class="cabecalho-acoes-pwa">
+        <a
+          class="cabecalho-apoie-link"
+          href="apoie/"
+          aria-label="Apoiar voluntariamente a Central Rádios Brasil por Pix"
+        >
+          <span aria-hidden="true">❤</span>
+          <span>Apoie o projeto</span>
+        </a>
+        <a
+          class="cabecalho-streaming-link"
+          href="streaming/"
+          aria-label="Conhecer o Streaming CRB, serviço em breve"
+        >
+          <span aria-hidden="true">📡</span>
+          <span>Streaming CRB</span>
+          <small>Em breve</small>
+        </a>
+        <button class="pwa-install-button" type="button" hidden aria-label="Instalar Central Rádios Brasil">
+          <span aria-hidden="true">⬇</span>
+          <span>Instalar aplicativo</span>
+        </button>
+
+        <div class="versao-banco" id="versao-banco">
+          Banco carregando...
+        </div>
+      </div>
+
+    </div>
+
+  </header>
+
+  <main class="pagina" id="conteudo-principal" tabindex="-1">
+
+    <section class="apresentacao apresentacao-premium">
+
+  <div class="hero-efeitos" aria-hidden="true">
+
+    <div class="hero-orbita hero-orbita-1"></div>
+    <div class="hero-orbita hero-orbita-2"></div>
+    <div class="hero-orbita hero-orbita-3"></div>
+
+    <span class="hero-particula particula-1"></span>
+    <span class="hero-particula particula-2"></span>
+    <span class="hero-particula particula-3"></span>
+    <span class="hero-particula particula-4"></span>
+    <span class="hero-particula particula-5"></span>
+
+    <div class="hero-brasil">
+
+      <span class="hero-brasil-sinal sinal-1"></span>
+      <span class="hero-brasil-sinal sinal-2"></span>
+      <span class="hero-brasil-sinal sinal-3"></span>
+
+      <span class="hero-brasil-texto">
+        BRASIL CONECTADO
+      </span>
+
+    </div>
+
+  </div>
+
+  <div class="apresentacao-conteudo">
+
+    <span class="selo">
+      A nova central brasileira de rádios
+    </span>
+
+    <p
+      class="hero-pre-titulo hero-frase-rotativa hero-frase-superior"
+      id="hero-frase-rotativa"
+      aria-live="off"
+    >
+      Descubra novas vozes. Explore novas regiões.
+    </p>
+
+    <h1 class="hero-titulo-principal">
+      <span class="hero-titulo-linha">O Brasil inteiro</span>
+      <span class="hero-titulo-linha hero-titulo-destaque">em uma só Conexão.</span>
+    </h1>
+
+    <p
+      class="hero-descricao hero-frase-rotativa hero-frase-inferior"
+      id="hero-descricao-rotativa"
+      aria-live="off"
+    >
+      Uma plataforma nacional criada para conectar ouvintes,
+      emissoras, cidades e culturas de todas as regiões do país.
+    </p>
+
+    <div class="hero-acoes">
+
+      <a
+        class="hero-botao hero-botao-principal"
+        href="#catalogo-emissoras"
+        id="btn-explorar-radios"
+        aria-label="Ir para o catálogo de emissoras"
+      >
+        <span aria-hidden="true">▶</span>
+        Explorar emissoras
+      </a>
+
+      <a
+        class="hero-botao hero-botao-secundario"
+        href="plataforma/"
+        id="btn-conhecer-plataforma"
+        aria-label="Conhecer a Central Rádios Brasil"
+      >
+        Conhecer a plataforma
+      </a>
+
+      <a
+        class="hero-botao hero-botao-cadastro"
+        href="cadastro/"
+        id="btn-cadastrar-radio"
+        aria-label="Cadastrar uma rádio na Central Rádios Brasil"
+      >
+        <span aria-hidden="true">📻</span>
+        Cadastre sua rádio
+      </a>
+
+      <a
+        class="hero-botao hero-botao-streaming"
+        href="streaming/"
+        id="btn-streaming-crb"
+        aria-label="Conhecer o futuro serviço de Streaming CRB"
+      >
+        <span aria-hidden="true">📡</span>
+        Streaming CRB
+        <small>Em breve</small>
+      </a>
+
+      <a
+        class="hero-botao hero-botao-secundario hero-botao-acompanhar"
+        href="acompanhar/"
+        id="btn-acompanhar-cadastro"
+        aria-label="Acompanhar solicitação de cadastro da emissora"
+      >
+        <span aria-hidden="true">🔎</span>
+        Acompanhar cadastro
+      </a>
+
+    </div>
+
+    <div class="hero-indicadores">
+
+      <span>
+        <i class="indicador-ao-vivo"></i>
+        Emissoras ao vivo
+      </span>
+
+      <span>
+        Catálogo nacional
+      </span>
+
+      <span>
+        Dados verificados
+      </span>
+
+    </div>
+
+  </div>
+
+</section>
+
+<section
+  class="estatisticas"
+  id="indicadores-plataforma"
+  aria-label="Indicadores da Central Rádios Brasil"
+>
+
+  <article class="estatistica-card">
+
+    <div class="estatistica-icone" aria-hidden="true">📻</div>
+
+    <div class="estatistica-conteudo">
+      <strong id="total-emissoras">0</strong>
+      <span>Emissoras</span>
+      <small>Publicadas no catálogo</small>
+    </div>
+
+  </article>
+
+  <article class="estatistica-card">
+
+    <div class="estatistica-icone" aria-hidden="true">◆</div>
+
+    <div class="estatistica-conteudo">
+      <strong id="total-estados">0</strong>
+      <span>Estados</span>
+      <small>Conectados à plataforma</small>
+    </div>
+
+  </article>
+
+  <article class="estatistica-card">
+
+    <div class="estatistica-icone" aria-hidden="true">●</div>
+
+    <div class="estatistica-conteudo">
+      <strong id="total-cidades">0</strong>
+      <span>Cidades</span>
+      <small>Representadas no Brasil</small>
+    </div>
+
+  </article>
+
+  <article class="estatistica-card estatistica-destaque">
+
+    <div class="estatistica-icone" aria-hidden="true">✓</div>
+
+    <div class="estatistica-conteudo">
+      <strong id="total-verificadas">0</strong>
+      <span>Verificadas</span>
+      <small>Emissoras autenticadas</small>
+    </div>
+
+  </article>
+
+</section>
+
+<section class="apoio-chamada" aria-labelledby="apoio-chamada-titulo">
+  <div class="apoio-chamada-icone" aria-hidden="true">❤</div>
+  <div class="apoio-chamada-conteudo">
+    <span class="titulo-menor">APOIO VOLUNTÁRIO</span>
+    <h2 id="apoio-chamada-titulo">Ajude a manter a Central Rádios Brasil</h2>
+    <p>Sua contribuição ajuda nos custos de manutenção, segurança e evolução da plataforma. O apoio é opcional e não interfere no cadastro, destaque ou permanência de nenhuma emissora.</p>
+  </div>
+  <a class="apoio-chamada-botao" href="apoie/">
+    <span aria-hidden="true">▦</span> Ver QR Code Pix
+  </a>
+</section>
+
+<section class="ranking-nacional" id="ranking-nacional" aria-labelledby="ranking-nacional-titulo">
+
+  <div class="ranking-nacional-cabecalho">
+    <span class="titulo-menor">DESTAQUES DA CENTRAL</span>
+    <h2 id="ranking-nacional-titulo"><span aria-hidden="true">🏆</span> Ranking Nacional</h2>
+    <p>Classificação por reproduções válidas: cada registro exige 5 minutos de áudio e repetições são limitadas.</p>
+  </div>
+
+  <div class="ranking-nacional-top3" id="ranking-nacional-top3">
+    <div class="ranking-carregando">Carregando ranking...</div>
+  </div>
+
+  <div class="ranking-nacional-acao">
+    <button class="ranking-ver-top10" id="btn-ranking-top10" type="button">
+      Ver Top 10 →
+    </button>
+  </div>
+
+</section>
+
+<section class="radio-destaque hidden" id="radio-destaque" aria-labelledby="destaque-nome">
+
+  <div class="radio-destaque-conteudo">
+
+    <span class="radio-destaque-selo">
+      <span aria-hidden="true">⭐</span> RÁDIO EM DESTAQUE
+    </span>
+
+    <div class="radio-destaque-grid">
+
+      <div class="radio-destaque-logo" id="destaque-logo">
+        CRB
+      </div>
+
+      <div class="radio-destaque-info">
+
+        <span class="radio-destaque-categoria"
+              id="destaque-categoria">
+          Categoria
+        </span>
+
+        <h2 id="destaque-nome">
+          Nome da Rádio
+        </h2>
+
+        <p id="destaque-descricao">
+          Descrição da emissora
+        </p>
+
+        <div class="radio-destaque-local">
+
+          <span id="destaque-cidade">
+            Cidade
+          </span>
+
+          •
+
+          <span id="destaque-uf">
+            UF
+          </span>
+
+        </div>
+
+        <button
+          id="btn-ouvir-destaque"
+          class="hero-botao hero-botao-principal"
+        >
+          ▶ Ouvir Agora
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<section class="descoberta-secao continuar-ouvindo hidden" id="continuar-ouvindo" aria-labelledby="continuar-ouvindo-titulo">
+  <div class="descoberta-cabecalho">
+    <div>
+      <span class="titulo-menor">RETOME DE ONDE PAROU</span>
+      <h2 id="continuar-ouvindo-titulo"><span aria-hidden="true">▶</span> Continuar ouvindo</h2>
+      <p>A última emissora ouvida neste aparelho fica pronta para você continuar.</p>
+    </div>
+  </div>
+  <div id="continuar-ouvindo-conteudo"></div>
+</section>
+
+<section class="descoberta-secao hidden" id="recem-chegadas" aria-labelledby="recem-chegadas-titulo">
+  <div class="descoberta-cabecalho">
+    <div>
+      <span class="titulo-menor">NOVIDADES DO CATÁLOGO</span>
+      <h2 id="recem-chegadas-titulo"><span aria-hidden="true">🆕</span> Recém-chegadas</h2>
+      <p>Emissoras publicadas recentemente na Central Rádios Brasil.</p>
+    </div>
+    <button class="descoberta-ver-todas" type="button" data-descoberta-acao="recentes">Ver no catálogo →</button>
+  </div>
+  <div class="grade-radios descoberta-grade" id="grade-recem-chegadas"></div>
+</section>
+
+<section class="descoberta-secao hidden" id="explorar-regioes" aria-labelledby="explorar-regioes-titulo">
+  <div class="descoberta-cabecalho">
+    <div>
+      <span class="titulo-menor">BRASIL DE NORTE A SUL</span>
+      <h2 id="explorar-regioes-titulo"><span aria-hidden="true">🗺️</span> Explore por regiões</h2>
+      <p>Descubra emissoras das regiões representadas no catálogo atual.</p>
+    </div>
+  </div>
+  <div class="regioes-grade" id="grade-regioes"></div>
+</section>
+
+<section class="descoberta-secao hidden" id="radios-verificadas" aria-labelledby="radios-verificadas-titulo">
+  <div class="descoberta-cabecalho">
+    <div>
+      <span class="titulo-menor">IDENTIDADE CONFIRMADA</span>
+      <h2 id="radios-verificadas-titulo"><span aria-hidden="true">✓</span> Rádios verificadas</h2>
+      <p>Emissoras cuja identidade foi validada pela Central Rádios Brasil.</p>
+    </div>
+    <button class="descoberta-ver-todas" type="button" data-descoberta-acao="verificadas">Ver no catálogo →</button>
+  </div>
+  <div class="grade-radios descoberta-grade" id="grade-verificadas"></div>
+</section>
+
+<section class="descoberta-secao hidden" id="categorias-destaque" aria-labelledby="categorias-destaque-titulo">
+  <div class="descoberta-cabecalho">
+    <div>
+      <span class="titulo-menor">ENCONTRE SEU ESTILO</span>
+      <h2 id="categorias-destaque-titulo"><span aria-hidden="true">🎵</span> Categorias em destaque</h2>
+      <p>As categorias com emissoras disponíveis no catálogo oficial.</p>
+    </div>
+  </div>
+  <div class="categorias-destaque-grade" id="grade-categorias-destaque"></div>
+</section>
+
+<section class="favoritas hidden" id="favoritas" aria-labelledby="favoritas-titulo">
+  <div class="favoritas-cabecalho">
+    <div>
+      <span class="titulo-menor">MINHAS RÁDIOS</span>
+      <h2 id="favoritas-titulo"><span aria-hidden="true">❤️</span> Favoritas</h2>
+      <p>As emissoras favoritas ficam salvas neste aparelho.</p>
+    </div>
+    <div class="contador" id="contador-favoritas">0 favoritas</div>
+  </div>
+  <div class="grade-radios grade-favoritas" id="grade-favoritas" aria-describedby="contador-favoritas"></div>
+</section>
+
+    <section class="filtros" aria-label="Filtros de emissoras">
+
+      <div class="campo campo-pesquisa">
+
+        <label for="pesquisa">Pesquisar rádio</label>
+
+        <input
+          type="search"
+          id="pesquisa"
+          placeholder="Nome, cidade, estado ou categoria"
+          autocomplete="off"
+        >
+
+      </div>
+
+      <div class="campo">
+
+        <label for="filtro-estado">Estado</label>
+
+        <select id="filtro-estado">
+          <option value="">Todos os estados</option>
+        </select>
+
+      </div>
+
+      <div class="campo">
+
+        <label for="filtro-categoria">Categoria</label>
+
+        <select id="filtro-categoria">
+          <option value="">Todas as categorias</option>
+        </select>
+
+      </div>
+
+      <button
+        class="botao-limpar"
+        type="button"
+        id="btn-limpar"
+      >
+        Limpar filtros
+      </button>
+
+      <div class="filtro-descoberta-ativo hidden" id="filtro-descoberta-ativo" role="status"></div>
+
+    </section>
+
+    <section class="catalogo" id="catalogo-emissoras" aria-labelledby="catalogo-titulo">
+
+      <div class="catalogo-cabecalho">
+
+        <div>
+          <span class="titulo-menor">Catálogo oficial</span>
+          <h2 id="catalogo-titulo">Emissoras disponíveis</h2>
+        </div>
+
+        <div class="contador" id="contador-radios">
+          0 emissoras
+        </div>
+
+      </div>
+
+      <div
+        class="mensagem-status"
+        id="mensagem-status"
+        role="status"
+      >
+        Carregando emissoras...
+      </div>
+
+      <div
+        class="grade-radios"
+        id="grade-radios"
+        aria-describedby="contador-radios"
+      ></div>
+
+      <nav
+        class="paginacao-radios"
+        id="paginacao-radios"
+        aria-label="Paginação das emissoras"
+      ></nav>
+
+    </section>
+
+  </main>
+
+
+  <div class="ranking-modal hidden" id="ranking-modal" role="dialog" aria-modal="true" aria-labelledby="ranking-modal-titulo" aria-describedby="ranking-modal-descricao" aria-hidden="true" hidden tabindex="-1">
+    <div class="ranking-modal-painel" tabindex="-1">
+      <button class="ranking-modal-fechar" id="btn-fechar-ranking" type="button" aria-label="Fechar ranking">✕</button>
+
+      <span class="titulo-menor">CLASSIFICAÇÃO NACIONAL</span>
+      <h2 id="ranking-modal-titulo"><span aria-hidden="true">🏆</span> Top 10 da Central</h2>
+      <p class="ranking-modal-subtitulo" id="ranking-modal-descricao">Top 10 por reproduções válidas de 5 minutos, com proteção contra repetições da mesma sessão.</p>
+
+      <ol class="ranking-top10-lista" id="ranking-top10-lista"></ol>
+    </div>
+  </div>
+
+
+  <section class="modo-carro hidden" id="modo-carro" role="dialog" aria-modal="true" aria-labelledby="modo-carro-titulo" aria-describedby="modo-carro-aviso" aria-hidden="true" hidden tabindex="-1">
+    <div class="modo-carro-painel" tabindex="-1">
+      <div class="modo-carro-topo">
+        <div>
+          <span class="titulo-menor">DIREÇÃO SEGURA</span>
+          <h2 id="modo-carro-titulo"><span aria-hidden="true">🚗</span> Modo carro</h2>
+        </div>
+        <button class="modo-carro-sair" id="btn-sair-modo-carro" type="button" aria-label="Sair do modo carro">Sair</button>
+      </div>
+
+      <div class="modo-carro-identidade">
+        <div class="modo-carro-capa-luz">
+          <div class="modo-carro-logo" id="modo-carro-logo">CRB</div>
+        </div>
+        <span class="popularidade-selo hidden" id="modo-carro-popularidade"></span>
+        <span class="modo-carro-status" id="modo-carro-status">Selecione uma rádio</span>
+        <strong id="modo-carro-nome">Central Rádios Brasil</strong>
+        <small id="modo-carro-localizacao">Catálogo nacional</small>
+        <p id="modo-carro-musica"><span aria-hidden="true">🎙️</span> Programação ao vivo</p>
+        <div class="modo-carro-metricas">
+          <span id="modo-carro-conexao"><span aria-hidden="true">🟢</span> Conexão estável</span>
+          <span id="modo-carro-tempo"><span aria-hidden="true">▶</span> Ouvindo há 00:00</span>
+        </div>
+        <div class="estabilidade-barra estabilidade-barra-carro" aria-label="Estabilidade da transmissão">
+          <span id="modo-carro-estabilidade-barra"></span>
+        </div>
+        <span class="modo-carro-buffer" id="modo-carro-buffer">Aguardando transmissão</span>
+        <span class="zap-status hidden" id="modo-carro-zap-status"></span>
+      </div>
+
+      <div class="modo-carro-controles">
+        <button type="button" id="btn-carro-anterior" aria-label="Rádio anterior"><span aria-hidden="true">⏮</span><span>Anterior</span></button>
+        <button class="modo-carro-play" type="button" id="btn-carro-play" aria-label="Reproduzir rádio"><span aria-hidden="true">▶</span></button>
+        <button type="button" id="btn-carro-proxima" aria-label="Próxima rádio"><span aria-hidden="true">⏭</span><span>Próxima</span></button>
+      </div>
+
+      <div class="modo-carro-volume">
+        <button type="button" id="btn-carro-volume-menos" aria-label="Diminuir volume">−</button>
+        <label for="carro-volume"><span aria-hidden="true">🔊</span> Volume</label>
+        <input id="carro-volume" type="range" min="0" max="100" step="1" value="80" aria-label="Volume do player">
+        <button type="button" id="btn-carro-volume-mais" aria-label="Aumentar volume">+</button>
+      </div>
+
+      <div class="modo-carro-acoes-extras">
+        <button class="modo-carro-favorita" type="button" id="btn-carro-favorita" aria-label="Adicionar rádio às favoritas" aria-pressed="false">♡ Favoritar</button>
+        <button type="button" id="btn-carro-tela-ligada" aria-pressed="false"><span aria-hidden="true">☀️</span> Manter tela ligada</button>
+        <button type="button" id="btn-carro-zap" aria-pressed="false"><span aria-hidden="true">📡</span> Iniciar ZAP</button>
+      </div>
+      <p class="modo-carro-aviso" id="modo-carro-aviso">Use os controles grandes e mantenha a atenção no trânsito.</p>
+    </div>
+  </section>
+
+  <aside
+    class="player hidden"
+    id="player"
+    aria-label="Player da rádio"
+    aria-describedby="player-status player-buffer"
+  >
+
+    <div class="player-conteudo">
+
+      <div class="player-identidade">
+
+        <div class="player-logo" id="player-logo">
+          CRB
+        </div>
+
+        <div class="player-informacoes">
+
+          <div class="player-linha-superior">
+            <span class="player-status" id="player-status">
+              Pronto para ouvir
+            </span>
+            <span class="popularidade-selo hidden" id="player-popularidade"></span>
+          </div>
+
+          <strong id="player-nome">
+            Selecione uma rádio
+          </strong>
+
+          <small id="player-localizacao">
+            Central Rádios Brasil
+          </small>
+
+          <small class="player-musica" id="player-musica">
+            <span aria-hidden="true">🎙️</span> Programação ao vivo
+          </small>
+
+          <div class="player-metricas">
+            <span id="player-conexao"><span aria-hidden="true">🟢</span> Conexão estável</span>
+            <span id="player-tempo"><span aria-hidden="true">▶</span> Ouvindo há 00:00</span>
+          </div>
+
+          <div class="estabilidade-barra" aria-label="Estabilidade da transmissão">
+            <span id="player-estabilidade-barra"></span>
+          </div>
+
+          <span class="player-buffer" id="player-buffer">
+            Aguardando transmissão
+          </span>
+          <span class="zap-status hidden" id="player-zap-status"></span>
+
+        </div>
+
+      </div>
+
+      <div class="player-acoes">
+
+        <button class="botao-player-secundario" type="button" id="btn-player-favorita" aria-label="Adicionar rádio às favoritas" aria-pressed="false">♡</button>
+        <button class="botao-player-secundario" type="button" id="btn-radio-anterior" aria-label="Rádio anterior">⏮</button>
+
+        <button
+          class="botao-player"
+          type="button"
+          id="btn-play-pause"
+          aria-label="Reproduzir rádio"
+        >
+          ▶
+        </button>
+
+        <button class="botao-player-secundario" type="button" id="btn-proxima-radio" aria-label="Próxima rádio">⏭</button>
+        <div class="player-volume-area">
+          <button class="botao-player-secundario" type="button" id="btn-volume" aria-label="Controlar volume" aria-expanded="false" aria-controls="player-volume-popover"><span aria-hidden="true">🔊</span></button>
+          <div class="player-volume-popover hidden" id="player-volume-popover" role="group" aria-label="Controle de volume">
+            <label for="player-volume">Volume</label>
+            <input id="player-volume" type="range" min="0" max="100" step="1" value="80" aria-label="Volume do player">
+          </div>
+        </div>
+        <button class="botao-player-secundario botao-zap" type="button" id="btn-zap" aria-label="Iniciar modo ZAP" aria-pressed="false"><span aria-hidden="true">📡</span></button>
+        <button class="botao-player-secundario botao-modo-carro" type="button" id="btn-modo-carro" aria-label="Abrir modo carro"><span aria-hidden="true">🚗</span></button>
+        <button class="botao-player-secundario botao-compartilhar" type="button" id="btn-compartilhar-radio" aria-label="Compartilhar emissora" disabled><span aria-hidden="true">🔗</span></button>
+        <button class="botao-player-secundario botao-reportar" type="button" id="btn-reportar-radio" aria-label="Informar problema com esta emissora" title="Informar problema" disabled><span aria-hidden="true">⚠️</span></button>
+
+        <button
+          class="botao-fechar"
+          type="button"
+          id="btn-fechar-player"
+          aria-label="Fechar player"
+        >
+          ✕
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="player-toast hidden" id="player-toast"></div>
+    <audio id="audio-player" preload="auto" autoplay></audio>
+
+  </aside>
+
+  <footer class="rodape">
+    <div class="rodape-conteudo">
+      <div class="rodape-identidade">
+        <strong>Central Rádios Brasil</strong>
+        <span>Rádios de todo o país em um só lugar.</span>
+      </div>
+      <nav class="rodape-links" aria-label="Links institucionais">
+        <a href="plataforma/">Sobre a plataforma</a>
+        <a href="privacidade/">Privacidade</a>
+        <a href="termos/">Termos de Uso</a>
+        <a href="regras-emissoras/">Regras para Emissoras</a>
+        <a href="suporte/">Suporte</a>
+      </nav>
+      <p class="rodape-contato">Atendimento: <a href="mailto:suporte@centralradiosbrasil.com.br">suporte@centralradiosbrasil.com.br</a></p>
+      <p>© 2026 Central Rádios Brasil. Todos os direitos reservados.</p>
+      <p id="informacao-banco">Dados oficiais da Central Rádios Brasil.</p>
+    </div>
+  </footer>
+
+  <div class="sr-only" id="anuncio-acessibilidade" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <script src="accessibility.js?v=22.16.1"></script>
+  <script src="app.js?v=22.16.1"></script>
+  <script src="pwa.js?v=22.16.1"></script>
+
+</body>
+</html>

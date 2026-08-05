@@ -1,0 +1,26 @@
+/* Central Rádios Brasil — Apoio Pix 22.16.1 */
+.apoie-pagina{width:min(calc(100% - 40px),1120px);margin:0 auto;padding:44px 0 80px}
+.apoie-hero{padding:clamp(30px,6vw,64px);border:1px solid rgba(255,100,151,.25);border-radius:30px;background:radial-gradient(circle at 85% 12%,rgba(255,74,140,.2),transparent 36%),linear-gradient(145deg,rgba(9,37,76,.94),rgba(27,8,49,.97));box-shadow:0 24px 70px rgba(0,0,0,.3)}
+.apoie-etiqueta,.apoie-pix-selo{display:inline-flex;padding:7px 12px;border:1px solid rgba(255,113,159,.34);border-radius:999px;color:#ff9dbc;background:rgba(255,71,133,.1);font-size:.72rem;font-weight:950;letter-spacing:.1em}
+.apoie-hero h1{max-width:850px;margin-top:18px;color:#fff;font-size:clamp(2.2rem,6vw,4.7rem);line-height:1.02}
+.apoie-hero p{max-width:780px;margin-top:18px;color:#bdcce0;font-size:clamp(1rem,2vw,1.18rem);line-height:1.75}
+.apoie-painel{display:grid;grid-template-columns:minmax(300px,.9fr) minmax(0,1.1fr);gap:26px;margin-top:28px}
+.apoie-qr-area,.apoie-dados{padding:clamp(24px,4vw,36px);border:1px solid rgba(255,255,255,.1);border-radius:24px;background:linear-gradient(145deg,rgba(12,39,76,.82),rgba(5,20,44,.94));box-shadow:0 18px 50px rgba(0,0,0,.22)}
+.apoie-qr-area{text-align:center}.apoie-qr-area h2,.apoie-dados h2{margin-top:14px;color:#fff;font-size:clamp(1.45rem,3vw,2.15rem)}
+.apoie-qr-area p,.apoie-dados>p,.apoie-conferencia{margin-top:10px;color:#b7c8dc;line-height:1.7}
+.apoie-qr-area img{display:block;width:min(100%,420px);height:auto;margin:24px auto 0;padding:12px;border-radius:22px;background:#fff;box-shadow:0 18px 40px rgba(0,0,0,.28)}
+.apoie-dados-icone{display:grid;place-items:center;width:58px;height:58px;border-radius:18px;color:#fff;font-size:1.55rem;background:linear-gradient(135deg,#ff3d7f,#8d4cff)}
+.apoie-chave-grupo{display:grid;gap:10px;margin-top:24px;padding:20px;border:1px solid rgba(55,230,255,.18);border-radius:18px;background:rgba(55,230,255,.055)}
+.apoie-chave-grupo>span{color:#8fabc7;font-size:.78rem;font-weight:850;text-transform:uppercase;letter-spacing:.08em}
+.apoie-chave-grupo strong{overflow-wrap:anywhere;color:#fff;font-size:clamp(1rem,2.3vw,1.3rem)}
+#btn-copiar-pix{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:48px;margin-top:4px;padding:12px 17px;border:0;border-radius:13px;color:#07162a;font:inherit;font-weight:950;cursor:pointer;background:linear-gradient(135deg,#37e6ff,#7fffc4);box-shadow:0 12px 28px rgba(55,230,255,.17)}
+#btn-copiar-pix:hover,#btn-copiar-pix:focus-visible{filter:brightness(1.06);transform:translateY(-1px)}
+.apoie-status{min-height:1.5em;margin:0!important;color:#91f5c4!important;font-weight:800}
+.apoie-aviso{margin-top:20px;padding:17px;border:1px solid rgba(255,206,91,.28);border-radius:16px;background:rgba(255,190,70,.075)}
+.apoie-aviso strong{color:#ffe3a6}.apoie-aviso p{margin-top:7px;color:#d5c5a1;line-height:1.6}
+.apoie-beneficios{display:grid;gap:10px;margin:22px 0 0;padding:0;list-style:none}
+.apoie-beneficios li{position:relative;padding-left:28px;color:#bdd0e3;line-height:1.55}.apoie-beneficios li::before{content:'✓';position:absolute;left:0;color:#54e9b1;font-weight:950}
+.apoie-conferencia{padding-top:20px;border-top:1px solid rgba(255,255,255,.09)}
+.apoie-conferencia strong{color:#fff}
+@media(max-width:820px){.apoie-painel{grid-template-columns:1fr}.apoie-qr-area img{width:min(100%,360px)}}
+@media(max-width:560px){.apoie-pagina{width:min(calc(100% - 24px),1120px);padding-top:20px}.apoie-hero,.apoie-qr-area,.apoie-dados{padding:24px 20px;border-radius:22px}}
