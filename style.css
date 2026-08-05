@@ -5287,3 +5287,187 @@ body.player-recolhido-visivel .apoio-flutuante{bottom:118px;}
     animation: none !important;
   }
 }
+
+
+/* =========================================================
+   SITE 22.17.2 — MAPA SONORO 3D SOBRE MALHA DETALHADA
+   ========================================================= */
+.mapa-brasil-stage {
+  perspective: 1050px;
+  aspect-ratio: 1 / .98;
+  overflow: hidden;
+  border-radius: 34px;
+  background:
+    radial-gradient(circle at 50% 63%, rgba(32, 143, 238, .25), transparent 28%),
+    radial-gradient(circle at 18% 17%, rgba(125, 92, 255, .16), transparent 30%),
+    linear-gradient(rgba(77, 222, 255, .035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(77, 222, 255, .035) 1px, transparent 1px),
+    linear-gradient(155deg, #020b1d 0%, #051c36 52%, #031126 100%);
+  background-size: auto, auto, 28px 28px, 28px 28px, auto;
+}
+
+.mapa-brasil-camada-3d {
+  --mapa-rotacao-x: 0deg;
+  --mapa-rotacao-y: 0deg;
+  position: absolute;
+  z-index: 2;
+  inset: 3.5% 3.5% 7%;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--mapa-rotacao-x)) rotateY(var(--mapa-rotacao-y)) translateZ(0);
+  transition: transform .28s cubic-bezier(.22,.8,.22,1);
+  animation: mapa-flutuacao-3d 7s ease-in-out infinite;
+}
+
+@keyframes mapa-flutuacao-3d {
+  0%,100% { translate: 0 0; }
+  50% { translate: 0 -5px; }
+}
+
+.mapa-brasil-modelo {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  transform: translateZ(-8px);
+  transform-style: preserve-3d;
+  pointer-events: none;
+}
+
+.mapa-brasil-modelo::before,
+.mapa-brasil-modelo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: url("assets/mapa-brasil-base-neon.png") center/contain no-repeat;
+  pointer-events: none;
+}
+
+.mapa-brasil-modelo::before {
+  opacity: .23;
+  transform: translate3d(5px, 10px, -24px);
+  filter: blur(1.2px) drop-shadow(0 0 22px rgba(46, 221, 255, .58));
+}
+
+.mapa-brasil-modelo::after {
+  opacity: .16;
+  transform: translate3d(-4px, -3px, -12px);
+  filter: hue-rotate(52deg) drop-shadow(0 0 14px rgba(139, 92, 255, .5));
+  animation: mapa-camada-neon 4.8s ease-in-out infinite;
+}
+
+.mapa-brasil-modelo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: .88;
+  filter:
+    drop-shadow(0 0 3px rgba(255,255,255,.48))
+    drop-shadow(0 0 11px rgba(55,230,255,.7))
+    drop-shadow(0 22px 28px rgba(0,0,0,.42));
+  animation: mapa-base-respirar 4.8s ease-in-out infinite;
+}
+
+@keyframes mapa-base-respirar {
+  0%,100% { opacity: .72; filter: drop-shadow(0 0 3px rgba(255,255,255,.38)) drop-shadow(0 0 9px rgba(55,230,255,.55)) drop-shadow(0 22px 28px rgba(0,0,0,.42)); }
+  50% { opacity: 1; filter: drop-shadow(0 0 4px rgba(255,255,255,.62)) drop-shadow(0 0 18px rgba(55,230,255,.9)) drop-shadow(0 22px 28px rgba(0,0,0,.42)); }
+}
+
+@keyframes mapa-camada-neon {
+  0%,100% { opacity: .1; }
+  50% { opacity: .28; }
+}
+
+.mapa-brasil-camada-3d .mapa-rede,
+.mapa-brasil-camada-3d .mapa-emissoras,
+.mapa-brasil-camada-3d .mapa-estados {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.mapa-brasil-camada-3d .mapa-rede {
+  z-index: 5;
+  transform: translateZ(22px);
+}
+
+.mapa-brasil-camada-3d .mapa-emissoras {
+  z-index: 8;
+  transform: translateZ(38px);
+}
+
+.mapa-brasil-camada-3d .mapa-estados {
+  z-index: 7;
+  transform: translateZ(28px);
+}
+
+.mapa-rede-linha {
+  stroke-width: .56;
+  opacity: .5;
+}
+
+.mapa-rede-fluxo {
+  stroke-width: .85;
+  stroke-dasharray: 1.8 8.6;
+  opacity: .98;
+  animation-duration: 3.15s;
+}
+
+.mapa-emissora-ponto {
+  width: 22px;
+  height: 22px;
+}
+
+.mapa-emissora-nucleo {
+  width: 10px;
+  height: 10px;
+  border-width: 2px;
+  box-shadow:
+    0 0 5px #fff,
+    0 0 12px var(--mapa-cor),
+    0 0 26px var(--mapa-cor),
+    0 0 42px color-mix(in srgb, var(--mapa-cor) 68%, transparent);
+}
+
+.mapa-emissora-onda {
+  width: 22px;
+  height: 22px;
+  border-width: 1.5px;
+}
+
+.mapa-hub-nucleo {
+  stroke: rgba(255,255,255,.95);
+  stroke-width: .38;
+  filter: url(#mapa-rede-glow) drop-shadow(0 0 4px #37e6ff);
+}
+
+.mapa-hub-texto {
+  font-size: 1.22px;
+  font-weight: 1000;
+}
+
+.mapa-uf {
+  width: 24px;
+  height: 18px;
+  color: rgba(211, 239, 255, .42);
+  background: rgba(2, 12, 27, .12);
+}
+.mapa-uf-contagem { display: none; }
+.mapa-uf.tem-radio { color: rgba(255,255,255,.76); background: rgba(4,25,48,.28); }
+
+@media (max-width: 620px) {
+  .mapa-brasil-stage { aspect-ratio: .92 / 1; border-radius: 24px; }
+  .mapa-brasil-camada-3d { inset: 2% 1% 8%; animation-duration: 8.5s; }
+  .mapa-brasil-modelo img { opacity: .82; }
+  .mapa-uf { width: 20px; height: 16px; }
+  .mapa-uf-sigla { font-size: .44rem; }
+  .mapa-emissora-ponto { width: 20px; height: 20px; }
+  .mapa-emissora-nucleo { width: 9px; height: 9px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mapa-brasil-camada-3d,
+  .mapa-brasil-modelo img,
+  .mapa-brasil-modelo::after { animation: none !important; }
+  .mapa-brasil-camada-3d { transform: none !important; }
+}

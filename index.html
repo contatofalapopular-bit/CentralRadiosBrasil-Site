@@ -412,7 +412,7 @@
   <div class="descoberta-cabecalho mapa-sonoro-cabecalho">
     <div>
       <span class="titulo-menor">BRASIL DE NORTE A SUL</span>
-      <h2 id="mapa-sonoro-titulo"><span aria-hidden="true">🗺️</span> Mapa Sonoro Conectado</h2>
+      <h2 id="mapa-sonoro-titulo"><span aria-hidden="true">🗺️</span> Mapa Sonoro 3D do Brasil</h2>
       <p>Uma rede viva de rádios, cidades e regiões conectadas de norte a sul do Brasil.</p>
     </div>
     <div class="mapa-resumo-geral" id="mapa-resumo-geral" aria-live="polite">Carregando presença nacional...</div>
@@ -450,22 +450,11 @@
           <span style="--x:48%;--y:9%;--d:-7s;--s:3px"></span>
           <span style="--x:91%;--y:52%;--d:-3.5s;--s:3px"></span>
         </div>
-        <svg class="mapa-brasil-silhueta" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
-          <defs>
-            <linearGradient id="mapa-brasil-gradiente" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0" stop-color="#0c8de8" stop-opacity=".23"/>
-              <stop offset=".48" stop-color="#37e6ff" stop-opacity=".10"/>
-              <stop offset="1" stop-color="#8b5cff" stop-opacity=".18"/>
-            </linearGradient>
-            <filter id="mapa-brilho" x="-30%" y="-30%" width="160%" height="160%">
-              <feGaussianBlur stdDeviation="1.8" result="blur"/>
-              <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
-            </filter>
-          </defs>
-          <path class="mapa-brasil-contorno" d="M21 3 38 6 47 13 59 11 67 17 79 18 82 25 91 27 96 35 94 43 99 49 95 58 88 61 86 69 79 73 76 82 68 85 64 93 56 99 49 94 47 86 41 81 35 76 28 74 25 67 18 63 15 55 10 50 12 42 8 36 10 28 7 21 14 16 16 9Z"/>
-          <path class="mapa-brasil-pulso" d="M21 3 38 6 47 13 59 11 67 17 79 18 82 25 91 27 96 35 94 43 99 49 95 58 88 61 86 69 79 73 76 82 68 85 64 93 56 99 49 94 47 86 41 81 35 76 28 74 25 67 18 63 15 55 10 50 12 42 8 36 10 28 7 21 14 16 16 9Z"/>
-        </svg>
-        <svg class="mapa-rede" id="mapa-rede" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
+        <div class="mapa-brasil-camada-3d" id="mapa-brasil-camada-3d">
+          <div class="mapa-brasil-modelo" aria-hidden="true">
+            <img src="assets/mapa-brasil-base-neon.png" alt="" width="1188" height="1148" decoding="async">
+          </div>
+          <svg class="mapa-rede" id="mapa-rede" viewBox="0 0 100 100" aria-hidden="true" focusable="false">
           <defs>
             <filter id="mapa-rede-glow" x="-80%" y="-80%" width="260%" height="260%">
               <feGaussianBlur stdDeviation="1.1" result="glow"/>
@@ -478,7 +467,7 @@
             </radialGradient>
           </defs>
           <g id="mapa-conexoes"></g>
-          <g class="mapa-hub" transform="translate(51 58)">
+          <g class="mapa-hub" transform="translate(61 63)">
             <circle class="mapa-hub-onda mapa-hub-onda-1" r="5.5"></circle>
             <circle class="mapa-hub-onda mapa-hub-onda-2" r="8"></circle>
             <circle class="mapa-hub-nucleo" r="2.15"></circle>
@@ -487,13 +476,14 @@
         </svg>
         <div class="mapa-emissoras" id="mapa-emissoras"></div>
         <div class="mapa-estados" id="mapa-estados"></div>
+        </div>
         <div class="mapa-legenda" aria-hidden="true">
           <span><i class="mapa-legenda-ponto com-radio"></i>Cidade conectada</span>
           <span><i class="mapa-legenda-linha"></i>Fluxo da rede</span>
           <span><i class="mapa-legenda-ponto"></i>Estado disponível</span>
         </div>
       </div>
-      <p class="mapa-instrucao"><span aria-hidden="true">◎</span> Pontos luminosos representam cidades com emissoras. As linhas animadas mostram a rede nacional se formando em tempo real.</p>
+      <p class="mapa-instrucao"><span aria-hidden="true">◎</span> Cada luz representa uma cidade com emissora. Fluxos coloridos conectam a rede à Central Rádios Brasil.</p>
       <div class="mapa-estados-lista" id="mapa-estados-lista" aria-label="Lista alternativa de estados"></div>
     </div>
 

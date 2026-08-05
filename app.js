@@ -256,6 +256,7 @@ async function iniciarPortal() {
   carregarPreferenciasLocais();
   carregarPreferenciaPlayerRecolhido();
   registrarEventos();
+  configurarMapaSonoro3D();
   configurarMediaSession();
   atualizarControlesVolume();
   atualizarControlesZap();
@@ -3102,33 +3103,33 @@ const ICONES_REGIOES = {
 };
 
 const ESTADOS_BRASIL = {
-  AC: { nome: "Acre", regiao: "Norte", x: 12, y: 49 },
-  AM: { nome: "Amazonas", regiao: "Norte", x: 27, y: 34 },
-  RR: { nome: "Roraima", regiao: "Norte", x: 31, y: 13 },
-  AP: { nome: "Amapá", regiao: "Norte", x: 59, y: 13 },
-  PA: { nome: "Pará", regiao: "Norte", x: 52, y: 31 },
-  RO: { nome: "Rondônia", regiao: "Norte", x: 27, y: 52 },
-  TO: { nome: "Tocantins", regiao: "Norte", x: 56, y: 48 },
-  MA: { nome: "Maranhão", regiao: "Nordeste", x: 69, y: 37 },
-  PI: { nome: "Piauí", regiao: "Nordeste", x: 74, y: 48 },
-  CE: { nome: "Ceará", regiao: "Nordeste", x: 84, y: 44 },
-  RN: { nome: "Rio Grande do Norte", regiao: "Nordeste", x: 93, y: 45, pequeno: true },
-  PB: { nome: "Paraíba", regiao: "Nordeste", x: 92, y: 51, pequeno: true },
-  PE: { nome: "Pernambuco", regiao: "Nordeste", x: 87, y: 56 },
-  AL: { nome: "Alagoas", regiao: "Nordeste", x: 88, y: 62, pequeno: true },
-  SE: { nome: "Sergipe", regiao: "Nordeste", x: 84, y: 66, pequeno: true },
-  BA: { nome: "Bahia", regiao: "Nordeste", x: 73, y: 62 },
-  MT: { nome: "Mato Grosso", regiao: "Centro-Oeste", x: 43, y: 55 },
-  MS: { nome: "Mato Grosso do Sul", regiao: "Centro-Oeste", x: 43, y: 72 },
-  GO: { nome: "Goiás", regiao: "Centro-Oeste", x: 58, y: 66 },
-  DF: { nome: "Distrito Federal", regiao: "Centro-Oeste", x: 61, y: 63, pequeno: true },
-  MG: { nome: "Minas Gerais", regiao: "Sudeste", x: 69, y: 73 },
-  ES: { nome: "Espírito Santo", regiao: "Sudeste", x: 81, y: 75, pequeno: true },
-  RJ: { nome: "Rio de Janeiro", regiao: "Sudeste", x: 75, y: 82, pequeno: true },
-  SP: { nome: "São Paulo", regiao: "Sudeste", x: 61, y: 80 },
-  PR: { nome: "Paraná", regiao: "Sul", x: 56, y: 87 },
-  SC: { nome: "Santa Catarina", regiao: "Sul", x: 58, y: 92, pequeno: true },
-  RS: { nome: "Rio Grande do Sul", regiao: "Sul", x: 51, y: 96 }
+  AC: { nome: "Acre", regiao: "Norte", x: 8.5, y: 42.5 },
+  AM: { nome: "Amazonas", regiao: "Norte", x: 24.5, y: 29.2 },
+  RR: { nome: "Roraima", regiao: "Norte", x: 31.5, y: 8.8 },
+  AP: { nome: "Amapá", regiao: "Norte", x: 55.5, y: 10.8 },
+  PA: { nome: "Pará", regiao: "Norte", x: 50.7, y: 29.6 },
+  RO: { nome: "Rondônia", regiao: "Norte", x: 28.6, y: 47.6 },
+  TO: { nome: "Tocantins", regiao: "Norte", x: 61.5, y: 44.0 },
+  MA: { nome: "Maranhão", regiao: "Nordeste", x: 70.2, y: 27.8 },
+  PI: { nome: "Piauí", regiao: "Nordeste", x: 78.1, y: 38.8 },
+  CE: { nome: "Ceará", regiao: "Nordeste", x: 87.1, y: 32.4 },
+  RN: { nome: "Rio Grande do Norte", regiao: "Nordeste", x: 96.2, y: 35.2, pequeno: true },
+  PB: { nome: "Paraíba", regiao: "Nordeste", x: 95.7, y: 40.1, pequeno: true },
+  PE: { nome: "Pernambuco", regiao: "Nordeste", x: 92.4, y: 44.7 },
+  AL: { nome: "Alagoas", regiao: "Nordeste", x: 92.2, y: 49.1, pequeno: true },
+  SE: { nome: "Sergipe", regiao: "Nordeste", x: 90.6, y: 52.4, pequeno: true },
+  BA: { nome: "Bahia", regiao: "Nordeste", x: 80.4, y: 55.4 },
+  MT: { nome: "Mato Grosso", regiao: "Centro-Oeste", x: 44.8, y: 54.0 },
+  MS: { nome: "Mato Grosso do Sul", regiao: "Centro-Oeste", x: 43.8, y: 70.5 },
+  GO: { nome: "Goiás", regiao: "Centro-Oeste", x: 61.0, y: 58.6 },
+  DF: { nome: "Distrito Federal", regiao: "Centro-Oeste", x: 61.0, y: 63.0, pequeno: true },
+  MG: { nome: "Minas Gerais", regiao: "Sudeste", x: 72.8, y: 68.2 },
+  ES: { nome: "Espírito Santo", regiao: "Sudeste", x: 86.4, y: 72.2, pequeno: true },
+  RJ: { nome: "Rio de Janeiro", regiao: "Sudeste", x: 82.5, y: 79.1, pequeno: true },
+  SP: { nome: "São Paulo", regiao: "Sudeste", x: 67.1, y: 78.5 },
+  PR: { nome: "Paraná", regiao: "Sul", x: 57.3, y: 86.1 },
+  SC: { nome: "Santa Catarina", regiao: "Sul", x: 59.2, y: 92.1, pequeno: true },
+  RS: { nome: "Rio Grande do Sul", regiao: "Sul", x: 52.1, y: 97.0 }
 };
 
 const ICONES_CATEGORIAS = {
@@ -3297,6 +3298,36 @@ function limitarCoordenadaMapa(valor, minimo, maximo) {
   return Math.min(maximo, Math.max(minimo, valor));
 }
 
+function gerarCorUnicaPontoMapa(indice) {
+  const matiz = (196 + indice * 137.508) % 360;
+  return `hsl(${matiz.toFixed(2)} 96% 64%)`;
+}
+
+function configurarMapaSonoro3D() {
+  const palco = document.querySelector(".mapa-brasil-stage");
+  const camada = document.getElementById("mapa-brasil-camada-3d");
+  if (!palco || !camada || window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches) return;
+
+  let quadro = 0;
+  const aplicar = (x, y) => {
+    cancelAnimationFrame(quadro);
+    quadro = requestAnimationFrame(() => {
+      camada.style.setProperty("--mapa-rotacao-y", `${x.toFixed(2)}deg`);
+      camada.style.setProperty("--mapa-rotacao-x", `${y.toFixed(2)}deg`);
+    });
+  };
+
+  palco.addEventListener("pointermove", evento => {
+    if (evento.pointerType === "touch") return;
+    const area = palco.getBoundingClientRect();
+    const px = (evento.clientX - area.left) / Math.max(1, area.width) - .5;
+    const py = (evento.clientY - area.top) / Math.max(1, area.height) - .5;
+    aplicar(px * 8, py * -6);
+  }, { passive: true });
+
+  palco.addEventListener("pointerleave", () => aplicar(0, 0), { passive: true });
+}
+
 function obterPontosRedeMapa(radios) {
   const grupos = new Map();
   radios.forEach(radio => {
@@ -3335,7 +3366,8 @@ function obterPontosRedeMapa(radios) {
   const limite = window.matchMedia?.("(max-width: 620px)")?.matches ? 28 : 64;
   return pontos
     .sort((a, b) => b.total - a.total || a.uf.localeCompare(b.uf) || a.cidade.localeCompare(b.cidade, "pt-BR"))
-    .slice(0, limite);
+    .slice(0, limite)
+    .map((ponto, indice) => ({ ...ponto, cor: gerarCorUnicaPontoMapa(indice) }));
 }
 
 function criarCaminhoRedeMapa(origem, destino, curvatura = 0) {
@@ -3406,7 +3438,7 @@ function renderizarRedeMapaSonoro(radios, cidadeNova) {
   elementos.mapaConexoes.innerHTML = "";
   elementos.mapaEmissoras.innerHTML = "";
 
-  const hub = { x: 51, y: 58, uf: "", regiao: "", chave: "", cor: "#37e6ff" };
+  const hub = { x: 61, y: 63, uf: "", regiao: "", chave: "", cor: "#37e6ff" };
   pontos.forEach((ponto, indice) => {
     const curvatura = ((hashVisualMapa(ponto.chave) % 11) - 5) * .42;
     adicionarConexaoRedeMapa(hub, ponto, { indice, cor: ponto.cor, curvatura });
