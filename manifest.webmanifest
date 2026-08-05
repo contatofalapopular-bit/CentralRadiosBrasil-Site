@@ -83,6 +83,12 @@
       "short_name": "Ocorrência",
       "description": "Informar rádio fora do ar ou problema no Portal",
       "url": "./ocorrencias/"
+    },
+    {
+      "name": "Apoie o projeto",
+      "short_name": "Apoie",
+      "description": "Contribua voluntariamente por Pix",
+      "url": "./apoie/"
     }
   ]
 }

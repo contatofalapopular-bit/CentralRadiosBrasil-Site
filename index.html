@@ -14,7 +14,7 @@
   >
 
 
-  <!-- SEO e compartilhamento — 22.16.0 -->
+  <!-- SEO e compartilhamento — 22.16.2 -->
   <meta name="robots" content="index, follow, max-image-preview:large">
   <link rel="canonical" href="https://centralradiosbrasil.com.br/">
   <meta property="og:locale" content="pt_BR">
@@ -41,14 +41,14 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Central Rádios">
-  <link rel="manifest" href="manifest.webmanifest?v=22.16.0">
+  <link rel="manifest" href="manifest.webmanifest?v=22.16.2">
   <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64-v22113.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon-v22113.png">
-  <link rel="stylesheet" href="pwa.css?v=22.16.0">
+  <link rel="stylesheet" href="pwa.css?v=22.16.2">
 
   <title>Central Rádios Brasil — Ouça rádios online do Brasil</title>
 
-  <link rel="stylesheet" href="style.css?v=22.16.0">
+  <link rel="stylesheet" href="style.css?v=22.16.2">
 </head>
 
 <body>
@@ -74,6 +74,14 @@
 
       </a>
       <div class="cabecalho-acoes-pwa">
+        <a
+          class="cabecalho-apoie-link"
+          href="apoie/"
+          aria-label="Apoiar voluntariamente a Central Rádios Brasil por Pix"
+        >
+          <span aria-hidden="true">❤</span>
+          <span>Apoie o projeto</span>
+        </a>
         <a
           class="cabecalho-streaming-link"
           href="streaming/"
@@ -286,7 +294,17 @@
 
 </section>
 
-
+<section class="apoio-chamada" aria-labelledby="apoio-chamada-titulo">
+  <div class="apoio-chamada-icone" aria-hidden="true">❤</div>
+  <div class="apoio-chamada-conteudo">
+    <span class="titulo-menor">APOIO VOLUNTÁRIO</span>
+    <h2 id="apoio-chamada-titulo">Ajude a manter a Central Rádios Brasil</h2>
+    <p>Sua contribuição ajuda nos custos de manutenção, segurança e evolução da plataforma. O apoio é opcional e não interfere no cadastro, destaque ou permanência de nenhuma emissora.</p>
+  </div>
+  <a class="apoio-chamada-botao" href="apoie/">
+    <span aria-hidden="true">▦</span> Ver QR Code Pix
+  </a>
+</section>
 
 <section class="ranking-nacional" id="ranking-nacional" aria-labelledby="ranking-nacional-titulo">
 
@@ -708,9 +726,13 @@
 
   <div class="sr-only" id="anuncio-acessibilidade" role="status" aria-live="polite" aria-atomic="true"></div>
 
-  <script src="accessibility.js?v=22.16.0"></script>
-  <script src="app.js?v=22.16.0"></script>
-  <script src="pwa.js?v=22.16.0"></script>
+  <script src="accessibility.js?v=22.16.2"></script>
+  <script src="app.js?v=22.16.2"></script>
+  <script src="pwa.js?v=22.16.2"></script>
 
+
+  <a class="apoio-flutuante" href="apoie/" aria-label="Apoie voluntariamente a Central Rádios Brasil por Pix">
+    <span aria-hidden="true">❤</span> Apoie
+  </a>
 </body>
 </html>

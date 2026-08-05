@@ -1,0 +1,11 @@
+CENTRAL RÁDIOS BRASIL — SITE v22.16.2
+
+1. Este ZIP já abre diretamente nos arquivos do site.
+2. Após descompactar, envie TODOS os arquivos e pastas desta pasta para a RAIZ do repositório do Site Público.
+3. O arquivo index.html precisa ficar na raiz do repositório, junto de app.js, style.css e service-worker.js.
+4. Não crie uma pasta chamada 01-SITE-PUBLICO ou site_v22162_root no GitHub.
+5. Confirme o commit na branch usada pelo GitHub Pages.
+6. Aguarde a implantação ficar verde.
+7. Abra https://centralradiosbrasil.com.br/apoie/ e depois use Ctrl+F5 na Home.
+
+Não altere Worker, D1, Admin ou Portal do Cliente.

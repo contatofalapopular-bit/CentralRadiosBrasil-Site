@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "22.16.0";
+const APP_VERSION = "22.16.2";
 const CACHE_SHELL = `crb-shell-${APP_VERSION}`;
 const CACHE_DADOS = `crb-dados-${APP_VERSION}`;
 const URL_RADIOS = "https://raw.githubusercontent.com/contatofalapopular-bit/CentralRadiosBrasil-Dados/main/radios.json";
@@ -13,7 +13,7 @@ const ARQUIVOS_ESSENCIAIS = [
   "./accessibility.js",
   "./pwa.css",
   "./pwa.js",
-  "./manifest.webmanifest?v=22.16.0",
+  "./manifest.webmanifest?v=22.16.2",
   "./offline.html",
   "./hero-frases.json",
   "./logo-central-radios-brasil.png",
@@ -51,6 +51,11 @@ const ARQUIVOS_ESSENCIAIS = [
   "./ocorrencias/index.html",
   "./ocorrencias/ocorrencias.css",
   "./ocorrencias/ocorrencias.js",
+  "./apoie/",
+  "./apoie/index.html",
+  "./apoie/apoie.css",
+  "./apoie/apoie.js",
+  "./assets/qr-code-pix-apoio.jpeg",
 ];
 
 self.addEventListener("install", evento => {
