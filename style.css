@@ -5544,3 +5544,206 @@ body.player-recolhido-visivel .apoio-flutuante{bottom:118px;}
 @media (prefers-reduced-motion: reduce) {
   .mapa-brasil-camada-3d { animation: none !important; transform: none !important; }
 }
+
+
+/* v22.17.4 — mapa sonoro refinado */
+.mapa-brasil-stage {
+  aspect-ratio: 1.12 / 1 !important;
+  min-height: 520px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 52%, rgba(32,92,168,.18), transparent 30%),
+    linear-gradient(180deg, rgba(6,18,42,.98), rgba(3,10,26,.98));
+}
+
+.mapa-brasil-stage::before,
+.mapa-brasil-stage::after,
+.mapa-brasil-camada-3d::after,
+.mapa-brasil-modelo::before,
+.mapa-brasil-modelo::after {
+  display: none !important;
+  content: none !important;
+}
+
+.mapa-brasil-camada-3d {
+  inset: 5% 5.5% 7% 5.5% !important;
+  transform: none !important;
+  animation: none !important;
+  perspective: none !important;
+  filter: none !important;
+}
+
+.mapa-brasil-modelo {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible !important;
+  transform: none !important;
+}
+
+.mapa-brasil-modelo img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  image-rendering: auto;
+  opacity: .96;
+  filter: drop-shadow(0 0 8px rgba(55,230,255,.12)) drop-shadow(0 0 18px rgba(55,230,255,.08)) !important;
+}
+
+.mapa-brasil-camada-3d .mapa-rede,
+.mapa-brasil-camada-3d .mapa-emissoras,
+.mapa-brasil-camada-3d .mapa-estados {
+  inset: 0 !important;
+  transform: none !important;
+}
+
+.mapa-rede {
+  overflow: visible;
+}
+
+.mapa-rede-linha {
+  opacity: .34 !important;
+  stroke-width: .32 !important;
+  filter: none !important;
+}
+
+.mapa-rede-fluxo {
+  opacity: .92 !important;
+  stroke-width: .70 !important;
+  filter: none !important;
+}
+
+.mapa-hub-onda {
+  opacity: .5;
+}
+
+.mapa-emissora-ponto {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+.mapa-emissora-nucleo {
+  width: 9px !important;
+  height: 9px !important;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.22), 0 0 8px var(--mapa-cor), 0 0 18px var(--mapa-cor) !important;
+}
+
+.mapa-emissora-onda {
+  border-width: 2px !important;
+  opacity: .75;
+}
+
+.mapa-legenda {
+  background: rgba(6,20,46,.74) !important;
+  backdrop-filter: blur(8px);
+}
+
+@media (max-width: 900px) {
+  .mapa-brasil-stage {
+    aspect-ratio: 1 / 1.02 !important;
+    min-height: 430px !important;
+  }
+  .mapa-brasil-camada-3d {
+    inset: 5.5% 4% 7.5% 4% !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .mapa-brasil-stage {
+    min-height: 360px !important;
+    aspect-ratio: 1 / 1.06 !important;
+  }
+  .mapa-brasil-camada-3d {
+    inset: 6% 3% 8% 3% !important;
+  }
+  .mapa-emissora-ponto { width: 18px !important; height: 18px !important; }
+  .mapa-emissora-nucleo { width: 8px !important; height: 8px !important; }
+}
+
+
+/* v22.17.5 — mapa sonoro com base satélite fornecida pelo usuário */
+.mapa-brasil-stage {
+  aspect-ratio: 1365 / 991 !important;
+  min-height: 540px !important;
+  overflow: hidden;
+  background: linear-gradient(180deg, rgba(5,16,39,.98), rgba(3,11,28,.98));
+}
+
+.mapa-brasil-stage::before,
+.mapa-brasil-stage::after,
+.mapa-brasil-camada-3d::after,
+.mapa-brasil-modelo::before,
+.mapa-brasil-modelo::after {
+  display: none !important;
+  content: none !important;
+}
+
+.mapa-brasil-camada-3d {
+  inset: 0 !important;
+  transform: none !important;
+  animation: none !important;
+  filter: none !important;
+  perspective: none !important;
+}
+
+.mapa-brasil-modelo {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  transform: none !important;
+}
+
+.mapa-brasil-modelo img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.mapa-brasil-camada-3d .mapa-rede,
+.mapa-brasil-camada-3d .mapa-emissoras,
+.mapa-brasil-camada-3d .mapa-estados {
+  inset: 0 !important;
+  transform: none !important;
+}
+
+.mapa-rede { overflow: visible; }
+.mapa-rede-linha { opacity: .28 !important; stroke-width: .30 !important; filter: none !important; }
+.mapa-rede-fluxo { opacity: .95 !important; stroke-width: .78 !important; filter: url(#mapa-rede-glow) !important; }
+.mapa-rede-fluxo.secundaria { opacity: .78 !important; }
+
+.mapa-hub-onda { opacity: .45; }
+.mapa-hub-nucleo { filter: drop-shadow(0 0 8px rgba(55,230,255,.8)); }
+
+.mapa-emissora-ponto { width: 20px !important; height: 20px !important; }
+.mapa-emissora-nucleo {
+  width: 9px !important;
+  height: 9px !important;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.26), 0 0 10px var(--mapa-cor), 0 0 18px var(--mapa-cor) !important;
+}
+.mapa-emissora-onda { border-width: 2px !important; opacity: .8 !important; }
+
+.mapa-legenda {
+  background: rgba(4,16,39,.78) !important;
+  backdrop-filter: blur(8px);
+}
+
+@media (max-width: 1100px) {
+  .mapa-brasil-stage { min-height: 470px !important; }
+}
+@media (max-width: 900px) {
+  .mapa-brasil-stage { min-height: 410px !important; }
+}
+@media (max-width: 640px) {
+  .mapa-brasil-stage { min-height: 330px !important; }
+  .mapa-emissora-ponto { width: 18px !important; height: 18px !important; }
+  .mapa-emissora-nucleo { width: 8px !important; height: 8px !important; }
+}

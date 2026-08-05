@@ -3322,7 +3322,7 @@ function configurarMapaSonoro3D() {
     const area = palco.getBoundingClientRect();
     const px = (evento.clientX - area.left) / Math.max(1, area.width) - .5;
     const py = (evento.clientY - area.top) / Math.max(1, area.height) - .5;
-    aplicar(px * 1.8, py * -1.35);
+    aplicar(px * 0.55, py * -0.42);
   }, { passive: true });
 
   palco.addEventListener("pointerleave", () => aplicar(0, 0), { passive: true });
