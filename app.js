@@ -3322,7 +3322,7 @@ function configurarMapaSonoro3D() {
     const area = palco.getBoundingClientRect();
     const px = (evento.clientX - area.left) / Math.max(1, area.width) - .5;
     const py = (evento.clientY - area.top) / Math.max(1, area.height) - .5;
-    aplicar(px * 8, py * -6);
+    aplicar(px * 1.8, py * -1.35);
   }, { passive: true });
 
   palco.addEventListener("pointerleave", () => aplicar(0, 0), { passive: true });
@@ -3445,24 +3445,8 @@ function renderizarRedeMapaSonoro(radios, cidadeNova) {
     elementos.mapaEmissoras.appendChild(criarPontoEmissoraMapa(ponto, indice, cidadeNova));
   });
 
-  const pares = new Set();
-  pontos.forEach((ponto, indice) => {
-    const vizinhos = pontos
-      .filter(outro => outro !== ponto && outro.regiao === ponto.regiao)
-      .map(outro => ({ outro, distancia: Math.hypot(outro.x - ponto.x, outro.y - ponto.y) }))
-      .sort((a, b) => a.distancia - b.distancia);
-    const vizinho = vizinhos[0]?.outro;
-    if (!vizinho) return;
-    const chavePar = [ponto.chave, vizinho.chave].sort().join("::");
-    if (pares.has(chavePar)) return;
-    pares.add(chavePar);
-    adicionarConexaoRedeMapa(ponto, vizinho, {
-      indice: indice + pontos.length,
-      cor: ponto.cor,
-      curvatura: ((indice % 3) - 1) * 1.2,
-      secundaria: true
-    });
-  });
+  // Cada cidade se conecta somente ao núcleo CRB.
+  // Isso preserva a animação e evita cruzamentos confusos entre cidades.
 }
 
 function selecionarCidadeMapa(cidade, uf) {
@@ -3529,7 +3513,7 @@ function renderizarMapaSonoro() {
   elementos.mapaEstadosLista.innerHTML = "";
   Object.entries(ESTADOS_BRASIL).forEach(([uf, dados]) => {
     const total = contagemUfs.get(uf) || 0;
-    elementos.mapaEstados.appendChild(criarBotaoEstadoMapa(uf, dados, total, cidadeNova));
+    // Os estados são escolhidos na lista externa. Não sobrepor siglas ao desenho do mapa.
     elementos.mapaEstadosLista.appendChild(criarBotaoEstadoListaMapa(uf, dados, total));
   });
   renderizarRedeMapaSonoro(radios, cidadeNova);

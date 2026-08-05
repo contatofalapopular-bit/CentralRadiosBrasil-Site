@@ -14,7 +14,7 @@
   >
 
 
-  <!-- SEO e compartilhamento — 22.17.1 -->
+  <!-- SEO e compartilhamento — 22.17.3 -->
   <meta name="robots" content="index, follow, max-image-preview:large">
   <link rel="canonical" href="https://centralradiosbrasil.com.br/">
   <meta property="og:locale" content="pt_BR">
@@ -41,14 +41,14 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Central Rádios">
-  <link rel="manifest" href="manifest.webmanifest?v=22.17.1">
+  <link rel="manifest" href="manifest.webmanifest?v=22.17.3">
   <link rel="icon" type="image/png" sizes="64x64" href="icons/favicon-64-v22113.png">
   <link rel="apple-touch-icon" href="icons/apple-touch-icon-v22113.png">
-  <link rel="stylesheet" href="pwa.css?v=22.17.1">
+  <link rel="stylesheet" href="pwa.css?v=22.17.3">
 
   <title>Central Rádios Brasil — Ouça rádios online do Brasil</title>
 
-  <link rel="stylesheet" href="style.css?v=22.17.1">
+  <link rel="stylesheet" href="style.css?v=22.17.3">
 </head>
 
 <body>
@@ -412,7 +412,7 @@
   <div class="descoberta-cabecalho mapa-sonoro-cabecalho">
     <div>
       <span class="titulo-menor">BRASIL DE NORTE A SUL</span>
-      <h2 id="mapa-sonoro-titulo"><span aria-hidden="true">🗺️</span> Mapa Sonoro 3D do Brasil</h2>
+      <h2 id="mapa-sonoro-titulo"><span aria-hidden="true">🗺️</span> Mapa Sonoro do Brasil</h2>
       <p>Uma rede viva de rádios, cidades e regiões conectadas de norte a sul do Brasil.</p>
     </div>
     <div class="mapa-resumo-geral" id="mapa-resumo-geral" aria-live="polite">Carregando presença nacional...</div>
@@ -441,7 +441,7 @@
 
   <div class="mapa-sonoro-layout">
     <div class="mapa-sonoro-visual">
-      <div class="mapa-brasil-stage" role="group" aria-label="Rede interativa de emissoras no mapa do Brasil">
+      <div class="mapa-brasil-stage" role="group" aria-label="Mapa interativo do Brasil com cidades conectadas à Central Rádios Brasil">
         <div class="mapa-atmosfera" aria-hidden="true">
           <span style="--x:12%;--y:18%;--d:-1s;--s:4px"></span>
           <span style="--x:86%;--y:22%;--d:-4s;--s:5px"></span>
@@ -475,16 +475,21 @@
           </g>
         </svg>
         <div class="mapa-emissoras" id="mapa-emissoras"></div>
-        <div class="mapa-estados" id="mapa-estados"></div>
+        <div class="mapa-estados" id="mapa-estados" aria-hidden="true"></div>
         </div>
         <div class="mapa-legenda" aria-hidden="true">
-          <span><i class="mapa-legenda-ponto com-radio"></i>Cidade conectada</span>
-          <span><i class="mapa-legenda-linha"></i>Fluxo da rede</span>
-          <span><i class="mapa-legenda-ponto"></i>Estado disponível</span>
+          <span><i class="mapa-legenda-ponto com-radio"></i>Cidade com rádio</span>
+          <span><i class="mapa-legenda-linha"></i>Ligação com a CRB</span>
         </div>
       </div>
-      <p class="mapa-instrucao"><span aria-hidden="true">◎</span> Cada luz representa uma cidade com emissora. Fluxos coloridos conectam a rede à Central Rádios Brasil.</p>
-      <div class="mapa-estados-lista" id="mapa-estados-lista" aria-label="Lista alternativa de estados"></div>
+      <p class="mapa-instrucao"><span aria-hidden="true">◎</span> Cada ponto colorido representa uma cidade com rádio. Toque no ponto ou escolha um estado abaixo.</p>
+      <div class="mapa-seletor-estados">
+        <div class="mapa-seletor-estados-cabecalho">
+          <strong>Escolha um estado</strong>
+          <span>Somente os pontos coloridos indicam cidades com emissoras</span>
+        </div>
+        <div class="mapa-estados-lista" id="mapa-estados-lista" aria-label="Escolher um estado do Brasil"></div>
+      </div>
     </div>
 
     <aside class="mapa-sonoro-painel" id="mapa-sonoro-painel" aria-live="polite">
@@ -845,9 +850,9 @@
 
   <div class="sr-only" id="anuncio-acessibilidade" role="status" aria-live="polite" aria-atomic="true"></div>
 
-  <script src="accessibility.js?v=22.17.1"></script>
-  <script src="app.js?v=22.17.1"></script>
-  <script src="pwa.js?v=22.17.1"></script>
+  <script src="accessibility.js?v=22.17.3"></script>
+  <script src="app.js?v=22.17.3"></script>
+  <script src="pwa.js?v=22.17.3"></script>
 
 
   <a class="apoio-flutuante" href="apoie/" aria-label="Apoie voluntariamente a Central Rádios Brasil por Pix">
