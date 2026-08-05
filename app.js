@@ -104,6 +104,9 @@ const elementos = {
   explorarRegioes: document.getElementById("explorar-regioes"),
   mapaResumoGeral: document.getElementById("mapa-resumo-geral"),
   mapaEstados: document.getElementById("mapa-estados"),
+  mapaRede: document.getElementById("mapa-rede"),
+  mapaConexoes: document.getElementById("mapa-conexoes"),
+  mapaEmissoras: document.getElementById("mapa-emissoras"),
   mapaEstadosLista: document.getElementById("mapa-estados-lista"),
   mapaPainelEtiqueta: document.getElementById("mapa-painel-etiqueta"),
   mapaPainelTitulo: document.getElementById("mapa-painel-titulo"),
@@ -162,6 +165,8 @@ const estado = {
   regiaoSelecionada: "",
   mapaRegiaoSelecionada: "",
   mapaUfSelecionada: "",
+  mapaCidadeSelecionada: "",
+  mapaCidadeUfSelecionada: "",
   usuarioPausou: false,
   fechandoPlayer: false,
   playerRecolhido: false,
@@ -3232,7 +3237,12 @@ function normalizarCidadeMapa(valor) {
 
 function obterRadiosRecorteMapa() {
   let radios = [...estado.radios];
-  if (estado.mapaUfSelecionada) {
+  if (estado.mapaCidadeSelecionada && estado.mapaCidadeUfSelecionada) {
+    radios = radios.filter(radio =>
+      String(radio.localizacao?.uf || "").toUpperCase() === estado.mapaCidadeUfSelecionada &&
+      normalizarCidadeMapa(radio.localizacao?.cidade) === estado.mapaCidadeSelecionada
+    );
+  } else if (estado.mapaUfSelecionada) {
     radios = radios.filter(radio => String(radio.localizacao?.uf || "").toUpperCase() === estado.mapaUfSelecionada);
   } else if (estado.mapaRegiaoSelecionada) {
     const ufs = obterUfsDaRegiao(estado.mapaRegiaoSelecionada);
@@ -3263,6 +3273,177 @@ function obterCidadeRecemChegada(radios) {
   return obterResumoCidadesMapa(radios)
     .filter(item => item.primeiraData)
     .sort((a, b) => b.primeiraData.getTime() - a.primeiraData.getTime())[0] || null;
+}
+
+
+const CORES_REDE_MAPA = {
+  Norte: "#46efb3",
+  Nordeste: "#ffd166",
+  "Centro-Oeste": "#37e6ff",
+  Sudeste: "#6ca8ff",
+  Sul: "#d48cff"
+};
+
+function hashVisualMapa(texto) {
+  let hash = 2166136261;
+  for (const caractere of String(texto || "")) {
+    hash ^= caractere.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return Math.abs(hash >>> 0);
+}
+
+function limitarCoordenadaMapa(valor, minimo, maximo) {
+  return Math.min(maximo, Math.max(minimo, valor));
+}
+
+function obterPontosRedeMapa(radios) {
+  const grupos = new Map();
+  radios.forEach(radio => {
+    const cidade = normalizarCidadeMapa(radio.localizacao?.cidade);
+    const uf = String(radio.localizacao?.uf || "").toUpperCase();
+    if (!cidade || !ESTADOS_BRASIL[uf]) return;
+    const chave = `${uf}|${cidade.toLocaleLowerCase("pt-BR")}`;
+    if (!grupos.has(chave)) grupos.set(chave, { chave, cidade, uf, radios: [] });
+    grupos.get(chave).radios.push(radio);
+  });
+
+  const porUf = new Map();
+  [...grupos.values()].forEach(grupo => {
+    if (!porUf.has(grupo.uf)) porUf.set(grupo.uf, []);
+    porUf.get(grupo.uf).push(grupo);
+  });
+
+  const pontos = [];
+  porUf.forEach((itens, uf) => {
+    const base = ESTADOS_BRASIL[uf];
+    itens
+      .sort((a, b) => b.radios.length - a.radios.length || a.cidade.localeCompare(b.cidade, "pt-BR"))
+      .forEach((grupo, indice) => {
+        const semente = hashVisualMapa(grupo.chave);
+        const angulo = ((semente % 360) + indice * 137.5) * Math.PI / 180;
+        const raio = itens.length === 1 ? .7 : 1.8 + Math.min(4.2, indice * .75);
+        grupo.x = limitarCoordenadaMapa(base.x + Math.cos(angulo) * raio, 7.5, 95.5);
+        grupo.y = limitarCoordenadaMapa(base.y + Math.sin(angulo) * raio, 6.5, 97);
+        grupo.regiao = base.regiao;
+        grupo.cor = CORES_REDE_MAPA[base.regiao] || "#37e6ff";
+        grupo.total = grupo.radios.length;
+        pontos.push(grupo);
+      });
+  });
+
+  const limite = window.matchMedia?.("(max-width: 620px)")?.matches ? 28 : 64;
+  return pontos
+    .sort((a, b) => b.total - a.total || a.uf.localeCompare(b.uf) || a.cidade.localeCompare(b.cidade, "pt-BR"))
+    .slice(0, limite);
+}
+
+function criarCaminhoRedeMapa(origem, destino, curvatura = 0) {
+  const meioX = (origem.x + destino.x) / 2;
+  const meioY = (origem.y + destino.y) / 2;
+  const dx = destino.x - origem.x;
+  const dy = destino.y - origem.y;
+  const tamanho = Math.max(1, Math.hypot(dx, dy));
+  const controleX = meioX - (dy / tamanho) * curvatura;
+  const controleY = meioY + (dx / tamanho) * curvatura;
+  return `M ${origem.x.toFixed(2)} ${origem.y.toFixed(2)} Q ${controleX.toFixed(2)} ${controleY.toFixed(2)} ${destino.x.toFixed(2)} ${destino.y.toFixed(2)}`;
+}
+
+function adicionarConexaoRedeMapa(origem, destino, opcoes = {}) {
+  if (!elementos.mapaConexoes) return;
+  const ns = "http://www.w3.org/2000/svg";
+  const cor = opcoes.cor || origem.cor || destino.cor || "#37e6ff";
+  const d = criarCaminhoRedeMapa(origem, destino, opcoes.curvatura || 0);
+  const atraso = `${-((opcoes.indice || 0) % 8) * .65}s`;
+  const dados = {
+    ufs: [origem.uf, destino.uf].filter(Boolean).join(","),
+    regioes: [origem.regiao, destino.regiao].filter(Boolean).join(","),
+    cidades: [origem.chave, destino.chave].filter(Boolean).join(",")
+  };
+
+  const base = document.createElementNS(ns, "path");
+  base.setAttribute("d", d);
+  base.setAttribute("pathLength", "100");
+  base.setAttribute("class", `mapa-rede-linha${opcoes.secundaria ? " secundaria" : ""}`);
+  base.style.setProperty("--mapa-cor", cor);
+  Object.entries(dados).forEach(([chave, valor]) => base.dataset[chave] = valor);
+  elementos.mapaConexoes.appendChild(base);
+
+  const fluxo = document.createElementNS(ns, "path");
+  fluxo.setAttribute("d", d);
+  fluxo.setAttribute("pathLength", "100");
+  fluxo.setAttribute("class", `mapa-rede-fluxo${opcoes.secundaria ? " secundaria" : ""}`);
+  fluxo.style.setProperty("--mapa-cor", cor);
+  fluxo.style.setProperty("--mapa-delay", atraso);
+  Object.entries(dados).forEach(([chave, valor]) => fluxo.dataset[chave] = valor);
+  elementos.mapaConexoes.appendChild(fluxo);
+}
+
+function criarPontoEmissoraMapa(ponto, indice, cidadeNova) {
+  const botao = document.createElement("button");
+  botao.type = "button";
+  botao.className = "mapa-emissora-ponto";
+  if (cidadeNova && cidadeNova.cidade === ponto.cidade && cidadeNova.uf === ponto.uf) botao.classList.add("cidade-nova");
+  botao.dataset.uf = ponto.uf;
+  botao.dataset.regiao = ponto.regiao;
+  botao.dataset.cidade = ponto.cidade;
+  botao.dataset.chave = ponto.chave;
+  botao.style.setProperty("--mapa-x", `${ponto.x}%`);
+  botao.style.setProperty("--mapa-y", `${ponto.y}%`);
+  botao.style.setProperty("--mapa-cor", ponto.cor);
+  botao.style.setProperty("--mapa-delay", `${-(indice % 9) * .42}s`);
+  botao.setAttribute("aria-pressed", "false");
+  botao.setAttribute("aria-label", `${ponto.cidade}, ${ponto.uf}: ${ponto.total} ${ponto.total === 1 ? "emissora" : "emissoras"}`);
+  botao.title = `${ponto.cidade} • ${ponto.uf} — ${ponto.total} ${ponto.total === 1 ? "emissora" : "emissoras"}`;
+  botao.innerHTML = `<span class="mapa-emissora-onda" aria-hidden="true"></span><span class="mapa-emissora-nucleo" aria-hidden="true"></span><span class="mapa-emissora-label"><strong>${ponto.cidade}</strong><small>${ponto.uf} • ${ponto.total}</small></span>`;
+  botao.addEventListener("click", () => selecionarCidadeMapa(ponto.cidade, ponto.uf));
+  return botao;
+}
+
+function renderizarRedeMapaSonoro(radios, cidadeNova) {
+  if (!elementos.mapaConexoes || !elementos.mapaEmissoras) return;
+  const pontos = obterPontosRedeMapa(radios);
+  elementos.mapaConexoes.innerHTML = "";
+  elementos.mapaEmissoras.innerHTML = "";
+
+  const hub = { x: 51, y: 58, uf: "", regiao: "", chave: "", cor: "#37e6ff" };
+  pontos.forEach((ponto, indice) => {
+    const curvatura = ((hashVisualMapa(ponto.chave) % 11) - 5) * .42;
+    adicionarConexaoRedeMapa(hub, ponto, { indice, cor: ponto.cor, curvatura });
+    elementos.mapaEmissoras.appendChild(criarPontoEmissoraMapa(ponto, indice, cidadeNova));
+  });
+
+  const pares = new Set();
+  pontos.forEach((ponto, indice) => {
+    const vizinhos = pontos
+      .filter(outro => outro !== ponto && outro.regiao === ponto.regiao)
+      .map(outro => ({ outro, distancia: Math.hypot(outro.x - ponto.x, outro.y - ponto.y) }))
+      .sort((a, b) => a.distancia - b.distancia);
+    const vizinho = vizinhos[0]?.outro;
+    if (!vizinho) return;
+    const chavePar = [ponto.chave, vizinho.chave].sort().join("::");
+    if (pares.has(chavePar)) return;
+    pares.add(chavePar);
+    adicionarConexaoRedeMapa(ponto, vizinho, {
+      indice: indice + pontos.length,
+      cor: ponto.cor,
+      curvatura: ((indice % 3) - 1) * 1.2,
+      secundaria: true
+    });
+  });
+}
+
+function selecionarCidadeMapa(cidade, uf) {
+  const mesmaCidade = estado.mapaCidadeSelecionada === cidade && estado.mapaCidadeUfSelecionada === uf;
+  estado.mapaCidadeSelecionada = mesmaCidade ? "" : cidade;
+  estado.mapaCidadeUfSelecionada = mesmaCidade ? "" : uf;
+  estado.mapaUfSelecionada = mesmaCidade ? uf : uf;
+  estado.mapaRegiaoSelecionada = "";
+  renderizarPainelMapaSonoro();
+  atualizarSelecaoMapaSonoro();
+  window.CRBAcessibilidade?.anunciar(
+    mesmaCidade ? `Mapa sonoro voltou ao estado ${ESTADOS_BRASIL[uf]?.nome || uf}.` : `Mapa sonoro selecionado: ${cidade}, ${uf}.`
+  );
 }
 
 function criarBotaoEstadoMapa(uf, dados, total, cidadeNova) {
@@ -3319,6 +3500,7 @@ function renderizarMapaSonoro() {
     elementos.mapaEstados.appendChild(criarBotaoEstadoMapa(uf, dados, total, cidadeNova));
     elementos.mapaEstadosLista.appendChild(criarBotaoEstadoListaMapa(uf, dados, total));
   });
+  renderizarRedeMapaSonoro(radios, cidadeNova);
 
   document.querySelectorAll("[data-mapa-regiao-total]").forEach(item => {
     const regiao = item.dataset.mapaRegiaoTotal;
@@ -3333,7 +3515,9 @@ function renderizarMapaSonoro() {
 }
 
 function selecionarUfMapa(uf) {
-  estado.mapaUfSelecionada = estado.mapaUfSelecionada === uf ? "" : uf;
+  estado.mapaUfSelecionada = estado.mapaUfSelecionada === uf && !estado.mapaCidadeSelecionada ? "" : uf;
+  estado.mapaCidadeSelecionada = "";
+  estado.mapaCidadeUfSelecionada = "";
   estado.mapaRegiaoSelecionada = "";
   renderizarPainelMapaSonoro();
   atualizarSelecaoMapaSonoro();
@@ -3347,6 +3531,8 @@ function selecionarUfMapa(uf) {
 function selecionarRegiaoMapa(regiao) {
   estado.mapaRegiaoSelecionada = estado.mapaRegiaoSelecionada === regiao ? "" : regiao;
   estado.mapaUfSelecionada = "";
+  estado.mapaCidadeSelecionada = "";
+  estado.mapaCidadeUfSelecionada = "";
   renderizarPainelMapaSonoro();
   atualizarSelecaoMapaSonoro();
   window.CRBAcessibilidade?.anunciar(
@@ -3363,9 +3549,44 @@ function atualizarSelecaoMapaSonoro() {
     botao.setAttribute("aria-pressed", String(selecionado));
   });
   document.querySelectorAll("[data-mapa-regiao]").forEach(botao => {
-    const selecionado = (botao.dataset.mapaRegiao || "") === estado.mapaRegiaoSelecionada && !estado.mapaUfSelecionada;
+    const selecionado = (botao.dataset.mapaRegiao || "") === estado.mapaRegiaoSelecionada && !estado.mapaUfSelecionada && !estado.mapaCidadeSelecionada;
     botao.classList.toggle("ativo", selecionado);
     botao.setAttribute("aria-pressed", String(selecionado));
+  });
+
+  document.querySelectorAll(".mapa-emissora-ponto").forEach(botao => {
+    const cidadeSelecionada = Boolean(
+      estado.mapaCidadeSelecionada &&
+      botao.dataset.cidade === estado.mapaCidadeSelecionada &&
+      botao.dataset.uf === estado.mapaCidadeUfSelecionada
+    );
+    const pertenceUf = Boolean(!estado.mapaCidadeSelecionada && estado.mapaUfSelecionada && botao.dataset.uf === estado.mapaUfSelecionada);
+    const pertenceRegiao = Boolean(!estado.mapaCidadeSelecionada && !estado.mapaUfSelecionada && estado.mapaRegiaoSelecionada && botao.dataset.regiao === estado.mapaRegiaoSelecionada);
+    const existeRecorte = Boolean(estado.mapaCidadeSelecionada || estado.mapaUfSelecionada || estado.mapaRegiaoSelecionada);
+    const ativoNoRecorte = cidadeSelecionada || pertenceUf || pertenceRegiao;
+    botao.classList.toggle("selecionado", cidadeSelecionada);
+    botao.classList.toggle("em-recorte", ativoNoRecorte);
+    botao.classList.toggle("apagado", existeRecorte && !ativoNoRecorte);
+    botao.setAttribute("aria-pressed", String(cidadeSelecionada));
+  });
+
+  document.querySelectorAll(".mapa-rede-linha, .mapa-rede-fluxo").forEach(linha => {
+    const ufs = String(linha.dataset.ufs || "").split(",").filter(Boolean);
+    const regioes = String(linha.dataset.regioes || "").split(",").filter(Boolean);
+    const cidades = String(linha.dataset.cidades || "").split(",").filter(Boolean);
+    const cidadeChave = estado.mapaCidadeSelecionada
+      ? `${estado.mapaCidadeUfSelecionada}|${estado.mapaCidadeSelecionada.toLocaleLowerCase("pt-BR")}`
+      : "";
+    const existeRecorte = Boolean(cidadeChave || estado.mapaUfSelecionada || estado.mapaRegiaoSelecionada);
+    const ativa = cidadeChave
+      ? cidades.includes(cidadeChave)
+      : estado.mapaUfSelecionada
+        ? ufs.includes(estado.mapaUfSelecionada)
+        : estado.mapaRegiaoSelecionada
+          ? regioes.includes(estado.mapaRegiaoSelecionada)
+          : true;
+    linha.classList.toggle("apagada", existeRecorte && !ativa);
+    linha.classList.toggle("destaque", existeRecorte && ativa);
   });
 }
 
@@ -3402,7 +3623,14 @@ function renderizarPainelMapaSonoro() {
   let titulo = "Brasil inteiro";
   let etiqueta = "PANORAMA NACIONAL";
   let descricao = "Explore a presença real das emissoras cadastradas em todo o país.";
-  if (estado.mapaUfSelecionada) {
+  if (estado.mapaCidadeSelecionada && estado.mapaCidadeUfSelecionada) {
+    const dados = ESTADOS_BRASIL[estado.mapaCidadeUfSelecionada];
+    titulo = estado.mapaCidadeSelecionada;
+    etiqueta = `${dados?.regiao || "CIDADE"} • ${estado.mapaCidadeUfSelecionada}`.toUpperCase();
+    descricao = radios.length
+      ? `Emissoras conectadas diretamente de ${titulo}, ${estado.mapaCidadeUfSelecionada}.`
+      : `${titulo} ainda não possui emissora disponível.`;
+  } else if (estado.mapaUfSelecionada) {
     const dados = ESTADOS_BRASIL[estado.mapaUfSelecionada];
     titulo = dados?.nome || estado.mapaUfSelecionada;
     etiqueta = `${dados?.regiao || "ESTADO"} • ${estado.mapaUfSelecionada}`.toUpperCase();
@@ -3438,9 +3666,10 @@ function renderizarPainelMapaSonoro() {
         botao.type = "button";
         botao.className = "mapa-cidade-chip";
         if (cidadeNova && item.cidade === cidadeNova.cidade && item.uf === cidadeNova.uf) botao.classList.add("nova");
+        if (estado.mapaCidadeSelecionada === item.cidade && estado.mapaCidadeUfSelecionada === item.uf) botao.classList.add("selecionada");
         botao.innerHTML = `<span>${item.cidade}</span><small>${item.uf} • ${item.total}</small>`;
-        botao.setAttribute("aria-label", `Ver rádios de ${item.cidade}, ${item.uf}`);
-        botao.addEventListener("click", () => abrirCatalogoPorCidadeMapa(item.cidade, item.uf));
+        botao.setAttribute("aria-label", `Selecionar rádios de ${item.cidade}, ${item.uf}`);
+        botao.addEventListener("click", () => selecionarCidadeMapa(item.cidade, item.uf));
         elementos.mapaCidades.appendChild(botao);
       });
   } else {
@@ -3483,10 +3712,10 @@ function abrirCatalogoDoMapa() {
   const radios = obterRadiosRecorteMapa();
   if (!radios.length) return;
   estado.paginaAtual = 1;
-  elementos.pesquisa.value = "";
+  elementos.pesquisa.value = estado.mapaCidadeSelecionada || "";
   elementos.filtroCategoria.value = "";
-  elementos.filtroEstado.value = estado.mapaUfSelecionada || "";
-  estado.regiaoSelecionada = estado.mapaUfSelecionada ? "" : estado.mapaRegiaoSelecionada;
+  elementos.filtroEstado.value = estado.mapaCidadeUfSelecionada || estado.mapaUfSelecionada || "";
+  estado.regiaoSelecionada = estado.mapaUfSelecionada || estado.mapaCidadeSelecionada ? "" : estado.mapaRegiaoSelecionada;
   atualizarFiltroDescobertaAtivo();
   aplicarFiltros();
   document.querySelector("#catalogo-emissoras")?.scrollIntoView({ behavior: "smooth", block: "start" });

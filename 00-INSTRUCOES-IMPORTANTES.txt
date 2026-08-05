@@ -1,14 +1,10 @@
-CENTRAL RÁDIOS BRASIL — SITE v22.16.4 — CORREÇÃO MÓVEL DO PLAYER
+CENTRAL RÁDIOS BRASIL — SITE v22.17.1 — MAPA SONORO CONECTADO
 
-1. Este ZIP já abre diretamente nos arquivos do site.
-2. Após descompactar, envie TODOS os arquivos e pastas desta pasta para a RAIZ do repositório do Site Público.
-3. O arquivo index.html precisa ficar na raiz do repositório, junto de app.js, style.css e service-worker.js.
-4. Não crie uma pasta chamada 01-SITE-PUBLICO ou site_v22162_root no GitHub.
-5. Confirme o commit na branch usada pelo GitHub Pages.
-6. Aguarde a implantação ficar verde.
-7. Abra https://centralradiosbrasil.com.br/apoie/ e depois use Ctrl+F5 na Home.
+1. Envie TODO o conteúdo desta pasta 01-SITE-PUBLICO para a raiz do repositório do Site Público.
+2. Substitua os arquivos existentes.
+3. Não envie a pasta 02-ROLLBACK-v22.17.0.
+4. Aguarde o GitHub Pages concluir.
+5. Pressione Ctrl + F5. No PWA instalado, feche e abra novamente.
 
-Não altere Worker, D1, Admin ou Portal do Cliente.
-
-8. No celular/PWA, teste os botões Recolher (seta) e Fechar (X) separadamente.
-9. No celular, o botão flutuante Apoie deve desaparecer enquanto o player estiver visível; o botão do cabeçalho permanece disponível.
+ALTERAÇÃO: somente o Mapa Sonoro do Site Público/PWA.
+PRESERVADO: autoplay, player recolhível, apoio Pix, catálogo, Worker, D1, Admin e Portal do Cliente.

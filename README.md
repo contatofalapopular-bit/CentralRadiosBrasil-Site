@@ -1,6 +1,14 @@
-# Central Rádios Brasil — Site v22.17.0
+# Central Rádios Brasil — Site v22.17.1
 
-## 22.17.0 — Mapa Sonoro do Brasil
+## 22.17.1 — Mapa Sonoro Conectado
+
+- Rede animada construída em HTML, CSS, SVG e JavaScript.
+- Pontos luminosos representam cidades com emissoras reais.
+- Linhas animadas conectam as cidades ao núcleo CRB e às cidades próximas da mesma região.
+- Clique nos pontos para filtrar a cidade no painel.
+- Modo com movimento reduzido respeitado.
+- Sem alteração no Worker, D1, Admin ou Portal do Cliente.
+
 
 - Substitui a antiga seção “Explore por regiões” por uma experiência nacional interativa.
 - Mapa estilizado com os 26 estados e o Distrito Federal.

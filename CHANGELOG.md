@@ -1,3 +1,13 @@
+## 22.17.1 — Mapa Sonoro Conectado
+
+- Substitui o desenho estático do mapa por uma rede visual animada em código.
+- Adiciona pontos brilhantes e coloridos por cidade com emissora.
+- Adiciona linhas com fluxo luminoso ligando emissoras ao núcleo CRB e entre cidades da mesma região.
+- Adiciona seleção de cidade diretamente no mapa, com atualização do painel.
+- Reduz o peso visual das siglas dos estados.
+- Mantém regiões, catálogo, autoplay e player recolhível.
+- Cache PWA atualizado para 22.17.1.
+
 ## 22.17.0 — Mapa Sonoro do Brasil
 
 - Antiga seção “Explore por regiões” substituída pelo Mapa Sonoro do Brasil.

@@ -4870,3 +4870,420 @@ body.player-recolhido-visivel .apoio-flutuante{bottom:118px;}
   .mapa-painel-metricas { gap: 6px; }
   .mapa-painel-metricas div { padding-inline: 6px; }
 }
+
+
+/* =========================================================
+   SITE 22.17.1 — MAPA SONORO CONECTADO
+   Rede animada em código: pontos reais, linhas e brilho.
+   ========================================================= */
+.mapa-sonoro-secao {
+  background:
+    radial-gradient(circle at 18% 24%, rgba(65, 122, 255, .15), transparent 32%),
+    radial-gradient(circle at 84% 74%, rgba(212, 140, 255, .12), transparent 34%),
+    linear-gradient(145deg, rgba(5, 18, 40, .98), rgba(5, 31, 62, .97) 56%, rgba(7, 21, 47, .99));
+}
+
+.mapa-brasil-stage {
+  isolation: isolate;
+  overflow: visible;
+  border: 1px solid rgba(104, 225, 255, .18);
+  border-radius: 38px;
+  background:
+    linear-gradient(rgba(55,230,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(55,230,255,.035) 1px, transparent 1px),
+    radial-gradient(circle at 50% 53%, rgba(25, 137, 231, .2), transparent 48%),
+    linear-gradient(145deg, rgba(3, 17, 37, .96), rgba(5, 35, 65, .9));
+  background-size: 30px 30px, 30px 30px, auto, auto;
+  box-shadow:
+    inset 0 0 90px rgba(2, 9, 25, .68),
+    0 28px 65px rgba(0, 0, 0, .38),
+    0 0 44px rgba(55,230,255,.055);
+}
+
+.mapa-brasil-stage::before {
+  inset: 5%;
+  border: 1px solid rgba(55,230,255,.08);
+  border-radius: 50%;
+  background: transparent;
+  box-shadow:
+    0 0 0 42px rgba(55,230,255,.018),
+    0 0 0 84px rgba(108,168,255,.014);
+  animation: mapa-orbita-respirar 7s ease-in-out infinite;
+}
+
+.mapa-brasil-stage::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(112deg, transparent 20%, rgba(55,230,255,.055) 48%, transparent 76%);
+  transform: translateX(-120%);
+  animation: mapa-varredura 8.5s ease-in-out infinite;
+}
+
+@keyframes mapa-orbita-respirar {
+  0%,100% { opacity: .4; transform: scale(.97) rotate(0deg); }
+  50% { opacity: .85; transform: scale(1.02) rotate(3deg); }
+}
+
+@keyframes mapa-varredura {
+  0%, 18% { transform: translateX(-120%); opacity: 0; }
+  38% { opacity: 1; }
+  64%, 100% { transform: translateX(120%); opacity: 0; }
+}
+
+.mapa-atmosfera {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.mapa-atmosfera span {
+  position: absolute;
+  left: var(--x);
+  top: var(--y);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 50%;
+  background: #b9f7ff;
+  box-shadow: 0 0 9px #37e6ff, 0 0 22px rgba(55,230,255,.55);
+  animation: mapa-particula-flutuar 8s var(--d) ease-in-out infinite;
+}
+
+@keyframes mapa-particula-flutuar {
+  0%,100% { opacity: .2; transform: translate3d(0, 8px, 0) scale(.75); }
+  45% { opacity: 1; transform: translate3d(5px, -9px, 0) scale(1.25); }
+  70% { opacity: .55; transform: translate3d(-4px, -3px, 0) scale(.9); }
+}
+
+.mapa-brasil-silhueta {
+  z-index: 2;
+  width: 84%;
+  height: 84%;
+  filter: drop-shadow(0 0 30px rgba(55,230,255,.08));
+}
+
+.mapa-brasil-contorno {
+  fill: url(#mapa-brasil-gradiente);
+  stroke: rgba(115, 224, 255, .3);
+  stroke-width: .5;
+}
+
+.mapa-brasil-pulso {
+  fill: transparent;
+  stroke: rgba(106, 223, 255, .62);
+  stroke-width: .38;
+  stroke-dasharray: 2 3;
+  animation: mapa-contorno-pulso 8s linear infinite;
+}
+
+.mapa-rede {
+  position: absolute;
+  z-index: 4;
+  inset: 8%;
+  width: 84%;
+  height: 84%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.mapa-rede-linha,
+.mapa-rede-fluxo {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+  transition: opacity .28s ease, filter .28s ease, stroke-width .28s ease;
+}
+
+.mapa-rede-linha {
+  stroke: color-mix(in srgb, var(--mapa-cor) 58%, transparent);
+  stroke-width: .42;
+  opacity: .38;
+  filter: url(#mapa-rede-glow);
+}
+
+.mapa-rede-linha.secundaria {
+  stroke-width: .28;
+  opacity: .24;
+}
+
+.mapa-rede-fluxo {
+  stroke: color-mix(in srgb, var(--mapa-cor) 80%, white 14%);
+  stroke-width: .65;
+  stroke-linecap: round;
+  stroke-dasharray: 2 10;
+  opacity: .88;
+  filter: url(#mapa-rede-glow);
+  animation: mapa-fluxo-rede 4.4s var(--mapa-delay, 0s) linear infinite;
+}
+
+.mapa-rede-fluxo.secundaria {
+  stroke-width: .42;
+  opacity: .56;
+  animation-duration: 6.2s;
+}
+
+.mapa-rede-linha.apagada,
+.mapa-rede-fluxo.apagada { opacity: .055; filter: none; }
+.mapa-rede-linha.destaque { opacity: .82; stroke-width: .72; }
+.mapa-rede-fluxo.destaque { opacity: 1; stroke-width: .9; }
+
+@keyframes mapa-fluxo-rede {
+  to { stroke-dashoffset: -100; }
+}
+
+.mapa-hub-nucleo {
+  fill: url(#mapa-hub-gradiente);
+  filter: url(#mapa-rede-glow);
+  animation: mapa-hub-pulso 2.4s ease-in-out infinite;
+}
+
+.mapa-hub-onda {
+  fill: none;
+  stroke: rgba(55,230,255,.56);
+  stroke-width: .32;
+  transform-origin: center;
+  animation: mapa-hub-onda 3.4s ease-out infinite;
+}
+.mapa-hub-onda-2 { animation-delay: 1.15s; opacity: .5; }
+.mapa-hub-texto { fill: #02111f; font-size: 1.28px; font-weight: 1000; letter-spacing: -.05px; }
+
+@keyframes mapa-hub-pulso {
+  0%,100% { transform: scale(.88); opacity: .82; }
+  50% { transform: scale(1.16); opacity: 1; }
+}
+@keyframes mapa-hub-onda {
+  0% { transform: scale(.45); opacity: .9; }
+  100% { transform: scale(1.4); opacity: 0; }
+}
+
+.mapa-emissoras,
+.mapa-estados {
+  position: absolute;
+  z-index: 7;
+  inset: 8%;
+  width: 84%;
+  height: 84%;
+  pointer-events: none;
+}
+
+.mapa-emissora-ponto {
+  --mapa-cor: #37e6ff;
+  position: absolute;
+  left: var(--mapa-x);
+  top: var(--mapa-y);
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  background: transparent;
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  cursor: pointer;
+  z-index: 9;
+  transition: opacity .22s ease, filter .22s ease, transform .22s ease;
+}
+
+.mapa-emissora-nucleo,
+.mapa-emissora-onda {
+  position: absolute;
+  inset: 50%;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.mapa-emissora-nucleo {
+  width: 8px;
+  height: 8px;
+  border: 1px solid rgba(255,255,255,.92);
+  background: var(--mapa-cor);
+  box-shadow:
+    0 0 5px #fff,
+    0 0 13px var(--mapa-cor),
+    0 0 28px color-mix(in srgb, var(--mapa-cor) 80%, transparent);
+  animation: mapa-emissora-nucleo 2.3s var(--mapa-delay, 0s) ease-in-out infinite;
+}
+
+.mapa-emissora-onda {
+  width: 18px;
+  height: 18px;
+  border: 1px solid color-mix(in srgb, var(--mapa-cor) 72%, transparent);
+  animation: mapa-emissora-onda 2.8s var(--mapa-delay, 0s) ease-out infinite;
+}
+
+.mapa-emissora-ponto::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--mapa-cor) 28%, transparent), transparent 68%);
+  opacity: .75;
+  pointer-events: none;
+}
+
+.mapa-emissora-ponto:hover,
+.mapa-emissora-ponto:focus-visible,
+.mapa-emissora-ponto.selecionado {
+  transform: translate(-50%, -50%) scale(1.28);
+  z-index: 18;
+  outline: none;
+  filter: brightness(1.18);
+}
+
+.mapa-emissora-ponto.apagado { opacity: .14; filter: saturate(.3); }
+.mapa-emissora-ponto.em-recorte:not(.selecionado) { filter: brightness(1.1); }
+
+.mapa-emissora-label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 9px);
+  min-width: max-content;
+  display: grid;
+  gap: 1px;
+  padding: 6px 8px;
+  border: 1px solid color-mix(in srgb, var(--mapa-cor) 42%, rgba(255,255,255,.1));
+  border-radius: 10px;
+  color: #fff;
+  background: rgba(2, 13, 29, .93);
+  box-shadow: 0 10px 24px rgba(0,0,0,.36), 0 0 18px color-mix(in srgb, var(--mapa-cor) 14%, transparent);
+  opacity: 0;
+  transform: translate(-50%, 5px) scale(.92);
+  pointer-events: none;
+  transition: opacity .18s ease, transform .18s ease;
+}
+
+.mapa-emissora-label strong { max-width: 135px; overflow: hidden; font-size: .64rem; text-overflow: ellipsis; white-space: nowrap; }
+.mapa-emissora-label small { color: #8fb4d2; font-size: .52rem; font-weight: 800; letter-spacing: .05em; }
+.mapa-emissora-ponto:hover .mapa-emissora-label,
+.mapa-emissora-ponto:focus-visible .mapa-emissora-label,
+.mapa-emissora-ponto.selecionado .mapa-emissora-label { opacity: 1; transform: translate(-50%, 0) scale(1); }
+
+.mapa-emissora-ponto.cidade-nova .mapa-emissora-nucleo { background: #fff3a3; box-shadow: 0 0 8px #fff, 0 0 18px #ffd166, 0 0 36px rgba(255,209,102,.9); }
+.mapa-emissora-ponto.cidade-nova::before {
+  content: "✦";
+  position: absolute;
+  left: 13px;
+  top: -10px;
+  color: #ffe99c;
+  font-size: .7rem;
+  text-shadow: 0 0 9px #ffd166;
+  animation: mapa-cidade-nova-brilho 1.6s ease-in-out infinite;
+}
+
+@keyframes mapa-emissora-nucleo {
+  0%,100% { transform: translate(-50%, -50%) scale(.84); }
+  50% { transform: translate(-50%, -50%) scale(1.25); }
+}
+@keyframes mapa-emissora-onda {
+  0% { transform: translate(-50%, -50%) scale(.35); opacity: .95; }
+  100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+}
+@keyframes mapa-cidade-nova-brilho {
+  0%,100% { opacity: .45; transform: scale(.8) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.25) rotate(14deg); }
+}
+
+/* Estados ficam discretos; os pontos de cidades são os protagonistas. */
+.mapa-uf {
+  width: 28px;
+  height: 22px;
+  border: 0;
+  border-radius: 8px;
+  color: rgba(193, 219, 239, .55);
+  background: rgba(2, 14, 31, .22);
+  box-shadow: none;
+  backdrop-filter: none;
+  pointer-events: auto;
+}
+.mapa-uf-pequeno { width: 23px; height: 19px; }
+.mapa-uf:hover,
+.mapa-uf:focus-visible,
+.mapa-uf.selecionado {
+  border: 1px solid var(--mapa-cor);
+  color: #fff;
+  background: rgba(3, 24, 48, .88);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--mapa-cor) 14%, transparent), 0 7px 18px rgba(0,0,0,.35);
+}
+.mapa-uf.tem-radio {
+  border: 0;
+  color: color-mix(in srgb, var(--mapa-cor) 75%, white 22%);
+  background: rgba(3, 22, 45, .36);
+}
+.mapa-uf.tem-radio::after { display: none; }
+.mapa-uf:not(.tem-radio):not(.em-regiao):not(.selecionado) { opacity: .3; }
+.mapa-uf-sigla { font-size: .52rem; letter-spacing: .06em; }
+.mapa-uf-contagem {
+  top: -7px;
+  right: -7px;
+  min-width: 15px;
+  height: 15px;
+  border: 1px solid rgba(255,255,255,.45);
+  font-size: .48rem;
+  box-shadow: 0 0 10px color-mix(in srgb, var(--mapa-cor) 65%, transparent);
+}
+
+.mapa-legenda {
+  z-index: 20;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: rgba(2, 14, 31, .78);
+  backdrop-filter: blur(12px);
+}
+.mapa-legenda-linha {
+  width: 22px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, #37e6ff, #d48cff, transparent);
+  box-shadow: 0 0 8px rgba(55,230,255,.7);
+}
+
+.mapa-cidade-chip.selecionada {
+  border-color: rgba(55,230,255,.72);
+  color: #fff;
+  background: linear-gradient(135deg, rgba(12,105,171,.72), rgba(69,52,145,.62));
+  box-shadow: 0 8px 22px rgba(55,230,255,.12);
+}
+
+@media (max-width: 620px) {
+  .mapa-brasil-stage { min-height: 440px; aspect-ratio: 1 / 1.08; border-radius: 27px; }
+  .mapa-brasil-silhueta,
+  .mapa-rede,
+  .mapa-emissoras,
+  .mapa-estados { inset: 6%; width: 88%; height: 88%; }
+  .mapa-emissora-ponto { width: 16px; height: 16px; }
+  .mapa-emissora-nucleo { width: 7px; height: 7px; }
+  .mapa-emissora-label { display: none; }
+  .mapa-uf { width: 24px; height: 19px; }
+  .mapa-uf-pequeno { width: 20px; height: 17px; }
+  .mapa-uf-sigla { font-size: .46rem; }
+  .mapa-legenda { right: 2%; left: 2%; justify-content: center; bottom: 4px; font-size: .55rem; }
+}
+
+@media (max-width: 390px) {
+  .mapa-brasil-stage { min-height: 405px; }
+  .mapa-uf { width: 21px; height: 17px; }
+  .mapa-uf-pequeno { width: 18px; height: 15px; }
+  .mapa-uf-contagem { display: none; }
+  .mapa-legenda { gap: 7px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mapa-brasil-stage::after,
+  .mapa-brasil-stage::before,
+  .mapa-atmosfera span,
+  .mapa-rede-fluxo,
+  .mapa-hub-nucleo,
+  .mapa-hub-onda,
+  .mapa-emissora-nucleo,
+  .mapa-emissora-onda,
+  .mapa-emissora-ponto.cidade-nova::before {
+    animation: none !important;
+  }
+}
