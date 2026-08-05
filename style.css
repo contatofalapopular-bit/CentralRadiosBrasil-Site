@@ -5747,3 +5747,93 @@ body.player-recolhido-visivel .apoio-flutuante{bottom:118px;}
   .mapa-emissora-ponto { width: 18px !important; height: 18px !important; }
   .mapa-emissora-nucleo { width: 8px !important; height: 8px !important; }
 }
+
+
+/* v22.17.6 — coordenadas geográficas e animações desktop */
+.mapa-brasil-stage {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  aspect-ratio: 1365 / 991 !important;
+  overflow: hidden !important;
+}
+
+.mapa-brasil-camada-3d,
+.mapa-brasil-modelo,
+.mapa-brasil-modelo img,
+.mapa-brasil-camada-3d .mapa-rede,
+.mapa-brasil-camada-3d .mapa-emissoras,
+.mapa-brasil-camada-3d .mapa-estados {
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  transform: none !important;
+}
+
+.mapa-brasil-modelo img {
+  display: block !important;
+  object-fit: fill !important;
+  object-position: center !important;
+}
+
+.mapa-rede-fluxo {
+  stroke-dasharray: 1.8 8.2 !important;
+  animation: mapa-fluxo-rede 3.2s var(--mapa-delay, 0s) linear infinite !important;
+  animation-play-state: running !important;
+  will-change: stroke-dashoffset;
+}
+
+.mapa-hub-nucleo {
+  animation: mapa-hub-pulso 2.2s ease-in-out infinite !important;
+  animation-play-state: running !important;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.mapa-hub-onda {
+  animation: mapa-hub-onda 3.1s ease-out infinite !important;
+  animation-play-state: running !important;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.mapa-hub-onda-2 {
+  animation-delay: 1.05s !important;
+}
+
+.mapa-emissora-nucleo {
+  animation: mapa-emissora-nucleo 2s var(--mapa-delay, 0s) ease-in-out infinite !important;
+  animation-play-state: running !important;
+  will-change: transform;
+}
+
+.mapa-emissora-onda {
+  animation: mapa-emissora-onda 2.5s var(--mapa-delay, 0s) ease-out infinite !important;
+  animation-play-state: running !important;
+  will-change: transform, opacity;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mapa-rede-fluxo {
+    animation: mapa-fluxo-rede 8s var(--mapa-delay, 0s) linear infinite !important;
+  }
+  .mapa-emissora-nucleo {
+    animation: mapa-emissora-nucleo 4.5s var(--mapa-delay, 0s) ease-in-out infinite !important;
+  }
+  .mapa-emissora-onda {
+    animation: mapa-emissora-onda 5.5s var(--mapa-delay, 0s) ease-out infinite !important;
+  }
+  .mapa-hub-nucleo {
+    animation: mapa-hub-pulso 4.5s ease-in-out infinite !important;
+  }
+  .mapa-hub-onda {
+    animation: mapa-hub-onda 6s ease-out infinite !important;
+  }
+}
+
+@media (max-width: 1100px), (max-width: 900px), (max-width: 640px), (max-width: 390px) {
+  .mapa-brasil-stage {
+    min-height: 0 !important;
+    aspect-ratio: 1365 / 991 !important;
+  }
+}

@@ -3328,6 +3328,100 @@ function configurarMapaSonoro3D() {
   palco.addEventListener("pointerleave", () => aplicar(0, 0), { passive: true });
 }
 
+const COORDENADAS_CIDADES_MAPA = Object.freeze({
+  "ES|ANCHIETA": { latitude: -20.8058, longitude: -40.6450 },
+  "SP|MONGAGUA": { latitude: -24.0930, longitude: -46.6200 },
+  "RS|BENTO GONCALVES": { latitude: -29.1714, longitude: -51.5194 },
+  "MT|RONDONOPOLIS": { latitude: -16.4708, longitude: -54.6356 },
+  "PR|RESERVA": { latitude: -24.6500, longitude: -50.8500 },
+  "SC|PRESIDENTE CASTELLO BRANCO": { latitude: -27.2210, longitude: -51.8090 },
+  "MG|CONTAGEM": { latitude: -19.9317, longitude: -44.0536 },
+  "SE|ARACAJU": { latitude: -10.9472, longitude: -37.0731 },
+  "GO|RIO VERDE": { latitude: -17.7923, longitude: -50.9192 },
+  "SC|CRICIUMA": { latitude: -28.6728, longitude: -49.3734 },
+  "SP|ATIBAIA": { latitude: -23.1171, longitude: -46.5563 },
+  "MA|RAPOSA": { latitude: -2.4250, longitude: -44.0970 },
+  "MG|JABOTICATUBAS": { latitude: -19.5147, longitude: -43.7447 },
+  "RN|NATAL": { latitude: -5.7945, longitude: -35.2110 },
+  "SE|NOSSA SENHORA DO SOCORRO": { latitude: -10.8550, longitude: -37.1260 },
+  "TO|PALMEIRAS DO TOCANTINS": { latitude: -6.6160, longitude: -47.5500 },
+  "MA|CAXIAS": { latitude: -4.8580, longitude: -43.3560 },
+  "SP|PRESIDENTE VENCESLAU": { latitude: -21.8760, longitude: -51.8430 },
+  "PR|ALMIRANTE TAMANDARE": { latitude: -25.3240, longitude: -49.3100 }
+});
+
+function normalizarChaveGeograficaMapa(valor) {
+  return String(valor || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLocaleUpperCase("pt-BR")
+    .replace(/[^A-Z0-9 ]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function projetarCoordenadaGeograficaMapa(latitude, longitude) {
+  const lat = Number(latitude);
+  const lon = Number(longitude);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
+
+  // Limites geográficos do Brasil ajustados ao mapa-base 1365 × 991.
+  // O desenho ocupa aproximadamente de 1,5% a 87,5% na horizontal
+  // e de 1% a 99% na vertical.
+  const longitudeOeste = -73.99;
+  const longitudeLeste = -34.79;
+  const latitudeNorte = 5.27;
+  const latitudeSul = -33.75;
+  const xMinimo = 1.5;
+  const xMaximo = 87.5;
+  const yMinimo = 1;
+  const yMaximo = 99;
+
+  const x = xMinimo + ((lon - longitudeOeste) / (longitudeLeste - longitudeOeste)) * (xMaximo - xMinimo);
+  const y = yMinimo + ((latitudeNorte - lat) / (latitudeNorte - latitudeSul)) * (yMaximo - yMinimo);
+
+  return {
+    x: limitarCoordenadaMapa(x, xMinimo, xMaximo),
+    y: limitarCoordenadaMapa(y, yMinimo, yMaximo)
+  };
+}
+
+function obterCoordenadasCidadeMapa(grupo) {
+  const radioComCoordenada = grupo.radios.find(radio => {
+    const latitudeOriginal = radio.localizacao?.latitude;
+    const longitudeOriginal = radio.localizacao?.longitude;
+    if (latitudeOriginal === null || latitudeOriginal === undefined || latitudeOriginal === "") return false;
+    if (longitudeOriginal === null || longitudeOriginal === undefined || longitudeOriginal === "") return false;
+    const latitude = Number(latitudeOriginal);
+    const longitude = Number(longitudeOriginal);
+    return Number.isFinite(latitude) && Number.isFinite(longitude);
+  });
+
+  if (radioComCoordenada) {
+    const projetada = projetarCoordenadaGeograficaMapa(
+      radioComCoordenada.localizacao.latitude,
+      radioComCoordenada.localizacao.longitude
+    );
+    if (projetada) return projetada;
+  }
+
+  const chave = `${grupo.uf}|${normalizarChaveGeograficaMapa(grupo.cidade)}`;
+  const coordenadaConhecida = COORDENADAS_CIDADES_MAPA[chave];
+  if (coordenadaConhecida) {
+    const projetada = projetarCoordenadaGeograficaMapa(
+      coordenadaConhecida.latitude,
+      coordenadaConhecida.longitude
+    );
+    if (projetada) return projetada;
+  }
+
+  const estadoBase = ESTADOS_BRASIL[grupo.uf];
+  return {
+    x: limitarCoordenadaMapa(estadoBase?.x || 50, 2, 88),
+    y: limitarCoordenadaMapa(estadoBase?.y || 50, 1, 99)
+  };
+}
+
 function obterPontosRedeMapa(radios) {
   const grupos = new Map();
   radios.forEach(radio => {
@@ -3339,32 +3433,17 @@ function obterPontosRedeMapa(radios) {
     grupos.get(chave).radios.push(radio);
   });
 
-  const porUf = new Map();
-  [...grupos.values()].forEach(grupo => {
-    if (!porUf.has(grupo.uf)) porUf.set(grupo.uf, []);
-    porUf.get(grupo.uf).push(grupo);
-  });
-
-  const pontos = [];
-  porUf.forEach((itens, uf) => {
-    const base = ESTADOS_BRASIL[uf];
-    itens
-      .sort((a, b) => b.radios.length - a.radios.length || a.cidade.localeCompare(b.cidade, "pt-BR"))
-      .forEach((grupo, indice) => {
-        const semente = hashVisualMapa(grupo.chave);
-        const angulo = ((semente % 360) + indice * 137.5) * Math.PI / 180;
-        const raio = itens.length === 1 ? .7 : 1.8 + Math.min(4.2, indice * .75);
-        grupo.x = limitarCoordenadaMapa(base.x + Math.cos(angulo) * raio, 7.5, 95.5);
-        grupo.y = limitarCoordenadaMapa(base.y + Math.sin(angulo) * raio, 6.5, 97);
-        grupo.regiao = base.regiao;
-        grupo.cor = CORES_REDE_MAPA[base.regiao] || "#37e6ff";
-        grupo.total = grupo.radios.length;
-        pontos.push(grupo);
-      });
-  });
-
-  const limite = window.matchMedia?.("(max-width: 620px)")?.matches ? 28 : 64;
-  return pontos
+  const limite = window.matchMedia?.("(max-width: 620px)")?.matches ? 32 : 80;
+  return [...grupos.values()]
+    .map(grupo => {
+      const coordenadas = obterCoordenadasCidadeMapa(grupo);
+      return {
+        ...grupo,
+        ...coordenadas,
+        regiao: ESTADOS_BRASIL[grupo.uf]?.regiao || "",
+        total: grupo.radios.length
+      };
+    })
     .sort((a, b) => b.total - a.total || a.uf.localeCompare(b.uf) || a.cidade.localeCompare(b.cidade, "pt-BR"))
     .slice(0, limite)
     .map((ponto, indice) => ({ ...ponto, cor: gerarCorUnicaPontoMapa(indice) }));
@@ -3438,7 +3517,7 @@ function renderizarRedeMapaSonoro(radios, cidadeNova) {
   elementos.mapaConexoes.innerHTML = "";
   elementos.mapaEmissoras.innerHTML = "";
 
-  const hub = { x: 61, y: 63, uf: "", regiao: "", chave: "", cor: "#37e6ff" };
+  const hub = { x: 55.2, y: 57.2, uf: "", regiao: "", chave: "", cor: "#37e6ff" };
   pontos.forEach((ponto, indice) => {
     const curvatura = ((hashVisualMapa(ponto.chave) % 11) - 5) * .42;
     adicionarConexaoRedeMapa(hub, ponto, { indice, cor: ponto.cor, curvatura });
