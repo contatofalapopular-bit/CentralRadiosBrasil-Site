@@ -1,4 +1,13 @@
-# Central Rádios Brasil — Site v22.16.3
+# Central Rádios Brasil — Site v22.16.4
+
+## 22.16.4 — Correção móvel do player
+
+- Separados os botões Recolher e Fechar no aplicativo móvel.
+- O botão flutuante Apoie não cobre mais os controles do player no celular.
+- Player recolhido mantém logo e dados da emissora, com seta para reabrir os controles.
+- Área segura inferior e telas baixas tratadas no CSS.
+- Reprodução automática preservada; `app.js` permanece igual à v22.16.3.
+- Nenhum Worker, D1, Admin ou Portal do Cliente foi alterado.
 
 ## 22.16.3 — Apoio voluntário por Pix
 
@@ -6,7 +15,6 @@
 - Botão para copiar a chave Pix com retorno acessível.
 - Acesso no cabeçalho, Home, rodapé, atalho do PWA e sitemap.
 - Aviso explícito de que a contribuição é opcional e não interfere em cadastro, aprovação ou destaque.
-- Nenhum Worker, D1, Admin ou Portal do Cliente foi alterado.
 
 ## Etapa 5.2 — revisão 22.16.0 com acessibilidade
 
@@ -113,7 +121,7 @@ Esta revisão impede que o navegador preencha automaticamente o campo antirrobô
 Ao abrir ou atualizar o Portal, a última rádio é restaurada e o áudio é iniciado automaticamente quando permitido pelo navegador. Se o navegador bloquear áudio com som, a primeira interação na página libera a reprodução.
 
 
-## 22.16.3 — Correção de publicação do Apoio Pix
+## 22.16.4 — Correção de publicação do Apoio Pix
 - Arquivos entregues diretamente na raiz do pacote.
 - Cache da PWA atualizado.
 - Atalho flutuante de apoio adicionado à Home.

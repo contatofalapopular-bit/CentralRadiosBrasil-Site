@@ -1,4 +1,4 @@
-CENTRAL RÁDIOS BRASIL — SITE v22.16.3
+CENTRAL RÁDIOS BRASIL — SITE v22.16.4 — CORREÇÃO MÓVEL DO PLAYER
 
 1. Este ZIP já abre diretamente nos arquivos do site.
 2. Após descompactar, envie TODOS os arquivos e pastas desta pasta para a RAIZ do repositório do Site Público.
@@ -9,3 +9,6 @@ CENTRAL RÁDIOS BRASIL — SITE v22.16.3
 7. Abra https://centralradiosbrasil.com.br/apoie/ e depois use Ctrl+F5 na Home.
 
 Não altere Worker, D1, Admin ou Portal do Cliente.
+
+8. No celular/PWA, teste os botões Recolher (seta) e Fechar (X) separadamente.
+9. No celular, o botão flutuante Apoie deve desaparecer enquanto o player estiver visível; o botão do cabeçalho permanece disponível.

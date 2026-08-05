@@ -1,3 +1,10 @@
+## 22.16.4 — Correção móvel do player
+
+- Corrigida a sobreposição entre os botões Recolher e Fechar.
+- Botão flutuante Apoie não cobre mais os controles do player.
+- Ajustado miniplayer, área segura e rolagem em telas móveis.
+- Reprodução automática preservada.
+
 ## 22.16.3 — Apoio voluntário por Pix
 
 - Criada página pública de apoio com QR Code Pix estático.

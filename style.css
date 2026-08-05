@@ -1083,11 +1083,11 @@ a {
      * O botão não pode desaparecer nessa faixa, pois ele libera a navegação do portal.
      * Posicionado fora do fluxo, não comprime os demais controles do player.
      */
-    .botao-fechar {
+    #btn-fechar-player {
         position: absolute;
         top: 10px;
         right: 10px;
-        z-index: 4;
+        z-index: 5;
         width: 42px;
         height: 42px;
         display: grid;
@@ -4013,4 +4013,118 @@ body.player-recolhido-visivel .apoio-flutuante{bottom:118px;}
   .player.player-recolhido{left:12px;width:min(calc(100% - 24px), 420px);}
   .player.player-recolhido .player-informacoes strong,
   .player.player-recolhido .player-informacoes small{max-width:150px;}
+}
+
+
+/* 22.16.4 — Correção móvel: controles separados e Apoie sem sobreposição */
+@media (max-width: 760px) {
+  .player {
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    max-height: calc(100dvh - 92px - env(safe-area-inset-top));
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .player-conteudo {
+    position: relative;
+  }
+
+  /* Reserva a lateral direita da identificação para os dois controles. */
+  .player:not(.player-recolhido) .player-identidade {
+    padding-right: 94px;
+  }
+
+  /* Recolher e fechar ficam lado a lado, sem disputar a mesma posição. */
+  #btn-recolher-player,
+  #btn-fechar-player {
+    position: absolute;
+    top: 10px;
+    z-index: 8;
+    width: 42px;
+    height: 42px;
+    display: grid;
+    flex: 0 0 42px;
+    margin: 0;
+    border-radius: 14px;
+  }
+
+  #btn-recolher-player {
+    right: 58px;
+    color: #9cf6ff;
+    border-color: rgba(55, 230, 255, .38);
+    background: rgba(55, 230, 255, .13);
+  }
+
+  #btn-fechar-player {
+    right: 10px;
+    color: #d7e4f4;
+    border-color: rgba(255, 255, 255, .16);
+    background: rgba(255, 255, 255, .08);
+  }
+
+  /* No celular, o acesso Pix permanece no cabeçalho e não cobre o player. */
+  body.player-visivel .apoio-flutuante {
+    display: none;
+  }
+
+  .player.player-recolhido {
+    left: 8px;
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    width: min(calc(100% - 16px), 420px);
+    max-height: none;
+    overflow: visible;
+  }
+
+  .player.player-recolhido .player-conteudo {
+    min-height: 78px;
+    padding: 10px 104px 10px 10px;
+  }
+
+  .player.player-recolhido .player-identidade {
+    padding-right: 0;
+  }
+
+  .player.player-recolhido #btn-recolher-player,
+  .player.player-recolhido #btn-fechar-player {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .player.player-recolhido #btn-recolher-player {
+    right: 56px;
+  }
+
+  .player.player-recolhido #btn-fechar-player {
+    right: 8px;
+  }
+}
+
+@media (max-width: 390px) {
+  .player:not(.player-recolhido) .player-identidade {
+    padding-right: 88px;
+  }
+
+  #btn-recolher-player,
+  #btn-fechar-player {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+
+  #btn-recolher-player {
+    right: 54px;
+  }
+
+  #btn-fechar-player {
+    right: 8px;
+  }
+
+  .player.player-recolhido .player-conteudo {
+    padding-right: 98px;
+  }
+
+  .player.player-recolhido #btn-recolher-player {
+    right: 52px;
+  }
 }

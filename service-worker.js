@@ -1,6 +1,6 @@
 "use strict";
 
-const APP_VERSION = "22.16.3";
+const APP_VERSION = "22.16.4";
 const CACHE_SHELL = `crb-shell-${APP_VERSION}`;
 const CACHE_DADOS = `crb-dados-${APP_VERSION}`;
 const URL_RADIOS = "https://raw.githubusercontent.com/contatofalapopular-bit/CentralRadiosBrasil-Dados/main/radios.json";
@@ -13,7 +13,7 @@ const ARQUIVOS_ESSENCIAIS = [
   "./accessibility.js",
   "./pwa.css",
   "./pwa.js",
-  "./manifest.webmanifest?v=22.16.3",
+  "./manifest.webmanifest?v=22.16.4",
   "./offline.html",
   "./hero-frases.json",
   "./logo-central-radios-brasil.png",
