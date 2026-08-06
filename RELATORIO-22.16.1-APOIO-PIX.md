@@ -1,4 +1,4 @@
-# Central Rádios Brasil — v22.16.2 Apoio Pix
+# Central Rádios Brasil — v22.16.1 Apoio Pix
 
 ## Escopo
 

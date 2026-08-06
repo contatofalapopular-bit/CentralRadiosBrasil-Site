@@ -453,6 +453,8 @@ function registrarEventos() {
     estado.conexao.nivelForcado = "offline";
     atualizarQualidadeConexao();
     pausarTempoOuvido();
+    pausarCronometroRanking();
+    agendarCancelamentoPorEspera();
     cancelarReconexaoAutomatica();
   });
 
@@ -1921,13 +1923,26 @@ async function iniciarOuRetomarContagemRanking() {
     }
 
     const controleAtual = estado.reproducaoRanking;
-    controleAtual.eventoId = resultado.eventoId;
+    controleAtual.eventoId = resultado.eventoId || null;
     controleAtual.radioId = radioId;
     controleAtual.sessaoId = sessaoId;
     controleAtual.segundosAcumulados = 0;
     controleAtual.ultimoEnvioSegundos = 0;
-    controleAtual.finalizada = false;
 
+    if (
+      resultado.contagemDisponivelNestaConexao === false ||
+      resultado.status === "duplicada"
+    ) {
+      controleAtual.finalizada = true;
+      pausarCronometroRanking();
+      console.info(
+        "A audiência desta rede já foi contabilizada para esta rádio dentro da janela de proteção.",
+        resultado
+      );
+      return;
+    }
+
+    controleAtual.finalizada = false;
     iniciarCronometroRanking();
   } catch (erro) {
     console.warn(

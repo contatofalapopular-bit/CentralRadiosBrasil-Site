@@ -1,37 +1,10 @@
-## 22.17.1 — Mapa Sonoro Conectado
-
-- Substitui o desenho estático do mapa por uma rede visual animada em código.
-- Adiciona pontos brilhantes e coloridos por cidade com emissora.
-- Adiciona linhas com fluxo luminoso ligando emissoras ao núcleo CRB e entre cidades da mesma região.
-- Adiciona seleção de cidade diretamente no mapa, com atualização do painel.
-- Reduz o peso visual das siglas dos estados.
-- Mantém regiões, catálogo, autoplay e player recolhível.
-- Cache PWA atualizado para 22.17.1.
-
-## 22.17.0 — Mapa Sonoro do Brasil
-
-- Antiga seção “Explore por regiões” substituída pelo Mapa Sonoro do Brasil.
-- Estados, regiões, cidades e quantidades usam os dados reais do catálogo.
-- Seleção de Goiás e demais UFs exibe rádios e cidades da área.
-- Nova ação “Ouvir uma rádio desta área” escolhe uma emissora real do recorte.
-- Cidades recém-chegadas recebem destaque automático com base na primeira publicação da cidade.
-- Catálogo pode ser aberto filtrado por região, estado ou cidade.
-- Cache PWA atualizado para 22.17.0.
-
-## 22.16.4 — Correção móvel do player
-
-- Corrigida a sobreposição entre os botões Recolher e Fechar.
-- Botão flutuante Apoie não cobre mais os controles do player.
-- Ajustado miniplayer, área segura e rolagem em telas móveis.
-- Reprodução automática preservada.
-
-## 22.16.3 — Apoio voluntário por Pix
+## 22.16.1 — Apoio voluntário por Pix
 
 - Criada página pública de apoio com QR Code Pix estático.
 - Adicionada chave `centralradiosbrasil@gmail.com` e botão de cópia.
 - Adicionados links no cabeçalho, Home e rodapés públicos.
 - Página incluída no PWA, sitemap e atalhos do manifesto.
-- Cache PWA atualizado para 22.16.3.
+- Cache PWA atualizado para 22.16.1.
 
 ## 22.16.0 — Reprodução automática da última rádio
 
@@ -160,9 +133,3 @@
 - Selos de popularidade baseados em dados reais.
 - Fallback de metadados alterado para “Programação ao vivo”.
 - Atualização do cache PWA para 22.10.0.
-
-
-## 22.16.3 — Correção de publicação do Apoio Pix
-- Arquivos entregues diretamente na raiz do pacote.
-- Cache da PWA atualizado.
-- Atalho flutuante de apoio adicionado à Home.

@@ -1,4 +1,4 @@
-/* Central Rádios Brasil — Apoio Pix 22.16.2 */
+/* Central Rádios Brasil — Apoio Pix 22.16.1 */
 .apoie-pagina{width:min(calc(100% - 40px),1120px);margin:0 auto;padding:44px 0 80px}
 .apoie-hero{padding:clamp(30px,6vw,64px);border:1px solid rgba(255,100,151,.25);border-radius:30px;background:radial-gradient(circle at 85% 12%,rgba(255,74,140,.2),transparent 36%),linear-gradient(145deg,rgba(9,37,76,.94),rgba(27,8,49,.97));box-shadow:0 24px 70px rgba(0,0,0,.3)}
 .apoie-etiqueta,.apoie-pix-selo{display:inline-flex;padding:7px 12px;border:1px solid rgba(255,113,159,.34);border-radius:999px;color:#ff9dbc;background:rgba(255,71,133,.1);font-size:.72rem;font-weight:950;letter-spacing:.1em}
