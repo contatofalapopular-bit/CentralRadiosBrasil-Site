@@ -1,0 +1,18 @@
+CENTRAL RÁDIOS BRASIL — SITE/PWA 22.18.0
+
+INSTALAÇÃO NO GITHUB
+
+1. Extraia este ZIP no computador.
+2. Abra o repositório do Site Público no GitHub.
+3. Use Add file > Upload files.
+4. Arraste todos os arquivos e pastas que estão dentro da pasta extraída.
+5. Confirme que index.html, app.js, style.css, service-worker.js e a pasta radio estão na raiz do repositório.
+6. Faça o commit.
+7. Após a publicação, use Ctrl + Shift + R para ignorar o cache antigo.
+
+ATENÇÃO
+
+- Não envie o ZIP fechado para o repositório: envie os arquivos extraídos.
+- A pasta radio contém as páginas individuais de compartilhamento das emissoras.
+- O Worker/API 1.18.2, o D1, o Admin e o Portal do Cliente não precisam ser alterados.
+- As ondas, os pulsos, os pontos luminosos e os fluxos animados do mapa foram preservados.

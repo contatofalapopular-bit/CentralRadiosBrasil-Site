@@ -5840,7 +5840,7 @@ body.player-recolhido-visivel .apoio-flutuante{bottom:118px;}
 
 
 /* =========================================================
-   SITE 22.17.8 — PLAYER HÍBRIDO RESPONSIVO
+   SITE 22.18.0 — PLAYER HÍBRIDO RESPONSIVO
    Desktop: fixo no topo, abaixo do cabeçalho.
    Celular/tablet: permanece fixo na parte inferior.
    ========================================================= */
@@ -5993,4 +5993,37 @@ body.player-recolhido-visivel .apoio-flutuante{bottom:118px;}
     width: 39px;
     height: 39px;
   }
+}
+
+
+/* =========================================================
+   SITE 22.18.0 — OTIMIZAÇÃO, SEO E NAVEGAÇÃO
+   As animações do mapa foram preservadas integralmente.
+   ========================================================= */
+.player {
+  transition: width .25s ease, top .25s ease, border-radius .25s ease, box-shadow .25s ease;
+}
+.pagina {
+  transition: padding-top .25s ease;
+}
+.radio-card-estatico .radio-card-acao {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: inherit;
+}
+.radio-card-estatico .radio-favorita-estatica {
+  pointer-events: none;
+}
+.catalogo-sem-javascript {
+  margin-top: 28px;
+}
+.catalogo-sem-javascript ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 10px 18px;
+  padding-left: 20px;
+}
+.catalogo-sem-javascript a {
+  color: #dcecff;
 }

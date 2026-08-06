@@ -1,28 +1,34 @@
 "use strict";
 
-const APP_VERSION = "22.17.8";
+const APP_VERSION = "22.18.0";
 const CACHE_SHELL = `crb-shell-${APP_VERSION}`;
 const CACHE_DADOS = `crb-dados-${APP_VERSION}`;
 const URL_RADIOS = "https://raw.githubusercontent.com/contatofalapopular-bit/CentralRadiosBrasil-Dados/main/radios.json";
 
-const ARQUIVOS_ESSENCIAIS = [
+const ARQUIVOS_CRITICOS = [
   "./",
   "./index.html",
   "./style.css",
-  "./assets/mapa-brasil-base-satelite.png",
   "./app.js",
   "./accessibility.js",
   "./pwa.css",
   "./pwa.js",
-  "./manifest.webmanifest?v=22.17.8",
+  "./manifest.webmanifest?v=22.18.0",
   "./offline.html",
   "./hero-frases.json",
-  "./logo-central-radios-brasil.png",
+  "./catalogo-inicial.json",
+  "./logo-central-radios-brasil-192.webp",
+  "./logo-central-radios-brasil-384.webp",
   "./icons/icon-192-v22113.png",
   "./icons/icon-512-v22113.png",
   "./icons/icon-maskable-512-v22113.png",
   "./icons/apple-touch-icon-v22113.png",
-  "./icons/favicon-64-v22113.png",
+  "./icons/favicon-64-v22113.png"
+];
+
+const ARQUIVOS_OPCIONAIS = [
+  "./assets/mapa-brasil-base-satelite.webp",
+  "./assets/compartilhamento-central-radios-brasil.png",
   "./cadastro/",
   "./cadastro/index.html",
   "./cadastro/cadastro.css",
@@ -39,7 +45,6 @@ const ARQUIVOS_ESSENCIAIS = [
   "./streaming/streaming.css",
   "./streaming/streaming.js",
   "./institucional.css",
-  "./assets/compartilhamento-central-radios-brasil.png",
   "./privacidade/",
   "./privacidade/index.html",
   "./termos/",
@@ -56,13 +61,21 @@ const ARQUIVOS_ESSENCIAIS = [
   "./apoie/index.html",
   "./apoie/apoie.css",
   "./apoie/apoie.js",
-  "./assets/qr-code-pix-apoio.jpeg",
+  "./assets/qr-code-pix-apoio.jpeg"
 ];
 
 self.addEventListener("install", evento => {
   evento.waitUntil((async () => {
     const cache = await caches.open(CACHE_SHELL);
-    await cache.addAll(ARQUIVOS_ESSENCIAIS);
+    await cache.addAll(ARQUIVOS_CRITICOS);
+
+    await Promise.allSettled(
+      ARQUIVOS_OPCIONAIS.map(async caminho => {
+        const requisicao = new Request(caminho, { cache: "reload" });
+        const resposta = await fetch(requisicao);
+        if (resposta.ok) await cache.put(requisicao, resposta.clone());
+      })
+    );
 
     try {
       const resposta = await fetch(URL_RADIOS, { cache: "no-store" });
@@ -71,7 +84,7 @@ self.addEventListener("install", evento => {
         await cacheDados.put(URL_RADIOS, resposta.clone());
       }
     } catch (erro) {
-      console.info("Catálogo será armazenado após a primeira conexão.", erro);
+      console.info("Catálogo remoto será atualizado após a primeira conexão.", erro);
     }
 
     await self.skipWaiting();
@@ -92,9 +105,7 @@ self.addEventListener("activate", evento => {
 });
 
 self.addEventListener("message", evento => {
-  if (evento.data?.tipo === "PULAR_ESPERA") {
-    void self.skipWaiting();
-  }
+  if (evento.data?.tipo === "PULAR_ESPERA") void self.skipWaiting();
 });
 
 self.addEventListener("fetch", evento => {
@@ -102,10 +113,7 @@ self.addEventListener("fetch", evento => {
   if (requisicao.method !== "GET") return;
 
   const url = new URL(requisicao.url);
-
-  if (requisicao.destination === "audio" || url.hostname.endsWith("workers.dev")) {
-    return;
-  }
+  if (requisicao.destination === "audio" || url.hostname.endsWith("workers.dev")) return;
 
   if (requisicao.mode === "navigate") {
     evento.respondWith(responderNavegacao(requisicao));
@@ -123,9 +131,7 @@ self.addEventListener("fetch", evento => {
     return;
   }
 
-  if (requisicao.destination === "image") {
-    evento.respondWith(responderImagemExterna(requisicao));
-  }
+  if (requisicao.destination === "image") evento.respondWith(responderImagemExterna(requisicao));
 });
 
 async function responderNavegacao(requisicao) {
@@ -140,6 +146,7 @@ async function responderNavegacao(requisicao) {
     const cache = await caches.open(CACHE_SHELL);
     return (
       await cache.match(requisicao, { ignoreSearch: true }) ||
+      await cache.match("./index.html") ||
       await cache.match("./offline.html")
     );
   }
@@ -152,14 +159,13 @@ async function responderDados(requisicao) {
     if (resposta.ok) await cache.put(URL_RADIOS, resposta.clone());
     return resposta;
   } catch {
+    const remoto = await cache.match(URL_RADIOS);
+    if (remoto) return remoto;
+
+    const shell = await caches.open(CACHE_SHELL);
     return (
-      await cache.match(URL_RADIOS) ||
-      new Response(JSON.stringify({
-        valido: false,
-        offline: true,
-        emissoras: [],
-        mensagem: "Catálogo indisponível sem conexão e ainda não armazenado neste aparelho."
-      }), {
+      await shell.match("./catalogo-inicial.json") ||
+      new Response(JSON.stringify({ valido: false, offline: true, emissoras: [] }), {
         status: 503,
         headers: { "Content-Type": "application/json; charset=utf-8" }
       })
@@ -170,7 +176,6 @@ async function responderDados(requisicao) {
 async function responderArquivoLocal(requisicao) {
   const cache = await caches.open(CACHE_SHELL);
   const salvo = await cache.match(requisicao, { ignoreSearch: true });
-
   const atualizacao = fetch(requisicao).then(async resposta => {
     if (resposta.ok) await cache.put(requisicao, resposta.clone());
     return resposta;
@@ -180,7 +185,6 @@ async function responderArquivoLocal(requisicao) {
     void atualizacao;
     return salvo;
   }
-
   return (await atualizacao) || Response.error();
 }
 
@@ -188,12 +192,9 @@ async function responderImagemExterna(requisicao) {
   const cache = await caches.open(CACHE_DADOS);
   const salvo = await cache.match(requisicao);
   if (salvo) return salvo;
-
   try {
     const resposta = await fetch(requisicao);
-    if (resposta.ok || resposta.type === "opaque") {
-      await cache.put(requisicao, resposta.clone());
-    }
+    if (resposta.ok || resposta.type === "opaque") await cache.put(requisicao, resposta.clone());
     return resposta;
   } catch {
     return Response.error();

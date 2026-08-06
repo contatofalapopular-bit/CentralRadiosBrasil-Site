@@ -3,6 +3,8 @@
 const URL_RADIOS =
   "https://raw.githubusercontent.com/contatofalapopular-bit/CentralRadiosBrasil-Dados/main/radios.json";
 
+const URL_RADIOS_LOCAL = "catalogo-inicial.json";
+
 const URL_API =
   "https://broken-bar-45e2.contatofalapopular.workers.dev";
 
@@ -170,6 +172,10 @@ const estado = {
   usuarioPausou: false,
   fechandoPlayer: false,
   playerRecolhido: false,
+  playerPreferenciaRecolhido: false,
+  playerRecolhimentoAutomatico: false,
+  playerBloqueioAutomaticoAte: 0,
+  playerScrollRaf: null,
   indiceStreamAtual: 0,
   reconexao: {
     tentativa: 0,
@@ -273,14 +279,18 @@ const CHAVE_PLAYER_RECOLHIDO = "crb_player_recolhido";
 
 function carregarPreferenciaPlayerRecolhido() {
   try {
-    estado.playerRecolhido = localStorage.getItem(CHAVE_PLAYER_RECOLHIDO) === "1";
-  } catch {}
+    estado.playerPreferenciaRecolhido = localStorage.getItem(CHAVE_PLAYER_RECOLHIDO) === "1";
+  } catch {
+    estado.playerPreferenciaRecolhido = false;
+  }
+  estado.playerRecolhido = estado.playerPreferenciaRecolhido;
+  estado.playerRecolhimentoAutomatico = false;
   aplicarEstadoPlayerRecolhido();
 }
 
 function salvarPreferenciaPlayerRecolhido() {
   try {
-    localStorage.setItem(CHAVE_PLAYER_RECOLHIDO, estado.playerRecolhido ? "1" : "0");
+    localStorage.setItem(CHAVE_PLAYER_RECOLHIDO, estado.playerPreferenciaRecolhido ? "1" : "0");
   } catch {}
 }
 
@@ -327,9 +337,76 @@ function aplicarEstadoPlayerRecolhido() {
 }
 
 function alternarPlayerRecolhido() {
+  estado.playerRecolhimentoAutomatico = false;
   estado.playerRecolhido = !estado.playerRecolhido;
+  estado.playerPreferenciaRecolhido = estado.playerRecolhido;
+  estado.playerBloqueioAutomaticoAte = Date.now() + 5000;
   aplicarEstadoPlayerRecolhido();
   salvarPreferenciaPlayerRecolhido();
+}
+
+function playerPossuiInteracaoAberta() {
+  const volumeAberto = !elementos.playerVolumePopover?.classList.contains("hidden");
+  const avisoAberto = !elementos.playerToast?.classList.contains("hidden");
+  return Boolean(volumeAberto || avisoAberto);
+}
+
+function expandirPlayerTemporariamente(duracaoMs = 5000) {
+  if (!playerUsaTopoDesktop() || estado.playerPreferenciaRecolhido) return;
+  estado.playerRecolhido = false;
+  estado.playerRecolhimentoAutomatico = false;
+  estado.playerBloqueioAutomaticoAte = Date.now() + duracaoMs;
+  aplicarEstadoPlayerRecolhido();
+  window.setTimeout(agendarRolagemPlayerInteligente, duracaoMs + 50);
+}
+
+function prepararPlayerParaNovaRadio() {
+  if (!playerUsaTopoDesktop() || estado.playerPreferenciaRecolhido) return;
+  estado.playerRecolhido = false;
+  estado.playerRecolhimentoAutomatico = false;
+  estado.playerBloqueioAutomaticoAte = Date.now() + 6500;
+  window.setTimeout(agendarRolagemPlayerInteligente, 6550);
+}
+
+function tratarRolagemPlayerInteligente() {
+  estado.playerScrollRaf = null;
+
+  if (!playerUsaTopoDesktop() || elementos.player?.classList.contains("hidden")) {
+    if (estado.playerRecolhimentoAutomatico) {
+      estado.playerRecolhido = estado.playerPreferenciaRecolhido;
+      estado.playerRecolhimentoAutomatico = false;
+      aplicarEstadoPlayerRecolhido();
+    }
+    return;
+  }
+
+  const topo = window.scrollY || document.documentElement.scrollTop || 0;
+
+  if (topo <= 80) {
+    if (estado.playerRecolhimentoAutomatico && !estado.playerPreferenciaRecolhido) {
+      estado.playerRecolhido = false;
+      estado.playerRecolhimentoAutomatico = false;
+      aplicarEstadoPlayerRecolhido();
+    }
+    return;
+  }
+
+  if (
+    topo >= 260 &&
+    !estado.playerPreferenciaRecolhido &&
+    !estado.playerRecolhido &&
+    Date.now() >= estado.playerBloqueioAutomaticoAte &&
+    !playerPossuiInteracaoAberta()
+  ) {
+    estado.playerRecolhido = true;
+    estado.playerRecolhimentoAutomatico = true;
+    aplicarEstadoPlayerRecolhido();
+  }
+}
+
+function agendarRolagemPlayerInteligente() {
+  if (estado.playerScrollRaf !== null) return;
+  estado.playerScrollRaf = window.requestAnimationFrame(tratarRolagemPlayerInteligente);
 }
 
 function registrarEventos() {
@@ -338,6 +415,16 @@ function registrarEventos() {
     atualizarOffsetCabecalhoPlayer();
     atualizarBotaoRecolherPlayer();
   }, { passive: true });
+
+  window.addEventListener("scroll", agendarRolagemPlayerInteligente, { passive: true });
+  elementos.player?.addEventListener("click", evento => {
+    if (
+      estado.playerRecolhimentoAutomatico &&
+      !evento.target.closest("#btn-recolher-player, #btn-fechar-player")
+    ) {
+      expandirPlayerTemporariamente(6000);
+    }
+  });
 
   if (typeof ResizeObserver !== "undefined") {
     const cabecalho = document.querySelector(".cabecalho");
@@ -835,21 +922,39 @@ function exibirFraseHero(indice, animar) {
   window.setTimeout(trocarTextos, estado.hero.transicaoMs);
 }
 
-async function carregarBanco() {
-  mostrarMensagem("Carregando emissoras...");
+async function obterBancoComFallbackLocal() {
+  let erroRemoto = null;
 
   try {
-    const [resposta, statusMonitoramento, popularidade] = await Promise.all([
-      fetch(URL_RADIOS, { cache: "no-store" }),
+    const resposta = await fetch(URL_RADIOS, { cache: "no-store" });
+    if (!resposta.ok) throw new Error(`Erro HTTP ${resposta.status}`);
+    const banco = await resposta.json();
+    validarBanco(banco);
+    return banco;
+  } catch (erro) {
+    erroRemoto = erro;
+    console.warn("Catálogo remoto indisponível; usando snapshot local.", erro);
+  }
+
+  const respostaLocal = await fetch(URL_RADIOS_LOCAL, { cache: "no-store" });
+  if (!respostaLocal.ok) {
+    throw erroRemoto || new Error(`Erro HTTP ${respostaLocal.status}`);
+  }
+
+  const bancoLocal = await respostaLocal.json();
+  validarBanco(bancoLocal);
+  return bancoLocal;
+}
+
+async function carregarBanco() {
+  mostrarMensagem("Atualizando catálogo oficial...");
+
+  try {
+    const [banco, statusMonitoramento, popularidade] = await Promise.all([
+      obterBancoComFallbackLocal(),
       carregarStatusMonitoramentoStreams(),
       carregarPopularidade()
     ]);
-
-    if (!resposta.ok) {
-      throw new Error(`Erro HTTP ${resposta.status}`);
-    }
-
-    const banco = await resposta.json();
 
     validarBanco(banco);
 
@@ -1653,6 +1758,7 @@ async function selecionarRadio(radio, opcoes = {}) {
 
   salvarUltimaRadio(radio);
   elementos.player.classList.remove("hidden");
+  prepararPlayerParaNovaRadio();
   atualizarClassesPlayerVisivel();
   aplicarEstadoPlayerRecolhido();
 
@@ -2335,6 +2441,7 @@ function restaurarUltimaRadio() {
   estado.radioAtual = radio;
   estado.indiceStreamAtual = 0;
   elementos.player.classList.remove("hidden");
+  prepararPlayerParaNovaRadio();
   atualizarClassesPlayerVisivel();
   aplicarEstadoPlayerRecolhido();
   atualizarIdentidadePlayer(radio);
@@ -2373,6 +2480,7 @@ function prepararRadioCompartilhada() {
   estado.radioAtual = radio;
   estado.indiceStreamAtual = 0;
   elementos.player.classList.remove("hidden");
+  prepararPlayerParaNovaRadio();
   atualizarClassesPlayerVisivel();
   aplicarEstadoPlayerRecolhido();
   atualizarIdentidadePlayer(radio);
@@ -2544,6 +2652,7 @@ function animarFavorita() {
 
 function mostrarAvisoPlayer(texto) {
   if (!elementos.playerToast) return;
+  expandirPlayerTemporariamente(3500);
   if (estado.toastTimerId) window.clearTimeout(estado.toastTimerId);
   elementos.playerToast.textContent = texto;
   elementos.playerToast.classList.remove("hidden");
@@ -2736,7 +2845,10 @@ function alternarPainelVolume() {
   const abrindo = elementos.playerVolumePopover.classList.contains("hidden");
   elementos.playerVolumePopover.classList.toggle("hidden", !abrindo);
   elementos.btnVolume.setAttribute("aria-expanded", String(abrindo));
-  if (abrindo) elementos.playerVolume.focus();
+  if (abrindo) {
+    expandirPlayerTemporariamente(8000);
+    elementos.playerVolume.focus();
+  }
 }
 
 function fecharPainelVolume() {
@@ -3085,9 +3197,8 @@ function atualizarMediaSession() {
 }
 
 function criarLinkCompartilhavelRadio(radio) {
-  const url = new URL("https://centralradiosbrasil.com.br/");
-  url.searchParams.set("radio", obterIdentificadorRadio(radio));
-  return url.href;
+  const identificador = encodeURIComponent(obterIdentificadorRadio(radio));
+  return `https://centralradiosbrasil.com.br/radio/${identificador}/`;
 }
 
 async function copiarLinkCompartilhavel(texto) {
@@ -4121,7 +4232,7 @@ const rankingDemonstracao = [
     nome: "Rádio Fala Popular",
     categoria: "Sertanejo",
     reproducoesRanking: 18452,
-    logoRanking: "logo-central-radios-brasil.png",
+    logoRanking: "logo-central-radios-brasil-192.webp",
     demonstrativa: true
   },
   {

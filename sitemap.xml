@@ -1,14 +1,128 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://centralradiosbrasil.com.br/</loc><lastmod>2026-08-04</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
-  <url><loc>https://centralradiosbrasil.com.br/plataforma/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://centralradiosbrasil.com.br/cadastro/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://centralradiosbrasil.com.br/acompanhar/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://centralradiosbrasil.com.br/streaming/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://centralradiosbrasil.com.br/privacidade/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://centralradiosbrasil.com.br/termos/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://centralradiosbrasil.com.br/regras-emissoras/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
-  <url><loc>https://centralradiosbrasil.com.br/suporte/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://centralradiosbrasil.com.br/ocorrencias/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://centralradiosbrasil.com.br/apoie/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://centralradiosbrasil.com.br/</loc><lastmod>2026-08-04</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
+<url><loc>https://centralradiosbrasil.com.br/plataforma/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://centralradiosbrasil.com.br/cadastro/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.9</priority></url>
+<url><loc>https://centralradiosbrasil.com.br/acompanhar/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://centralradiosbrasil.com.br/streaming/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+<url><loc>https://centralradiosbrasil.com.br/privacidade/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://centralradiosbrasil.com.br/termos/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.5</priority></url>
+<url><loc>https://centralradiosbrasil.com.br/regras-emissoras/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.6</priority></url>
+<url><loc>https://centralradiosbrasil.com.br/suporte/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://centralradiosbrasil.com.br/ocorrencias/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+<url><loc>https://centralradiosbrasil.com.br/apoie/</loc><lastmod>2026-08-04</lastmod><changefreq>monthly</changefreq><priority>0.7</priority></url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/derik-ramos-radio-show-1785841848411/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/gruda-fm-1785716999351/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/ide-radio-gospel-1785636284319/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/pop-rock-brasil-1785842110236/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/radio-capital-do-tomate-1785545220352/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/radio-casteloweb-1785691204268/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/radio-e-web-tv-mais24-horas-no-ar-co-voce-e-ora-voce-trazendo-informacao-em-tempo-real-1785848265660/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/radio-esperanca-1785628051841/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/radio-fala-popular-1785545311379/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/radio-gospel-novo-amanhecer-1785842047917/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/radio-modao-fm-1785891961751/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/radio-ol-1785841965699/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/radio-paraiso-web-1785891885869/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/radio-vida-natal-1785627937391/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/radio-web-novo-horizonte-1785891777080/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/radio-wording-76-3-fm-1785775969135/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/web-radio-caxias-1785627985907/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/web-radio-cidade-1785691312417/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://centralradiosbrasil.com.br/radio/web-radio-conectados-gospel-fm-1785717085503/</loc>
+    <lastmod>2026-08-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
 </urlset>
