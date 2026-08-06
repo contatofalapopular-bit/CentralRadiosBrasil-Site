@@ -1,3 +1,14 @@
+# Central Rádios Brasil — Histórico de versões
+
+## 22.17.8 — Player híbrido responsivo
+
+- Desktop: player fixo no topo, logo abaixo do cabeçalho.
+- Celular e tablet: player mantido na parte inferior.
+- Reserva dinâmica de espaço para não cobrir ranking, catálogo ou botões.
+- Modo recolhido compacto com logo, identificação, play, expandir e fechar.
+- Altura do cabeçalho calculada automaticamente, inclusive quando os botões se reorganizam.
+- Popover de volume e avisos abrem para baixo no desktop.
+
 ## 22.16.1 — Apoio voluntário por Pix
 
 - Criada página pública de apoio com QR Code Pix estático.

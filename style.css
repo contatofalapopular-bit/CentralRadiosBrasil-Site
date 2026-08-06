@@ -5837,3 +5837,160 @@ body.player-recolhido-visivel .apoio-flutuante{bottom:118px;}
     aspect-ratio: 1365 / 991 !important;
   }
 }
+
+
+/* =========================================================
+   SITE 22.17.8 — PLAYER HÍBRIDO RESPONSIVO
+   Desktop: fixo no topo, abaixo do cabeçalho.
+   Celular/tablet: permanece fixo na parte inferior.
+   ========================================================= */
+@media (min-width: 900px) {
+  :root {
+    --crb-cabecalho-altura: 86px;
+    --crb-player-topo-gap: 10px;
+    --crb-player-altura-expandido: 106px;
+    --crb-player-altura-recolhido: 76px;
+  }
+
+  .player {
+    top: calc(var(--crb-cabecalho-altura) + var(--crb-player-topo-gap));
+    bottom: auto;
+    z-index: 49;
+    width: min(calc(100% - 40px), var(--largura));
+    border-radius: 22px;
+    animation-name: surgir-player-topo;
+  }
+
+  .player-conteudo {
+    min-height: 96px;
+    gap: 16px;
+    padding: 10px 14px;
+  }
+
+  .player-identidade {
+    flex: 1 1 auto;
+    gap: 13px;
+  }
+
+  .player-logo {
+    flex-basis: 66px;
+    width: 66px;
+    height: 66px;
+    border-radius: 18px;
+  }
+
+  .player-informacoes strong,
+  .player-informacoes small,
+  .player-buffer {
+    max-width: min(43vw, 540px);
+  }
+
+  .player-acoes {
+    flex: 0 0 auto;
+    gap: 7px;
+  }
+
+  .botao-player-secundario,
+  .botao-fechar {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+  }
+
+  .botao-player {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+  }
+
+  /* Abre os elementos auxiliares para baixo quando o player está no topo. */
+  .player-volume-popover {
+    top: calc(100% + 12px);
+    bottom: auto;
+  }
+
+  .player-toast {
+    top: calc(100% + 10px);
+    bottom: auto;
+  }
+
+  /* Reserva espaço real: o player nunca cobre ranking, catálogo ou botões. */
+  body.player-visivel .pagina {
+    padding-top: calc(var(--crb-player-altura-expandido) + var(--crb-player-topo-gap));
+  }
+
+  body.player-recolhido-visivel .pagina {
+    padding-top: calc(var(--crb-player-altura-recolhido) + var(--crb-player-topo-gap));
+  }
+
+  body.player-visivel .apoio-flutuante,
+  body.player-recolhido-visivel .apoio-flutuante {
+    bottom: 24px;
+  }
+
+  /* Recolhido: faixa central compacta com identidade, play e controles de janela. */
+  .player.player-recolhido {
+    top: calc(var(--crb-cabecalho-altura) + var(--crb-player-topo-gap));
+    bottom: auto;
+    left: 50%;
+    right: auto;
+    width: min(calc(100% - 40px), 650px);
+    transform: translateX(-50%);
+  }
+
+  .player.player-recolhido .player-conteudo {
+    min-height: var(--crb-player-altura-recolhido);
+    padding: 9px 12px;
+  }
+
+  .player.player-recolhido .player-logo {
+    flex-basis: 52px;
+    width: 52px;
+    height: 52px;
+  }
+
+  .player.player-recolhido .player-informacoes strong,
+  .player.player-recolhido .player-informacoes small {
+    max-width: 300px;
+  }
+
+  .player.player-recolhido #btn-play-pause {
+    display: grid !important;
+    width: 46px;
+    height: 46px;
+  }
+
+  .player.player-recolhido #btn-recolher-player,
+  .player.player-recolhido #btn-fechar-player {
+    display: grid !important;
+  }
+}
+
+@keyframes surgir-player-topo {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -14px) scale(.985);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1120px) {
+  .player-informacoes strong,
+  .player-informacoes small,
+  .player-buffer {
+    max-width: 300px;
+  }
+
+  .player-acoes {
+    gap: 5px;
+  }
+
+  .botao-player-secundario,
+  .botao-fechar {
+    width: 39px;
+    height: 39px;
+  }
+}

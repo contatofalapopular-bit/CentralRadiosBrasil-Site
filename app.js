@@ -290,15 +290,39 @@ function atualizarClassesPlayerVisivel() {
   document.body.classList.toggle("player-recolhido-visivel", visivel && estado.playerRecolhido);
 }
 
+function playerUsaTopoDesktop() {
+  return window.matchMedia("(min-width: 900px)").matches;
+}
+
+function atualizarOffsetCabecalhoPlayer() {
+  const cabecalho = document.querySelector(".cabecalho");
+  if (!cabecalho) return;
+  const altura = Math.max(0, Math.ceil(cabecalho.getBoundingClientRect().height));
+  document.documentElement.style.setProperty("--crb-cabecalho-altura", `${altura}px`);
+}
+
+function atualizarBotaoRecolherPlayer() {
+  if (!elementos.btnRecolherPlayer) return;
+
+  const recolhido = Boolean(estado.playerRecolhido);
+  const superior = playerUsaTopoDesktop();
+
+  elementos.btnRecolherPlayer.textContent = superior
+    ? (recolhido ? "▾" : "▴")
+    : (recolhido ? "→" : "←");
+
+  elementos.btnRecolherPlayer.setAttribute(
+    "aria-label",
+    recolhido ? "Expandir controles do player" : "Recolher controles do player"
+  );
+  elementos.btnRecolherPlayer.setAttribute("aria-expanded", String(!recolhido));
+  elementos.btnRecolherPlayer.title = recolhido ? "Expandir controles" : "Recolher controles";
+}
+
 function aplicarEstadoPlayerRecolhido() {
   elementos.player?.classList.toggle("player-recolhido", Boolean(estado.playerRecolhido));
-  if (elementos.btnRecolherPlayer) {
-    const recolhido = Boolean(estado.playerRecolhido);
-    elementos.btnRecolherPlayer.textContent = recolhido ? "→" : "←";
-    elementos.btnRecolherPlayer.setAttribute("aria-label", recolhido ? "Expandir controles do player" : "Recolher player para a esquerda");
-    elementos.btnRecolherPlayer.setAttribute("aria-expanded", String(!recolhido));
-    elementos.btnRecolherPlayer.title = recolhido ? "Expandir controles" : "Recolher player";
-  }
+  atualizarBotaoRecolherPlayer();
+  atualizarOffsetCabecalhoPlayer();
   atualizarClassesPlayerVisivel();
 }
 
@@ -309,6 +333,19 @@ function alternarPlayerRecolhido() {
 }
 
 function registrarEventos() {
+  atualizarOffsetCabecalhoPlayer();
+  window.addEventListener("resize", () => {
+    atualizarOffsetCabecalhoPlayer();
+    atualizarBotaoRecolherPlayer();
+  }, { passive: true });
+
+  if (typeof ResizeObserver !== "undefined") {
+    const cabecalho = document.querySelector(".cabecalho");
+    if (cabecalho) {
+      new ResizeObserver(atualizarOffsetCabecalhoPlayer).observe(cabecalho);
+    }
+  }
+
   elementos.pesquisa.addEventListener("input", aplicarFiltros);
   elementos.filtroEstado.addEventListener("change", () => {
     estado.regiaoSelecionada = "";
